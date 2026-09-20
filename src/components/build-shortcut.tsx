@@ -27,7 +27,7 @@ export function BuildShortcut({ build }: BuildShortcutProps) {
   return (
     <Link
       href={buildHref(build)}
-      className="group flex w-full max-w-56 flex-col overflow-hidden rounded-2xl border border-zinc-200 transition group-hover:border-zinc-900"
+      className="group flex w-full max-w-56 flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white transition duration-200 ease-out hover:-translate-y-1 hover:border-zinc-900 hover:shadow-md"
     >
       <div className="aspect-square w-full overflow-hidden border-b border-zinc-200">
         <BuildDemo path={build.path} />

@@ -3,4 +3,27 @@
 @theme inline {
   --font-sans: var(--font-rubik), "Rubik", sans-serif;
   --font-display: var(--font-schoolbell), "Schoolbell", cursive;
+  --animate-cake-fly: cake-fly 0.75s ease-out forwards;
+  --animate-slider-nudge: slider-nudge 0.55s ease-out forwards;
+}
+
+@keyframes cake-fly {
+  0% {
+    transform: translate(0, 0);
+  }
+  45% {
+    transform: translate(42px, -20px);
+  }
+  100% {
+    transform: translate(88px, 12px);
+  }
+}
+
+@keyframes slider-nudge {
+  0% {
+    width: 33.333%;
+  }
+  100% {
+    width: 72%;
+  }
 }
