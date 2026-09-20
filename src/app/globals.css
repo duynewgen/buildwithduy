@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+@theme inline {
+  --font-display: var(--font-schoolbell), cursive;
+}
