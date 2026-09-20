@@ -12,11 +12,41 @@ export type Build = {
 export const builds: Build[] = [
   {
     path: "birthday/slider",
-    title: "birthday slider",
-    description: "slide to your month, day, and year. be careful with decimals.",
+    title: "slider",
+    description: "slide to your month, day, and year.",
   },
 ];
 
 export function buildHref(build: Build) {
   return `/${build.path}`;
+}
+
+export function buildCategory(build: Build) {
+  return build.path.split("/")[0] ?? build.path;
+}
+
+export function categoryHref(category: string) {
+  return `/${category}`;
+}
+
+/** unique categories in registry order */
+export function buildCategories() {
+  const seen = new Set<string>();
+  const categories: string[] = [];
+  for (const build of builds) {
+    const category = buildCategory(build);
+    if (!seen.has(category)) {
+      seen.add(category);
+      categories.push(category);
+    }
+  }
+  return categories;
+}
+
+export function buildsInCategory(category: string) {
+  return builds.filter((build) => buildCategory(build) === category);
+}
+
+export function getBuildByPath(path: string) {
+  return builds.find((build) => build.path === path);
 }

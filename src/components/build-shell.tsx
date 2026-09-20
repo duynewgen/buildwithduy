@@ -4,6 +4,8 @@ import { BackPill } from "@/components/back-pill";
 type BuildShellProps = {
   title: string;
   description: string;
+  /** where the top-left back pill goes (usually the category page) */
+  backHref?: string;
   children: ReactNode;
 };
 
@@ -13,11 +15,16 @@ type BuildShellProps = {
  * - title + description pinned at the top (centered)
  * - interactive build content vertically + horizontally centered in the viewport
  */
-export function BuildShell({ title, description, children }: BuildShellProps) {
+export function BuildShell({
+  title,
+  description,
+  backHref = "/",
+  children,
+}: BuildShellProps) {
   return (
     <main className="relative min-h-screen px-6 py-10 sm:px-10 lg:px-16">
       <div className="absolute left-6 top-6 z-20 sm:left-10 lg:left-16">
-        <BackPill href="/" />
+        <BackPill href={backHref} />
       </div>
 
       <header className="relative z-10 mx-auto w-full max-w-6xl pt-12 text-center sm:pt-4">

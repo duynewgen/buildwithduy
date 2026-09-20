@@ -7,7 +7,7 @@ alwaysApply: true
 
 - Body/UI font is Rubik via `font-sans`. Do not fall back to a generic system stack as the primary body font — Rubik only (Schoolbell for titles).
 - All numeric displays (slider values, dates, counters, step indicators, etc.) use Rubik via `font-sans` (or inherit the body font). Never use monospace (`font-mono`) or Schoolbell (`font-display`) for numbers.
-- Keep Schoolbell (`font-display`) for big titles only.
+- Keep Schoolbell (`font-display`) for titles: build page titles and directory build shortcut titles (modest size). Not for category names or body copy.
 
 # Copy
 

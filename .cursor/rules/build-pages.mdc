@@ -6,13 +6,16 @@ alwaysApply: true
 # Build pages
 
 - URL shape: `/{category}/{build}` (e.g. `/birthday/slider`). Never put a build at a bare category root.
-- Use `BuildShell` (`src/components/build-shell.tsx`) for every experiment/build route.
+- Category pages live at `/{category}` (e.g. `/birthday`) — a simple directory: small logo, category name below, builds listed as shortcuts. Do not redirect category roots into a build.
+- Site root `/` redirects to the default category (`/birthday` for now).
+- Build **title** is the short build name only (e.g. `slider`), not `birthday slider`. Category lives in the path.
+- Use `BuildShell` (`src/components/build-shell.tsx`) for every experiment/build route. Pass `backHref` to the category page.
 - Title + description at the **top** (centered).
 - Interactive build content vertically + horizontally centered in the **middle** of the viewport.
-- Top-left back pill → home. No logo on build pages.
+- Top-left back pill → category page. No logo on build pages.
 - Metadata titles use hyphen separator: `%s - buildwithduy`.
 
 # Registry + sitemap
 
-- Every public build must be listed in `src/lib/builds.ts` (single source for homepage + sitemap).
-- After adding a build: create `src/app/{path}/page.tsx`, add the `builds` entry, confirm `/sitemap.xml` includes it.
+- Every public build must be listed in `src/lib/builds.ts` (single source for directories + sitemap).
+- After adding a build: create `src/app/{path}/page.tsx`, add the `builds` entry, confirm category + build URLs appear in `/sitemap.xml`.
