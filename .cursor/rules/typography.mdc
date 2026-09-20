@@ -20,6 +20,6 @@ alwaysApply: true
 # Build pages
 
 - Use `BuildShell` for every experiment/build route.
-- Title + description stay at the **top** (centered). Interactive build content is vertically + horizontally centered in the **middle** of the viewport.
-- Top-left back pill navigates home. Do not put the logo on build pages.
+- Title + description stay at the **top** (centered). Interactive build content is centered in the **remaining space below the header** (never overlays the title).
+- Top-left back pill navigates to the category page. Do not put the logo on build pages.
 - Metadata title template uses a hyphen: `%s - buildwithduy` (not a middle dot).

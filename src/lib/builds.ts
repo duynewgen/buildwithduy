@@ -15,6 +15,11 @@ export const builds: Build[] = [
     title: "slider",
     description: "slide to your month, day, and year.",
   },
+  {
+    path: "birthday/angry-bird",
+    title: "angry bird",
+    description: "fling a bird to land on your month, day, and year.",
+  },
 ];
 
 export function buildHref(build: Build) {
