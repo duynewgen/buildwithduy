@@ -3,27 +3,35 @@
 @theme inline {
   --font-sans: var(--font-rubik), "Rubik", sans-serif;
   --font-display: var(--font-schoolbell), "Schoolbell", cursive;
-  --animate-cake-fly: cake-fly 0.75s ease-out forwards;
-  --animate-slider-nudge: slider-nudge 0.55s ease-out forwards;
+  --animate-cake-fly: cake-fly 0.85s linear forwards;
 }
 
 @keyframes cake-fly {
   0% {
-    transform: translate(0, 0);
+    transform: translate(0px, -4px);
   }
-  45% {
-    transform: translate(42px, -20px);
+  12.5% {
+    transform: translate(11px, -10px);
+  }
+  25% {
+    transform: translate(22px, -14px);
+  }
+  37.5% {
+    transform: translate(34px, -15px);
+  }
+  50% {
+    transform: translate(45px, -14px);
+  }
+  62.5% {
+    transform: translate(56px, -12px);
+  }
+  75% {
+    transform: translate(68px, -7px);
+  }
+  87.5% {
+    transform: translate(80px, 1px);
   }
   100% {
-    transform: translate(88px, 12px);
-  }
-}
-
-@keyframes slider-nudge {
-  0% {
-    width: 33.333%;
-  }
-  100% {
-    width: 72%;
+    transform: translate(92px, 10px);
   }
 }

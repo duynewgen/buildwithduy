@@ -17,5 +17,11 @@ alwaysApply: true
 
 # Registry + sitemap
 
-- Every public build must be listed in `src/lib/builds.ts` (single source for directories + sitemap).
-- After adding a build: create `src/app/{path}/page.tsx`, add the `builds` entry, confirm category + build URLs appear in `/sitemap.xml`.
+- Register every public build in `src/lib/builds.ts` (directories + sitemap). After each new build: create `src/app/{path}/page.tsx`, add the `builds` entry, confirm category + build URLs appear in `/sitemap.xml`.
+
+# Build shortcut thumbnails
+
+- Every build gets a demo thumbnail in `src/components/{name}-demo.tsx`, wired through `BuildShortcut`.
+- Thumbnails must animate **inside the card on hover**, driven by the parent Link’s `group` / `group-hover:` classes (same pattern as slider thumb slide and angry-cake flight).
+- Idle state shows a quiet preview; hover plays a short motion that hints at the interaction. Prefer CSS transitions or keyframes — no autoplay loops while idle.
+- When adding a new build: ship the hover thumbnail animation with the build, not as a follow-up.

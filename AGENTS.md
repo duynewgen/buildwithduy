@@ -33,3 +33,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Top-left back pill navigates to the category page. Do not put the logo on build pages.
 - Metadata title template uses a hyphen: `%s - buildwithduy` (not a middle dot).
 - Register every public build in `src/lib/builds.ts` (directories + sitemap). After each new build: route + registry entry + confirm sitemap.
+- Every build ships a shortcut thumbnail demo that animates on card hover via `group-hover` (idle preview → short motion that hints at the interaction). Wire it in `BuildShortcut`. No idle autoplay loops.
