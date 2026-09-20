@@ -24,7 +24,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Build pages
 
+- URL shape: `/{category}/{build}` (e.g. `/birthday/slider`). Do not put a build at a bare category root.
 - Use `BuildShell` for every experiment/build route.
 - Title + description stay at the **top** (centered). Interactive build content is vertically + horizontally centered in the **middle** of the viewport.
 - Top-left back pill navigates home. Do not put the logo on build pages.
 - Metadata title template uses a hyphen: `%s - buildwithduy` (not a middle dot).
+- Register every public build in `src/lib/builds.ts` (homepage + sitemap). After each new build: route + registry entry + confirm sitemap.

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { builds, buildHref } from "@/lib/builds";
 
 export default function Home() {
   return (
@@ -14,11 +15,19 @@ export default function Home() {
           ideas.
         </p>
         <ul className="mt-10 space-y-3">
-          <li className="border-b border-zinc-200 px-1 py-4 text-xl text-zinc-700">
-            <Link href="/birthday" className="underline-offset-4 hover:underline">
-              birthday slider
-            </Link>
-          </li>
+          {builds.map((build) => (
+            <li
+              key={build.path}
+              className="border-b border-zinc-200 px-1 py-4 text-xl text-zinc-700"
+            >
+              <Link
+                href={buildHref(build)}
+                className="underline-offset-4 hover:underline"
+              >
+                {build.title}
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
     </main>
