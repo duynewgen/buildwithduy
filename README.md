@@ -1,10 +1,8 @@
-# buildwithduy
+# welcome to buildwithduy :)
 
-random builds by duy :)
+hi there! i'm duy.
 
-Next.js App Router playground, deployed on Vercel.
+i'm bored af so i make these dumbass ways to do things.
 
-```bash
-npm run dev
-```
+hope you'll enjoy :)
 
