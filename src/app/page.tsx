@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "@/components/logo";
 
 export default function Home() {
@@ -9,12 +10,14 @@ export default function Home() {
           random builds by duy
         </h1>
         <p className="mt-4 max-w-2xl text-xl text-zinc-600">
-          A playground for experiments. First up: cursed birthday selection
+          a playground for experiments. first up: cursed birthday selection
           ideas.
         </p>
         <ul className="mt-10 space-y-3">
           <li className="border-b border-zinc-200 px-1 py-4 text-xl text-zinc-700">
-            cursed birthday selection ideas — coming soon
+            <Link href="/birthday" className="underline-offset-4 hover:underline">
+              birthday slider
+            </Link>
           </li>
         </ul>
       </div>

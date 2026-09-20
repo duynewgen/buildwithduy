@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
-import { Schoolbell } from "next/font/google";
+import { Rubik, Schoolbell } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  variable: "--font-rubik",
+  display: "swap",
+});
 
 const schoolbell = Schoolbell({
   weight: "400",
@@ -14,7 +20,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.name,
-    template: `%s · ${siteConfig.name}`,
+    template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
@@ -39,8 +45,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={schoolbell.variable}>
-      <body className="min-h-screen bg-white text-zinc-900 antialiased">
+    <html lang="en" className={`${rubik.variable} ${schoolbell.variable}`}>
+      <body className="min-h-screen bg-white font-sans text-zinc-900 antialiased">
         {children}
       </body>
     </html>

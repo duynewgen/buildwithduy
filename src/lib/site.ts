@@ -6,7 +6,7 @@ export const siteConfig = {
   logo: {
     src: "/brand/logo.png",
     alt: "build with duy",
-    width: 1024,
-    height: 1024,
+    width: 898,
+    height: 624,
   },
 } as const;

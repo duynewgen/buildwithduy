@@ -1,0 +1,12 @@
+---
+description: Build page layout convention (BuildShell)
+alwaysApply: true
+---
+
+# Build pages
+
+- Use `BuildShell` (`src/components/build-shell.tsx`) for every experiment/build route.
+- Title + description at the **top** (centered).
+- Interactive build content vertically + horizontally centered in the **middle** of the viewport.
+- Top-left back pill → home. No logo on build pages.
+- Metadata titles use hyphen separator: `%s - buildwithduy`.
