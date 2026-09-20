@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BirthdayAngryBirdDemo } from "@/components/birthday-angry-bird-demo";
+import { BirthdayAngryCakeDemo } from "@/components/birthday-angry-cake-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
@@ -8,8 +8,8 @@ function BuildDemo({ path }: { path: string }) {
   if (path === "birthday/slider") {
     return <BirthdaySliderDemo />;
   }
-  if (path === "birthday/angry-bird") {
-    return <BirthdayAngryBirdDemo />;
+  if (path === "birthday/angry-cake") {
+    return <BirthdayAngryCakeDemo />;
   }
 
   return (

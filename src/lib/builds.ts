@@ -16,9 +16,9 @@ export const builds: Build[] = [
     description: "slide to your month, day, and year.",
   },
   {
-    path: "birthday/angry-bird",
-    title: "angry bird",
-    description: "fling a bird to land on your month, day, and year.",
+    path: "birthday/angry-cake",
+    title: "angry cake",
+    description: "fling a cake to land on your month, day, and year.",
   },
 ];
 

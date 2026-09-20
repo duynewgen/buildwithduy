@@ -14,21 +14,26 @@ type Phase = "aiming" | "flying" | "landed";
 const STEPS: Step[] = ["month", "day", "year"];
 
 const RANGES = {
-  month: { min: 0, max: 12, step: 0.1 },
-  day: { min: 0, max: 31, step: 0.1 },
-  year: { min: 0, max: 2026, step: 1 },
+  month: { min: 1, max: 12, step: 1 },
+  day: { min: 1, max: 31, step: 1 },
+  year: { min: 1900, max: 2026, step: 1 },
 } as const;
 
-const WIDTH = 640;
-const HEIGHT = 320;
-const GROUND_Y = 268;
-const ANCHOR = { x: 72, y: 220 };
-const BIRD_R = 14;
-const MAX_PULL = 78;
-const GRAVITY = 980;
-const LAUNCH_SCALE = 7.2;
+const WIDTH = 820;
+const HEIGHT = 300;
+const GROUND_Y = 250;
+const ANCHOR = { x: 78, y: 205 };
+const CAKE_R = 16;
+const MAX_PULL = 92;
+const GRAVITY = 900;
+const LAUNCH_SCALE = 11.2;
 const FIELD_LEFT = 130;
-const FIELD_RIGHT = 600;
+const FIELD_RIGHT = 790;
+const GROUND_BOUNCE = 0.58;
+const WALL_BOUNCE = 0.72;
+const GROUND_FRICTION = 0.82;
+const SETTLE_VY = 55;
+const SETTLE_VX = 35;
 
 function snapToStep(value: number, step: number) {
   return Math.round(value / step) * step;
@@ -38,15 +43,8 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function isWholeNumber(value: number) {
-  return Math.abs(value - Math.round(value)) < 1e-9;
-}
-
 function formatMonthOrDay(value: number) {
-  if (isWholeNumber(value)) {
-    return String(Math.round(value)).padStart(2, "0");
-  }
-  return snapToStep(value, 0.1).toFixed(1);
+  return String(Math.round(value)).padStart(2, "0");
 }
 
 function formatYear(value: number) {
@@ -80,26 +78,41 @@ function pullFromPointer(clientX: number, clientY: number, rect: DOMRect) {
   };
 }
 
+function CakeBall({ x, y }: { x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <circle r={CAKE_R} fill="#fff7ed" stroke="#fdba74" strokeWidth={2} />
+      <text
+        textAnchor="middle"
+        dominantBaseline="central"
+        style={{ fontSize: 18, userSelect: "none" }}
+      >
+        🎂
+      </text>
+    </g>
+  );
+}
+
 const pillButtonBase =
   "inline-flex min-w-24 items-center justify-center rounded-full border px-4 py-2 text-sm transition";
 
-export function BirthdayAngryBird() {
+export function BirthdayAngryCake() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [step, setStep] = useState<Step>("month");
-  const [month, setMonth] = useState(0);
-  const [day, setDay] = useState(0);
-  const [year, setYear] = useState(0);
+  const [month, setMonth] = useState(1);
+  const [day, setDay] = useState(1);
+  const [year, setYear] = useState(1900);
   const [phase, setPhase] = useState<Phase>("aiming");
-  const [bird, setBird] = useState({ x: ANCHOR.x, y: ANCHOR.y });
+  const [cake, setCake] = useState({ x: ANCHOR.x, y: ANCHOR.y });
   const [dragging, setDragging] = useState(false);
   const [aimDots, setAimDots] = useState<{ x: number; y: number }[]>([]);
 
   const velocityRef = useRef({ x: 0, y: 0 });
-  const birdRef = useRef(bird);
+  const cakeRef = useRef(cake);
   const phaseRef = useRef(phase);
   const stepRef = useRef(step);
 
-  birdRef.current = bird;
+  cakeRef.current = cake;
   phaseRef.current = phase;
   stepRef.current = step;
 
@@ -110,16 +123,16 @@ export function BirthdayAngryBird() {
     if (current === "year") setYear(next);
   });
 
-  const resetBird = useCallback(() => {
+  const resetCake = useCallback(() => {
     setPhase("aiming");
-    setBird({ x: ANCHOR.x, y: ANCHOR.y });
+    setCake({ x: ANCHOR.x, y: ANCHOR.y });
     setAimDots([]);
     velocityRef.current = { x: 0, y: 0 };
   }, []);
 
   useEffect(() => {
-    resetBird();
-  }, [step, resetBird]);
+    resetCake();
+  }, [step, resetCake]);
 
   useEffect(() => {
     if (phase !== "flying") return;
@@ -131,22 +144,45 @@ export function BirthdayAngryBird() {
       const dt = Math.min(0.032, (now - last) / 1000);
       last = now;
 
-      velocityRef.current.y += GRAVITY * dt;
-      const next = {
-        x: birdRef.current.x + velocityRef.current.x * dt,
-        y: birdRef.current.y + velocityRef.current.y * dt,
-      };
+      let { x: vx, y: vy } = velocityRef.current;
+      vy += GRAVITY * dt;
 
-      if (next.y + BIRD_R >= GROUND_Y || next.x > WIDTH + 40 || next.x < -40) {
-        const landX = clamp(next.x, FIELD_LEFT, FIELD_RIGHT);
-        const landed = { x: landX, y: GROUND_Y - BIRD_R };
-        setBird(landed);
-        setPhase("landed");
-        setStepValue(xToValue(landX, stepRef.current));
-        return;
+      let x = cakeRef.current.x + vx * dt;
+      let y = cakeRef.current.y + vy * dt;
+
+      // side walls
+      if (x - CAKE_R < 0) {
+        x = CAKE_R;
+        vx = Math.abs(vx) * WALL_BOUNCE;
+      } else if (x + CAKE_R > WIDTH) {
+        x = WIDTH - CAKE_R;
+        vx = -Math.abs(vx) * WALL_BOUNCE;
       }
 
-      setBird(next);
+      // ground bounce / settle
+      if (y + CAKE_R >= GROUND_Y) {
+        y = GROUND_Y - CAKE_R;
+        vy = -Math.abs(vy) * GROUND_BOUNCE;
+        vx *= GROUND_FRICTION;
+
+        if (Math.abs(vy) < SETTLE_VY && Math.abs(vx) < SETTLE_VX) {
+          const landX = clamp(x, FIELD_LEFT, FIELD_RIGHT);
+          setCake({ x: landX, y: GROUND_Y - CAKE_R });
+          velocityRef.current = { x: 0, y: 0 };
+          setPhase("landed");
+          setStepValue(xToValue(landX, stepRef.current));
+          return;
+        }
+      }
+
+      // soft ceiling
+      if (y - CAKE_R < 8) {
+        y = CAKE_R + 8;
+        vy = Math.abs(vy) * 0.4;
+      }
+
+      velocityRef.current = { x: vx, y: vy };
+      setCake({ x, y });
       frame = requestAnimationFrame(tick);
     };
 
@@ -162,12 +198,27 @@ export function BirthdayAngryBird() {
     let x = ANCHOR.x;
     let y = ANCHOR.y;
     const dots: { x: number; y: number }[] = [];
-    for (let i = 0; i < 14; i++) {
-      vx = vx;
-      vy += GRAVITY * 0.045;
-      x += vx * 0.045;
-      y += vy * 0.045;
-      if (y > GROUND_Y) break;
+    const dt = 0.04;
+
+    for (let i = 0; i < 22; i++) {
+      vy += GRAVITY * dt;
+      x += vx * dt;
+      y += vy * dt;
+
+      if (x - CAKE_R < 0) {
+        x = CAKE_R;
+        vx = Math.abs(vx) * WALL_BOUNCE;
+      } else if (x + CAKE_R > WIDTH) {
+        x = WIDTH - CAKE_R;
+        vx = -Math.abs(vx) * WALL_BOUNCE;
+      }
+
+      if (y + CAKE_R >= GROUND_Y) {
+        y = GROUND_Y - CAKE_R;
+        vy = -Math.abs(vy) * GROUND_BOUNCE;
+        vx *= GROUND_FRICTION;
+      }
+
       dots.push({ x, y });
     }
     setAimDots(dots);
@@ -179,7 +230,7 @@ export function BirthdayAngryBird() {
     if (!rect) return;
     const pos = pullFromPointer(event.clientX, event.clientY, rect);
     setDragging(true);
-    setBird(pos);
+    setCake(pos);
     updateAimPreview(pos);
     event.currentTarget.setPointerCapture(event.pointerId);
   }
@@ -189,7 +240,7 @@ export function BirthdayAngryBird() {
     const rect = svgRef.current?.getBoundingClientRect();
     if (!rect) return;
     const pos = pullFromPointer(event.clientX, event.clientY, rect);
-    setBird(pos);
+    setCake(pos);
     updateAimPreview(pos);
   }
 
@@ -198,11 +249,11 @@ export function BirthdayAngryBird() {
     setDragging(false);
     event.currentTarget.releasePointerCapture(event.pointerId);
 
-    const pullX = ANCHOR.x - birdRef.current.x;
-    const pullY = ANCHOR.y - birdRef.current.y;
+    const pullX = ANCHOR.x - cakeRef.current.x;
+    const pullY = ANCHOR.y - cakeRef.current.y;
     const pull = Math.hypot(pullX, pullY);
     if (pull < 10) {
-      setBird({ x: ANCHOR.x, y: ANCHOR.y });
+      setCake({ x: ANCHOR.x, y: ANCHOR.y });
       setAimDots([]);
       return;
     }
@@ -211,7 +262,7 @@ export function BirthdayAngryBird() {
       x: pullX * LAUNCH_SCALE,
       y: pullY * LAUNCH_SCALE,
     };
-    setBird({ x: ANCHOR.x, y: ANCHOR.y });
+    setCake({ x: ANCHOR.x, y: ANCHOR.y });
     setAimDots([]);
     setPhase("flying");
   }
@@ -221,26 +272,39 @@ export function BirthdayAngryBird() {
   const value = step === "month" ? month : step === "day" ? day : year;
   const display =
     step === "year" ? formatYear(value) : formatMonthOrDay(value);
-  const error =
-    step === "month" && !isWholeNumber(month)
-      ? "sorry this is not a valid month"
-      : step === "day" && !isWholeNumber(day)
-        ? "sorry this is not a valid day"
-        : null;
 
-  const ticks = Array.from({ length: 9 }, (_, i) => {
-    const t = i / 8;
-    const tickValue = range.min + t * (range.max - range.min);
-    return {
-      x: FIELD_LEFT + t * (FIELD_RIGHT - FIELD_LEFT),
-      label:
-        step === "year"
-          ? String(Math.round(tickValue))
-          : snapToStep(tickValue, range.step).toFixed(
-              isWholeNumber(snapToStep(tickValue, range.step)) ? 0 : 1,
-            ),
-    };
-  });
+  const ticks = (() => {
+    if (step === "month") {
+      return Array.from({ length: 12 }, (_, i) => {
+        const tickValue = i + 1;
+        const t = (tickValue - range.min) / (range.max - range.min);
+        return {
+          x: FIELD_LEFT + t * (FIELD_RIGHT - FIELD_LEFT),
+          label: String(tickValue),
+        };
+      });
+    }
+
+    if (step === "day") {
+      return Array.from({ length: 16 }, (_, i) => {
+        const tickValue = Math.round(1 + (i / 15) * 30);
+        const t = (tickValue - range.min) / (range.max - range.min);
+        return {
+          x: FIELD_LEFT + t * (FIELD_RIGHT - FIELD_LEFT),
+          label: String(tickValue),
+        };
+      });
+    }
+
+    return Array.from({ length: 9 }, (_, i) => {
+      const t = i / 8;
+      const tickValue = Math.round(range.min + t * (range.max - range.min));
+      return {
+        x: FIELD_LEFT + t * (FIELD_RIGHT - FIELD_LEFT),
+        label: String(tickValue),
+      };
+    });
+  })();
 
   return (
     <div className="w-full text-center">
@@ -265,7 +329,7 @@ export function BirthdayAngryBird() {
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
           role="img"
-          aria-label={`slingshot for ${step}. drag the bird back and release.`}
+          aria-label={`slingshot for ${step}. drag the cake back and release.`}
         >
           <rect
             x={0}
@@ -298,14 +362,16 @@ export function BirthdayAngryBird() {
                 y={GROUND_Y + 26}
                 textAnchor="middle"
                 className="fill-zinc-600"
-                style={{ fontSize: 11, fontFamily: "var(--font-rubik), sans-serif" }}
+                style={{
+                  fontSize: 11,
+                  fontFamily: "var(--font-rubik), sans-serif",
+                }}
               >
                 {tick.label}
               </text>
             </g>
           ))}
 
-          {/* slingshot */}
           <line
             x1={ANCHOR.x - 14}
             y1={ANCHOR.y + 48}
@@ -330,16 +396,16 @@ export function BirthdayAngryBird() {
               <line
                 x1={ANCHOR.x - 8}
                 y1={ANCHOR.y}
-                x2={bird.x}
-                y2={bird.y}
+                x2={cake.x}
+                y2={cake.y}
                 stroke="#3f3f46"
                 strokeWidth={3}
               />
               <line
                 x1={ANCHOR.x + 8}
                 y1={ANCHOR.y}
-                x2={bird.x}
-                y2={bird.y}
+                x2={cake.x}
+                y2={cake.y}
                 stroke="#3f3f46"
                 strokeWidth={3}
               />
@@ -369,28 +435,15 @@ export function BirthdayAngryBird() {
             />
           ) : null}
 
-          {/* bird */}
-          <g transform={`translate(${bird.x} ${bird.y})`}>
-            <circle r={BIRD_R} fill="#dc2626" />
-            <circle cx={-4} cy={-3} r={3.2} fill="#fff" />
-            <circle cx={5} cy={-3} r={3.2} fill="#fff" />
-            <circle cx={-3} cy={-3} r={1.4} fill="#18181b" />
-            <circle cx={6} cy={-3} r={1.4} fill="#18181b" />
-            <path d="M -2 4 Q 0 8 2 4" fill="none" stroke="#18181b" strokeWidth={1.5} />
-            <path d="M 10 -1 L 18 0 L 10 2 Z" fill="#f59e0b" />
-          </g>
+          <CakeBall x={cake.x} y={cake.y} />
         </svg>
-
-        <p className="min-h-5 text-sm text-red-600" role="status">
-          {error ?? ""}
-        </p>
 
         <p className="text-center text-sm text-zinc-500">
           {phase === "aiming"
-            ? "pull the bird back and release to land on a number."
+            ? "pull the cake back and release to land on a number."
             : phase === "flying"
-              ? "flying..."
-              : "landed. shoot again or continue."}
+              ? "cake is bouncing..."
+              : "landed. launch again or continue."}
         </p>
       </div>
 
@@ -398,10 +451,10 @@ export function BirthdayAngryBird() {
         {phase === "landed" ? (
           <button
             type="button"
-            onClick={resetBird}
+            onClick={resetCake}
             className={`${pillButtonBase} border-zinc-300 bg-white text-zinc-800 hover:border-zinc-900`}
           >
-            shoot again
+            launch again
           </button>
         ) : null}
         {stepIndex > 0 ? (
