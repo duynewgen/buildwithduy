@@ -18,11 +18,17 @@ const linkClassName =
   "font-display text-lg tracking-tight text-zinc-600 underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] duration-300 ease-out hover:text-zinc-900 hover:decoration-current";
 
 const socialLinks = [
-  { href: siteConfig.about, label: "about", hidden: true }, // temporarily hidden
-  { href: siteConfig.github, label: "github" },
-  { href: siteConfig.tiktok, label: "tiktok" },
-  { href: siteConfig.instagram, label: "instagram", hidden: true }, // temporarily hidden
-  { href: siteConfig.x, label: "x", hidden: true }, // temporarily hidden
+  { href: "/readme", label: "readme.md", external: false },
+  { href: siteConfig.about, label: "about", hidden: true, external: true }, // temporarily hidden
+  { href: siteConfig.github, label: "github", external: true },
+  { href: siteConfig.tiktok, label: "tiktok", external: true },
+  {
+    href: siteConfig.instagram,
+    label: "instagram",
+    hidden: true,
+    external: true,
+  }, // temporarily hidden
+  { href: siteConfig.x, label: "x", hidden: true, external: true }, // temporarily hidden
 ];
 
 function SocialLinks({
@@ -36,17 +42,23 @@ function SocialLinks({
     <nav className={className} aria-label="links">
       {socialLinks
         .filter((link) => !link.hidden)
-        .map((link) => (
-          <a
-            key={link.label}
-            href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-          >
-            {link.label}
-          </a>
-        ))}
+        .map((link) =>
+          link.external ? (
+            <a
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+            >
+              {link.label}
+            </a>
+          ) : (
+            <Link key={link.label} href={link.href} className={linkClass}>
+              {link.label}
+            </Link>
+          ),
+        )}
     </nav>
   );
 }
