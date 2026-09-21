@@ -22,7 +22,7 @@ export function CreatorMode({
   backHref = "/",
   YearPicker,
 }: CreatorModeProps) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState("build with duy");
   const [year, setYear] = useState<number | null>(null);
   const [startYearText, setStartYearText] = useState(String(CREATOR_YEAR.min));
   const [modalOpen, setModalOpen] = useState(false);
