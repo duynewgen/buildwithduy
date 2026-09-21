@@ -9,7 +9,12 @@ export function BirthdayLotteryDemo() {
       <div className="flex items-end gap-1.5">
         {reels.map((value, index) => (
           <div key={`${value}-${index}`} className="flex items-stretch">
-            <div className="flex h-11 w-8 items-center justify-center rounded-l-md border border-zinc-300 bg-[#f3eee6]">
+            <div
+              className={[
+                "flex h-11 items-center justify-center rounded-l-md border border-zinc-300 bg-[#f3eee6]",
+                index === 2 ? "w-11" : "w-8",
+              ].join(" ")}
+            >              
               <span
                 suppressHydrationWarning
                 className="font-sans text-[11px] tabular-nums text-zinc-900 transition duration-500 group-hover:blur-[1px]"

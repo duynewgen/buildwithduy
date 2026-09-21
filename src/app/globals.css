@@ -6,6 +6,17 @@
   --animate-cake-fly: cake-fly 0.85s linear forwards;
 }
 
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: default;
+  }
+}
+
 @keyframes cake-fly {
   0% {
     transform: translate(0px, -4px);

@@ -137,7 +137,7 @@ function PullHandle({
         "shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] transition",
         disabled
           ? "cursor-default"
-          : "hover:from-zinc-50 hover:to-zinc-100 active:brightness-95",
+          : "cursor-pointer hover:from-zinc-50 hover:to-zinc-100 active:brightness-95",
       ].join(" ")}
     >
       {/* pivot mount */}
@@ -187,10 +187,20 @@ function LotteryColumn({
   onStop,
 }: ColumnProps) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
+    <div
+      className={[
+        "flex min-w-0 flex-col items-center gap-3",
+        label === "year" ? "flex-[1.4]" : "flex-1",
+      ].join(" ")}
+    >
       <span className="text-sm tracking-wide text-zinc-500">{label}</span>
 
-      <div className="group/handle flex w-full max-w-[9.5rem] items-stretch">
+      <div
+        className={[
+          "group/handle flex w-full items-stretch",
+          label === "year" ? "max-w-[12.5rem]" : "max-w-[9.5rem]",
+        ].join(" ")}
+      >
         <div
           className={[
             "relative flex min-h-[7.5rem] min-w-0 flex-1 items-center justify-center overflow-hidden",
@@ -273,7 +283,7 @@ export function BirthdayLottery() {
 
   return (
     <div className="w-full text-center">
-      <div className="mx-auto flex max-w-xl items-start justify-center gap-3 sm:gap-5">
+      <div className="mx-auto flex max-w-2xl items-start justify-center gap-3 sm:gap-5">
         <LotteryColumn
           label="month"
           display={formatMonthOrDay(month.value)}

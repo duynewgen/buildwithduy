@@ -25,7 +25,7 @@ function BackIcon() {
 }
 
 const pillClassName =
-  "inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-3.5 py-1.5 text-sm text-zinc-800 transition hover:border-zinc-900 hover:bg-zinc-50";
+  "inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-3.5 py-1.5 text-sm text-zinc-800 transition hover:border-zinc-900 hover:bg-zinc-50";
 
 export function BackPill({ href, onClick, className = "" }: BackPillProps) {
   const classes = `${pillClassName} ${className}`.trim();
