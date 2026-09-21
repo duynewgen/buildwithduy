@@ -5,7 +5,7 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://buildwithduy.vercel.app",
   about: "https://duynewgen.com",
   github: "https://github.com/duynewgen/buildwithduy",
-  tiktok: "https://www.tiktok.com/@duynewgen",
+  tiktok: "https://www.tiktok.com/@buildwithduy",
   instagram: "https://www.instagram.com/duynewgen",
   x: "https://x.com/duynewgen",
   logo: {
