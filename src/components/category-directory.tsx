@@ -60,7 +60,7 @@ export function CategoryDirectory({ category }: CategoryDirectoryProps) {
           "relative flex flex-col border-zinc-200",
           "px-[clamp(1.25rem,4.5vw,3.5rem)] pt-[clamp(1.5rem,4vh,3.5rem)]",
           "max-xl:gap-6 max-xl:border-b max-xl:pb-6",
-          "xl:sticky xl:top-0 xl:h-dvh xl:gap-0 xl:border-r xl:pb-[clamp(1.5rem,4vh,3.5rem)]",
+          "xl:sticky xl:top-0 xl:h-dvh xl:gap-0 xl:border-r xl:pb-0",
         ].join(" ")}
       >
         <div className="w-[clamp(4.25rem,18vw,6rem)] shrink-0">
@@ -96,9 +96,17 @@ export function CategoryDirectory({ category }: CategoryDirectoryProps) {
           })}
         </nav>
 
-        <hr className="my-8 hidden border-zinc-200 xl:block" />
-
-        <SocialLinks className="mt-auto hidden flex-col gap-2 xl:flex" />
+        <div
+          className={[
+            "mt-auto hidden xl:block",
+            "-mx-[clamp(1.25rem,4.5vw,3.5rem)]",
+            "border-t border-zinc-200",
+            "px-[clamp(1.25rem,4.5vw,3.5rem)]",
+            "py-[clamp(1.25rem,3vh,2rem)]",
+          ].join(" ")}
+        >
+          <SocialLinks className="flex flex-col gap-2" />
+        </div>
       </aside>
 
       <section
@@ -110,7 +118,7 @@ export function CategoryDirectory({ category }: CategoryDirectoryProps) {
         ].join(" ")}
       >
         {categoryBuilds.length === 0 ? (
-          <p className="text-sm text-zinc-500">nothing here yet.</p>
+          <p className="text-sm text-zinc-500">coming soon :)</p>
         ) : (
           <ul
             className={[

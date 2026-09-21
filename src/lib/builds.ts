@@ -23,18 +23,15 @@ export const categories: Category[] = [
   },
   {
     id: "password",
-    description: "password builds.",
-    hidden: true,
+    description: "cursed password builds.",
   },
   {
-    id: "2fa",
-    description: "two-factor builds.",
-    hidden: true,
+    id: "payment",
+    description: "cursed payment builds.",
   },
   {
     id: "other",
-    description: "other builds.",
-    hidden: true,
+    description: "other cursed builds.",
   },
 ];
 
