@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BirthdayAngryCakeDemo } from "@/components/birthday-angry-cake-demo";
 import { BirthdayBounceDemo } from "@/components/birthday-bounce-demo";
+import { BirthdayClickDemo } from "@/components/birthday-click-demo";
 import { BirthdayLotteryDemo } from "@/components/birthday-lottery-demo";
 import { BirthdayRomanDemo } from "@/components/birthday-roman-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
@@ -26,6 +27,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "birthday/bounce") {
     return <BirthdayBounceDemo />;
+  }
+  if (path === "birthday/click") {
+    return <BirthdayClickDemo />;
   }
 
   return (

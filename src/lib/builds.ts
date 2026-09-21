@@ -73,6 +73,12 @@ export const builds: Build[] = [
     title: "bounce",
     description: "bounce a cake off the walls to count your month and day.",
   },
+  {
+    path: "birthday/click",
+    title: "click",
+    description:
+      "mash the box for 5 seconds to set your month, day, and year.",
+  },
 ];
 
 export function buildHref(build: Build) {
