@@ -11,10 +11,11 @@ alwaysApply: true
 - Site root `/` redirects to the default category (`/birthday` for now).
 - Build **title** is the short build name only (e.g. `slider`), not `birthday slider`. Category lives in the path.
 - Use `BuildShell` (`src/components/build-shell.tsx`) for every experiment/build route. Pass `backHref` to the category page.
-- Title + description at the **top** (centered). A subtle word button under the back pill (`hide title` / `show title`) toggles them; default is shown. Not a pill.
+- Title + description at the **top** (centered).
 - Interactive build content is vertically + horizontally centered in the **remaining space below the header** — never absolutely centered over the full viewport (that overlays the title).
 - Top-left back pill → category page. No logo on build pages.
 - Metadata titles use hyphen separator: `%s - buildwithduy`.
+- Creator filming mode: same build URL with `?creator=true`. No title/description. Small form (name + when were you born). Birth year field opens a modal with the build in **year-only** mode. Wire pages through `BuildExperience`.
 
 # Registry + sitemap
 

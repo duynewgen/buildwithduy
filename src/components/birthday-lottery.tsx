@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
+import type { YearPickerProps } from "@/lib/creator";
 
 type Phase = "idle" | "spinning" | "stopping" | "done";
 type ReelKey = "month" | "day" | "year";
@@ -268,51 +269,77 @@ function LotteryColumn({
   );
 }
 
-export function BirthdayLottery() {
+export function BirthdayLottery({
+  yearOnly = false,
+  onYearChange,
+}: YearPickerProps = {}) {
   const month = useLotteryReel(RANGES.month.min, RANGES.month.max);
   const day = useLotteryReel(RANGES.day.min, RANGES.day.max);
   const year = useLotteryReel(RANGES.year.min, RANGES.year.max);
 
-  const anyStopping =
-    month.phase === "stopping" ||
-    day.phase === "stopping" ||
-    year.phase === "stopping";
-  const anySpinning =
-    month.phase === "spinning" ||
-    day.phase === "spinning" ||
-    year.phase === "spinning";
-  const allDone =
-    month.phase === "done" && day.phase === "done" && year.phase === "done";
+  useEffect(() => {
+    if (yearOnly && year.phase === "done") {
+      onYearChange?.(year.value);
+    }
+  }, [yearOnly, year.phase, year.value, onYearChange]);
+
+  const anyStopping = yearOnly
+    ? year.phase === "stopping"
+    : month.phase === "stopping" ||
+      day.phase === "stopping" ||
+      year.phase === "stopping";
+  const anySpinning = yearOnly
+    ? year.phase === "spinning"
+    : month.phase === "spinning" ||
+      day.phase === "spinning" ||
+      year.phase === "spinning";
+  const allDone = yearOnly
+    ? year.phase === "done"
+    : month.phase === "done" && day.phase === "done" && year.phase === "done";
 
   const status = anyStopping
     ? "stopping..."
     : anySpinning
       ? "rolling..."
       : allDone
-        ? "birthday locked in. pull again to reroll a part."
-        : "pull each handle to roll month, day, and year.";
+        ? yearOnly
+          ? "year locked in. pull again to reroll."
+          : "birthday locked in. pull again to reroll a part."
+        : yearOnly
+          ? "pull the handle to roll a year."
+          : "pull each handle to roll month, day, and year.";
 
   return (
     <div className="w-full text-center">
-      <div className="mx-auto flex max-w-2xl items-start justify-center gap-3 sm:gap-5">
-        <LotteryColumn
-          label="month"
-          display={formatMonthOrDay(month.value)}
-          phase={month.phase}
-          pulled={month.pulled}
-          spinning={month.spinning}
-          onPull={month.pull}
-          onStop={month.stop}
-        />
-        <LotteryColumn
-          label="day"
-          display={formatMonthOrDay(day.value)}
-          phase={day.phase}
-          pulled={day.pulled}
-          spinning={day.spinning}
-          onPull={day.pull}
-          onStop={day.stop}
-        />
+      <div
+        className={
+          yearOnly
+            ? "mx-auto flex max-w-xs items-start justify-center"
+            : "mx-auto flex max-w-2xl items-start justify-center gap-3 sm:gap-5"
+        }
+      >
+        {yearOnly ? null : (
+          <>
+            <LotteryColumn
+              label="month"
+              display={formatMonthOrDay(month.value)}
+              phase={month.phase}
+              pulled={month.pulled}
+              spinning={month.spinning}
+              onPull={month.pull}
+              onStop={month.stop}
+            />
+            <LotteryColumn
+              label="day"
+              display={formatMonthOrDay(day.value)}
+              phase={day.phase}
+              pulled={day.pulled}
+              spinning={day.spinning}
+              onPull={day.pull}
+              onStop={day.stop}
+            />
+          </>
+        )}
         <LotteryColumn
           label="year"
           display={formatYear(year.value)}

@@ -7,15 +7,17 @@ import {
   useRef,
   useState,
 } from "react";
+import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 
-type Step = "month" | "day";
+type Step = "month" | "day" | "year";
 type Phase = "aiming" | "flying" | "stopped";
 
-const STEPS: Step[] = ["month", "day"];
+const MONTH_DAY_STEPS: Step[] = ["month", "day"];
 
 const RANGES = {
   month: { min: 1, max: 12 },
   day: { min: 1, max: 31 },
+  year: { min: CREATOR_YEAR.min, max: CREATOR_YEAR.max },
 } as const;
 
 const WIDTH = 560;
@@ -41,6 +43,11 @@ function clamp(value: number, min: number, max: number) {
 function formatMonthOrDay(value: number | null) {
   if (value === null) return "--";
   return String(value).padStart(2, "0");
+}
+
+function formatYear(value: number | null) {
+  if (value === null) return "----";
+  return String(value).padStart(4, "0");
 }
 
 function pullFromPointer(clientX: number, clientY: number, rect: DOMRect) {
@@ -87,11 +94,17 @@ function CakeBall({
   );
 }
 
-export function BirthdayBounce() {
+export function BirthdayBounce({
+  yearOnly = false,
+  initialYear,
+  onYearChange,
+}: YearPickerProps = {}) {
+  const steps = yearOnly ? (["year"] as Step[]) : MONTH_DAY_STEPS;
   const svgRef = useRef<SVGSVGElement>(null);
-  const [step, setStep] = useState<Step>("month");
+  const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
   const [month, setMonth] = useState<number | null>(null);
   const [day, setDay] = useState<number | null>(null);
+  const [year, setYear] = useState<number | null>(initialYear ?? null);
   const [phase, setPhase] = useState<Phase>("aiming");
   const [cake, setCake] = useState(LAUNCHER);
   const [bounces, setBounces] = useState(0);
@@ -103,6 +116,8 @@ export function BirthdayBounce() {
   const phaseRef = useRef(phase);
   const bouncesRef = useRef(0);
   const stepRef = useRef(step);
+  const onYearChangeRef = useRef(onYearChange);
+  onYearChangeRef.current = onYearChange;
 
   cakeRef.current = cake;
   phaseRef.current = phase;
@@ -110,12 +125,17 @@ export function BirthdayBounce() {
   stepRef.current = step;
 
   const range = RANGES[step];
-  const stepIndex = STEPS.indexOf(step);
+  const stepIndex = steps.indexOf(step);
 
   const lockValue = useEffectEvent((count: number) => {
     const current = stepRef.current;
     if (current === "month") setMonth(count);
-    else setDay(count);
+    else if (current === "day") setDay(count);
+    else {
+      const nextYear = CREATOR_YEAR.min + count;
+      setYear(nextYear);
+      onYearChangeRef.current?.(nextYear);
+    }
     setPhase("stopped");
     velocityRef.current = { x: 0, y: 0 };
   });
@@ -263,31 +283,45 @@ export function BirthdayBounce() {
     setPhase("flying");
   }
 
-  const lockedValue = step === "month" ? month : day;
+  const lockedValue =
+    step === "month" ? month : step === "day" ? day : year;
   const inRange =
     lockedValue !== null &&
     lockedValue >= range.min &&
     lockedValue <= range.max;
   const error =
     phase === "stopped" && !inRange
-      ? step === "month"
-        ? `need ${range.min}–${range.max} bounces for a month`
-        : `need ${range.min}–${range.max} bounces for a day`
+      ? step === "year"
+        ? `need ${range.min - CREATOR_YEAR.min}–${range.max - CREATOR_YEAR.min} bounces (year ${range.min}–${range.max})`
+        : step === "month"
+          ? `need ${range.min}–${range.max} bounces for a month`
+          : `need ${range.min}–${range.max} bounces for a day`
       : null;
 
   const status =
     phase === "aiming"
-      ? `pull back from the launcher. wall hits count for ${step}.`
+      ? step === "year"
+        ? "pull back from the launcher. each bounce adds a year from 1900."
+        : `pull back from the launcher. wall hits count for ${step}.`
       : phase === "flying"
         ? "bouncing..."
         : inRange
           ? "settled. bounce again or continue."
           : "out of range. bounce again.";
 
+  const liveYear =
+    step === "year" ? CREATOR_YEAR.min + bounces : null;
+
   return (
     <div className="w-full text-center">
       <p className="font-sans text-3xl tabular-nums tracking-wide text-zinc-900 sm:text-4xl">
-        {formatMonthOrDay(month)} / {formatMonthOrDay(day)}
+        {yearOnly
+          ? formatYear(
+              phase === "flying" || phase === "aiming"
+                ? liveYear
+                : year,
+            )
+          : `${formatMonthOrDay(month)} / ${formatMonthOrDay(day)}`}
       </p>
 
       <div className="mt-8 space-y-3 text-left">
@@ -402,32 +436,41 @@ export function BirthdayBounce() {
         <p className="text-center text-sm text-zinc-500">{status}</p>
       </div>
 
-      <div className="mt-8 flex min-h-10 flex-wrap items-center justify-center gap-3">
-        {stepIndex > 0 ? (
-          <button
-            type="button"
-            onClick={() => setStep(STEPS[stepIndex - 1])}
-            className={`${pillButtonBase} border-zinc-900 bg-transparent text-zinc-900 hover:bg-zinc-100`}
-          >
-            previous
-          </button>
-        ) : null}
-        {stepIndex < STEPS.length - 1 ? (
-          <button
-            type="button"
-            onClick={() => setStep(STEPS[stepIndex + 1])}
-            disabled={phase === "flying" || !inRange}
-            className={`${pillButtonBase} border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 disabled:cursor-default disabled:opacity-40`}
-          >
-            next
-          </button>
-        ) : null}
-      </div>
+      {yearOnly ? null : (
+        <>
+          <div className="mt-8 flex min-h-10 flex-wrap items-center justify-center gap-3">
+            {stepIndex > 0 ? (
+              <button
+                type="button"
+                onClick={() => setStep(steps[stepIndex - 1])}
+                className={`${pillButtonBase} border-zinc-900 bg-transparent text-zinc-900 hover:bg-zinc-100`}
+              >
+                previous
+              </button>
+            ) : null}
+            {stepIndex < steps.length - 1 ? (
+              <button
+                type="button"
+                onClick={() => setStep(steps[stepIndex + 1])}
+                disabled={phase === "flying" || !inRange}
+                className={`${pillButtonBase} border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 disabled:cursor-default disabled:opacity-40`}
+              >
+                next
+              </button>
+            ) : null}
+          </div>
 
-      <p className="mt-4 text-sm text-zinc-400">
-        step {stepIndex + 1} of {STEPS.length}: {step} ({range.min}–
-        {range.max} bounces)
-      </p>
+          <p className="mt-4 text-sm text-zinc-400">
+            step {stepIndex + 1} of {steps.length}: {step} ({range.min}–
+            {range.max} bounces)
+          </p>
+        </>
+      )}
+      {yearOnly ? (
+        <p className="mt-4 text-sm text-zinc-400">
+          year = 1900 + bounces ({range.min}–{range.max})
+        </p>
+      ) : null}
     </div>
   );
 }

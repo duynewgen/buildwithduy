@@ -7,11 +7,12 @@ import {
   useRef,
   useState,
 } from "react";
+import type { YearPickerProps } from "@/lib/creator";
 
 type Step = "month" | "day" | "year";
 type Phase = "aiming" | "flying" | "landed";
 
-const STEPS: Step[] = ["month", "day", "year"];
+const ALL_STEPS: Step[] = ["month", "day", "year"];
 
 const RANGES = {
   month: { min: 1, max: 12, step: 1 },
@@ -113,12 +114,17 @@ function CakeBall({
 const pillButtonBase =
   "inline-flex min-w-24 items-center justify-center rounded-full border px-4 py-2 text-sm transition";
 
-export function BirthdayAngryCake() {
+export function BirthdayAngryCake({
+  yearOnly = false,
+  initialYear,
+  onYearChange,
+}: YearPickerProps = {}) {
+  const steps = yearOnly ? (["year"] as Step[]) : ALL_STEPS;
   const svgRef = useRef<SVGSVGElement>(null);
-  const [step, setStep] = useState<Step>("month");
+  const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
-  const [year, setYear] = useState(1900);
+  const [year, setYear] = useState(initialYear ?? 1900);
   const [phase, setPhase] = useState<Phase>("aiming");
   const [cake, setCake] = useState({ x: ANCHOR.x, y: ANCHOR.y });
   const [dragging, setDragging] = useState(false);
@@ -128,6 +134,8 @@ export function BirthdayAngryCake() {
   const cakeRef = useRef(cake);
   const phaseRef = useRef(phase);
   const stepRef = useRef(step);
+  const onYearChangeRef = useRef(onYearChange);
+  onYearChangeRef.current = onYearChange;
 
   cakeRef.current = cake;
   phaseRef.current = phase;
@@ -137,7 +145,10 @@ export function BirthdayAngryCake() {
     const current = stepRef.current;
     if (current === "month") setMonth(next);
     if (current === "day") setDay(next);
-    if (current === "year") setYear(next);
+    if (current === "year") {
+      setYear(next);
+      onYearChangeRef.current?.(next);
+    }
   });
 
   const resetCake = useCallback(() => {
@@ -284,7 +295,7 @@ export function BirthdayAngryCake() {
     setPhase("flying");
   }
 
-  const stepIndex = STEPS.indexOf(step);
+  const stepIndex = steps.indexOf(step);
   const range = RANGES[step];
   const value = step === "month" ? month : step === "day" ? day : year;
   const display =
@@ -326,7 +337,9 @@ export function BirthdayAngryCake() {
   return (
     <div className="w-full text-center">
       <p className="font-sans text-3xl tabular-nums tracking-wide text-zinc-900 sm:text-4xl">
-        {formatMonthOrDay(month)} / {formatMonthOrDay(day)} / {formatYear(year)}
+        {yearOnly
+          ? formatYear(year)
+          : `${formatMonthOrDay(month)} / ${formatMonthOrDay(day)} / ${formatYear(year)}`}
       </p>
 
       <div className="mt-8 space-y-3 text-left">
@@ -486,30 +499,34 @@ export function BirthdayAngryCake() {
         </p>
       </div>
 
-      <div className="mt-8 flex min-h-10 flex-wrap items-center justify-center gap-3">
-        {stepIndex > 0 ? (
-          <button
-            type="button"
-            onClick={() => setStep(STEPS[stepIndex - 1])}
-            className={`${pillButtonBase} border-zinc-900 bg-transparent text-zinc-900 hover:bg-zinc-100`}
-          >
-            previous
-          </button>
-        ) : null}
-        {stepIndex < STEPS.length - 1 ? (
-          <button
-            type="button"
-            onClick={() => setStep(STEPS[stepIndex + 1])}
-            className={`${pillButtonBase} border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800`}
-          >
-            next
-          </button>
-        ) : null}
-      </div>
+      {yearOnly ? null : (
+        <>
+          <div className="mt-8 flex min-h-10 flex-wrap items-center justify-center gap-3">
+            {stepIndex > 0 ? (
+              <button
+                type="button"
+                onClick={() => setStep(steps[stepIndex - 1])}
+                className={`${pillButtonBase} border-zinc-900 bg-transparent text-zinc-900 hover:bg-zinc-100`}
+              >
+                previous
+              </button>
+            ) : null}
+            {stepIndex < steps.length - 1 ? (
+              <button
+                type="button"
+                onClick={() => setStep(steps[stepIndex + 1])}
+                className={`${pillButtonBase} border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800`}
+              >
+                next
+              </button>
+            ) : null}
+          </div>
 
-      <p className="mt-4 text-sm text-zinc-400">
-        step {stepIndex + 1} of {STEPS.length}: {step}
-      </p>
+          <p className="mt-4 text-sm text-zinc-400">
+            step {stepIndex + 1} of {steps.length}: {step}
+          </p>
+        </>
+      )}
     </div>
   );
 }

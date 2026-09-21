@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { BirthdaySliders } from "@/components/birthday-sliders";
-import { BuildShell } from "@/components/build-shell";
+import { BuildExperience } from "@/components/build-experience";
 import { getBuildByPath } from "@/lib/builds";
+import { isCreatorMode } from "@/lib/creator";
 
 const build = getBuildByPath("birthday/slider")!;
 
@@ -10,14 +11,22 @@ export const metadata: Metadata = {
   description: build.description,
 };
 
-export default function BirthdaySliderPage() {
+type PageProps = {
+  searchParams: Promise<{ creator?: string | string[] }>;
+};
+
+export default async function BirthdaySliderPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
   return (
-    <BuildShell
+    <BuildExperience
+      creator={isCreatorMode(params.creator)}
       title={build.title}
       description={build.description}
       backHref="/birthday"
+      YearPicker={BirthdaySliders}
     >
       <BirthdaySliders />
-    </BuildShell>
+    </BuildExperience>
   );
 }

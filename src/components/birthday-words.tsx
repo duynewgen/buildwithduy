@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 import {
   dayToWords,
   monthToWords,
@@ -10,7 +11,11 @@ import {
 
 const MONTH_OPTIONS = rangeToWordOptions(1, 12, monthToWords);
 const DAY_OPTIONS = rangeToWordOptions(1, 31, dayToWords);
-const YEAR_OPTIONS = rangeToWordOptions(1900, 2026, yearToWords);
+const YEAR_OPTIONS = rangeToWordOptions(
+  CREATOR_YEAR.min,
+  CREATOR_YEAR.max,
+  yearToWords,
+);
 
 const selectClassName = [
   "w-full cursor-pointer appearance-none rounded-full border border-zinc-300",
@@ -50,16 +55,31 @@ function WordSelect({ id, label, value, options, onChange }: WordSelectProps) {
   );
 }
 
-export function BirthdayWords() {
+export function BirthdayWords({
+  yearOnly = false,
+  initialYear,
+  onYearChange,
+}: YearPickerProps = {}) {
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
-  const [year, setYear] = useState(1900);
+  const [year, setYear] = useState(initialYear ?? CREATOR_YEAR.min);
+
+  useEffect(() => {
+    if (yearOnly) onYearChange?.(year);
+  }, [yearOnly, year, onYearChange]);
 
   const summary = useMemo(
     () =>
-      `${monthToWords(month)} / ${dayToWords(day)} / ${yearToWords(year)}`,
-    [month, day, year],
+      yearOnly
+        ? yearToWords(year)
+        : `${monthToWords(month)} / ${dayToWords(day)} / ${yearToWords(year)}`,
+    [yearOnly, month, day, year],
   );
+
+  function updateYear(next: number) {
+    setYear(next);
+    onYearChange?.(next);
+  }
 
   return (
     <div className="w-full text-center">
@@ -67,27 +87,37 @@ export function BirthdayWords() {
         {summary}
       </p>
 
-      <div className="mx-auto mt-8 flex max-w-3xl flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-        <WordSelect
-          id="words-month"
-          label="month"
-          value={month}
-          options={MONTH_OPTIONS}
-          onChange={setMonth}
-        />
-        <WordSelect
-          id="words-day"
-          label="day"
-          value={day}
-          options={DAY_OPTIONS}
-          onChange={setDay}
-        />
+      <div
+        className={
+          yearOnly
+            ? "mx-auto mt-8 max-w-md"
+            : "mx-auto mt-8 flex max-w-3xl flex-col gap-4 sm:flex-row sm:items-start sm:gap-5"
+        }
+      >
+        {yearOnly ? null : (
+          <>
+            <WordSelect
+              id="words-month"
+              label="month"
+              value={month}
+              options={MONTH_OPTIONS}
+              onChange={setMonth}
+            />
+            <WordSelect
+              id="words-day"
+              label="day"
+              value={day}
+              options={DAY_OPTIONS}
+              onChange={setDay}
+            />
+          </>
+        )}
         <WordSelect
           id="words-year"
           label="year"
           value={year}
           options={YEAR_OPTIONS}
-          onChange={setYear}
+          onChange={updateYear}
         />
       </div>
     </div>

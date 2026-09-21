@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 
 type Step = "month" | "day" | "year";
 
-const STEPS: Step[] = ["month", "day", "year"];
+const ALL_STEPS: Step[] = ["month", "day", "year"];
 
 function snapToStep(value: number, step: number) {
   return Math.round(value / step) * step;
@@ -80,34 +81,49 @@ function SliderField({
 const pillButtonBase =
   "inline-flex min-w-24 items-center justify-center rounded-full border px-4 py-2 text-sm transition";
 
-export function BirthdaySliders() {
-  const [step, setStep] = useState<Step>("month");
+export function BirthdaySliders({
+  yearOnly = false,
+  initialYear,
+  onYearChange,
+}: YearPickerProps = {}) {
+  const steps = yearOnly ? (["year"] as Step[]) : ALL_STEPS;
+  const yearMin = yearOnly ? CREATOR_YEAR.min : 0;
+  const yearMax = CREATOR_YEAR.max;
+
+  const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
   const [month, setMonth] = useState(0);
   const [day, setDay] = useState(0);
-  const [year, setYear] = useState(0);
+  const [year, setYear] = useState(initialYear ?? yearMin);
 
-  const stepIndex = STEPS.indexOf(step);
+  useEffect(() => {
+    if (yearOnly) onYearChange?.(year);
+  }, [yearOnly, year, onYearChange]);
+
+  const stepIndex = steps.indexOf(step);
   const monthError = isWholeNumber(month)
     ? null
     : "sorry this is not a valid month";
   const dayError = isWholeNumber(day) ? null : "sorry this is not a valid day";
 
   function goBack() {
-    if (stepIndex > 0) {
-      setStep(STEPS[stepIndex - 1]);
-    }
+    if (stepIndex > 0) setStep(steps[stepIndex - 1]);
   }
 
   function goNext() {
-    if (stepIndex < STEPS.length - 1) {
-      setStep(STEPS[stepIndex + 1]);
-    }
+    if (stepIndex < steps.length - 1) setStep(steps[stepIndex + 1]);
+  }
+
+  function updateYear(next: number) {
+    setYear(next);
+    onYearChange?.(next);
   }
 
   return (
     <div className="w-full text-center">
       <p className="font-sans text-3xl tabular-nums tracking-wide text-zinc-900 sm:text-4xl">
-        {formatMonthOrDay(month)} / {formatMonthOrDay(day)} / {formatYear(year)}
+        {yearOnly
+          ? formatYear(year)
+          : `${formatMonthOrDay(month)} / ${formatMonthOrDay(day)} / ${formatYear(year)}`}
       </p>
 
       <div className="mt-12 text-left">
@@ -142,38 +158,42 @@ export function BirthdaySliders() {
             label="year"
             value={year}
             display={formatYear(year)}
-            min={0}
-            max={2026}
+            min={yearMin}
+            max={yearMax}
             step={1}
-            onChange={setYear}
+            onChange={updateYear}
           />
         ) : null}
       </div>
 
-      <div className="mt-10 flex min-h-10 items-center justify-center gap-3">
-        {stepIndex > 0 ? (
-          <button
-            type="button"
-            onClick={goBack}
-            className={`${pillButtonBase} border-zinc-900 bg-transparent text-zinc-900 hover:bg-zinc-100`}
-          >
-            previous
-          </button>
-        ) : null}
-        {stepIndex < STEPS.length - 1 ? (
-          <button
-            type="button"
-            onClick={goNext}
-            className={`${pillButtonBase} border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800`}
-          >
-            next
-          </button>
-        ) : null}
-      </div>
+      {yearOnly ? null : (
+        <>
+          <div className="mt-10 flex min-h-10 items-center justify-center gap-3">
+            {stepIndex > 0 ? (
+              <button
+                type="button"
+                onClick={goBack}
+                className={`${pillButtonBase} border-zinc-900 bg-transparent text-zinc-900 hover:bg-zinc-100`}
+              >
+                previous
+              </button>
+            ) : null}
+            {stepIndex < steps.length - 1 ? (
+              <button
+                type="button"
+                onClick={goNext}
+                className={`${pillButtonBase} border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800`}
+              >
+                next
+              </button>
+            ) : null}
+          </div>
 
-      <p className="mt-4 text-sm text-zinc-400">
-        step {stepIndex + 1} of {STEPS.length}: {step}
-      </p>
+          <p className="mt-4 text-sm text-zinc-400">
+            step {stepIndex + 1} of {steps.length}: {step}
+          </p>
+        </>
+      )}
     </div>
   );
 }
