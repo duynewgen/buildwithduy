@@ -58,6 +58,11 @@ export const builds: Build[] = [
     title: "lottery",
     description: "pull each handle to roll your month, day, and year.",
   },
+  {
+    path: "birthday/words",
+    title: "words",
+    description: "pick your month, day, and year in words.",
+  },
 ];
 
 export function buildHref(build: Build) {

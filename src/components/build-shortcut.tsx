@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BirthdayAngryCakeDemo } from "@/components/birthday-angry-cake-demo";
 import { BirthdayLotteryDemo } from "@/components/birthday-lottery-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
+import { BirthdayWordsDemo } from "@/components/birthday-words-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -14,6 +15,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "birthday/lottery") {
     return <BirthdayLotteryDemo />;
+  }
+  if (path === "birthday/words") {
+    return <BirthdayWordsDemo />;
   }
 
   return (
