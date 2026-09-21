@@ -25,7 +25,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # Build pages
 
 - URL shape: `/{category}/{build}` (e.g. `/birthday/slider`). Do not put a build at a bare category root.
-- Category pages at `/{category}` are simple directories (small logo + category name + build shortcuts). Do not redirect them into a build.
+- Category pages at `/{category}` are simple directories (small logo + category nav + build shortcuts). Do not redirect them into a build.
+- Categories live in `src/lib/builds.ts` (`categories`) in sidebar order; empty categories are allowed.
 - Site root `/` redirects to the default category (`/birthday` for now).
 - Build title is the short build name only (e.g. `slider`), not prefixed with the category.
 - Use `BuildShell` for every experiment/build route; pass `backHref` to the category page.

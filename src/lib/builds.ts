@@ -5,6 +5,39 @@ export type Build = {
   description: string;
 };
 
+export type Category = {
+  id: string;
+  description: string;
+  /** temporarily omit from sidebar + sitemap */
+  hidden?: boolean;
+};
+
+/**
+ * Categories shown in the sidebar, in order.
+ * Empty categories are fine — they still get a directory page for UI testing.
+ */
+export const categories: Category[] = [
+  {
+    id: "birthday",
+    description: "cursed birthday selection builds.",
+  },
+  {
+    id: "password",
+    description: "password builds.",
+    hidden: true,
+  },
+  {
+    id: "2fa",
+    description: "two-factor builds.",
+    hidden: true,
+  },
+  {
+    id: "other",
+    description: "other builds.",
+    hidden: true,
+  },
+];
+
 /**
  * Registry of every public build. Homepage + sitemap read from this.
  * When adding a build: add a route at `src/app/{path}/page.tsx` AND an entry here.
@@ -34,18 +67,15 @@ export function categoryHref(category: string) {
   return `/${category}`;
 }
 
-/** unique categories in registry order */
+export function getCategory(id: string) {
+  return categories.find((category) => category.id === id);
+}
+
+/** visible category ids in sidebar order */
 export function buildCategories() {
-  const seen = new Set<string>();
-  const categories: string[] = [];
-  for (const build of builds) {
-    const category = buildCategory(build);
-    if (!seen.has(category)) {
-      seen.add(category);
-      categories.push(category);
-    }
-  }
-  return categories;
+  return categories
+    .filter((category) => !category.hidden)
+    .map((category) => category.id);
 }
 
 export function buildsInCategory(category: string) {
