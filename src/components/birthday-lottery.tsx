@@ -250,6 +250,8 @@ function LotteryColumn({
           >
             stop
           </button>
+        ) : phase === "stopping" ? (
+          <span className="text-sm text-zinc-500">stopping...</span>
         ) : phase === "done" ? (
           <button
             type="button"
@@ -271,15 +273,24 @@ export function BirthdayLottery() {
   const day = useLotteryReel(RANGES.day.min, RANGES.day.max);
   const year = useLotteryReel(RANGES.year.min, RANGES.year.max);
 
-  const anySpinning = month.spinning || day.spinning || year.spinning;
+  const anyStopping =
+    month.phase === "stopping" ||
+    day.phase === "stopping" ||
+    year.phase === "stopping";
+  const anySpinning =
+    month.phase === "spinning" ||
+    day.phase === "spinning" ||
+    year.phase === "spinning";
   const allDone =
     month.phase === "done" && day.phase === "done" && year.phase === "done";
 
-  const status = anySpinning
-    ? "rolling..."
-    : allDone
-      ? "birthday locked in. pull again to reroll a part."
-      : "pull each handle to roll month, day, and year.";
+  const status = anyStopping
+    ? "stopping..."
+    : anySpinning
+      ? "rolling..."
+      : allDone
+        ? "birthday locked in. pull again to reroll a part."
+        : "pull each handle to roll month, day, and year.";
 
   return (
     <div className="w-full text-center">

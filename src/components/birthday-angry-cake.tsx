@@ -78,14 +78,31 @@ function pullFromPointer(clientX: number, clientY: number, rect: DOMRect) {
   };
 }
 
-function CakeBall({ x, y }: { x: number; y: number }) {
+function CakeBall({
+  x,
+  y,
+  interactive = false,
+}: {
+  x: number;
+  y: number;
+  interactive?: boolean;
+}) {
   return (
-    <g transform={`translate(${x} ${y})`}>
+    <g
+      transform={`translate(${x} ${y})`}
+      className={interactive ? "cursor-pointer" : undefined}
+      style={interactive ? { cursor: "pointer" } : undefined}
+    >
+      {/* larger hit target while aiming */}
+      {interactive ? (
+        <circle r={CAKE_R + 10} fill="transparent" className="cursor-pointer" />
+      ) : null}
       <circle r={CAKE_R} fill="#fff7ed" stroke="#fdba74" strokeWidth={2} />
       <text
         textAnchor="middle"
         dominantBaseline="central"
         style={{ fontSize: 18, userSelect: "none" }}
+        className={interactive ? "cursor-pointer" : undefined}
       >
         🎂
       </text>
@@ -320,17 +337,22 @@ export function BirthdayAngryCake() {
           </span>
         </div>
 
-        <svg
-          ref={svgRef}
-          viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-          className="h-auto w-full touch-none select-none rounded-2xl border border-zinc-200 bg-[#f7f4ef]"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          role="img"
-          aria-label={`slingshot for ${step}. drag the cake back and release.`}
-        >
+        <div className="relative">
+          <svg
+            ref={svgRef}
+            viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+            className={[
+              "h-auto w-full touch-none select-none rounded-2xl border border-zinc-200 bg-[#f7f4ef]",
+              phase === "aiming" ? "cursor-pointer" : "",
+              dragging ? "cursor-grabbing" : "",
+            ].join(" ")}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            role="img"
+            aria-label={`slingshot for ${step}. drag the cake back and release.`}
+          >
           <rect
             x={0}
             y={GROUND_Y}
@@ -435,8 +457,25 @@ export function BirthdayAngryCake() {
             />
           ) : null}
 
-          <CakeBall x={cake.x} y={cake.y} />
-        </svg>
+            <CakeBall
+              x={cake.x}
+              y={cake.y}
+              interactive={phase === "aiming"}
+            />
+          </svg>
+
+          {phase === "landed" ? (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={resetCake}
+                className={`${pillButtonBase} pointer-events-auto border-zinc-300 bg-white/95 text-zinc-800 shadow-sm backdrop-blur-sm hover:border-zinc-900`}
+              >
+                launch again
+              </button>
+            </div>
+          ) : null}
+        </div>
 
         <p className="text-center text-sm text-zinc-500">
           {phase === "aiming"
@@ -448,15 +487,6 @@ export function BirthdayAngryCake() {
       </div>
 
       <div className="mt-8 flex min-h-10 flex-wrap items-center justify-center gap-3">
-        {phase === "landed" ? (
-          <button
-            type="button"
-            onClick={resetCake}
-            className={`${pillButtonBase} border-zinc-300 bg-white text-zinc-800 hover:border-zinc-900`}
-          >
-            launch again
-          </button>
-        ) : null}
         {stepIndex > 0 ? (
           <button
             type="button"
