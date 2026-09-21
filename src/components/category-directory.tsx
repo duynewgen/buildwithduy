@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { BuildShortcut } from "@/components/build-shortcut";
 import { Logo } from "@/components/logo";
 import {
@@ -8,8 +9,9 @@ import {
 } from "@/lib/builds";
 import { siteConfig } from "@/lib/site";
 
-type CategoryDirectoryProps = {
+type CategoryShellProps = {
   category: string;
+  children: ReactNode;
 };
 
 const linkClassName =
@@ -49,8 +51,8 @@ function SocialLinks({
   );
 }
 
-export function CategoryDirectory({ category }: CategoryDirectoryProps) {
-  const categoryBuilds = buildsInCategory(category);
+/** Persistent directory chrome (logo, categories, social). Main content is `children`. */
+export function CategoryShell({ category, children }: CategoryShellProps) {
   const allCategories = buildCategories();
 
   return (
@@ -117,24 +119,7 @@ export function CategoryDirectory({ category }: CategoryDirectoryProps) {
           "xl:min-w-0",
         ].join(" ")}
       >
-        {categoryBuilds.length === 0 ? (
-          <p className="text-sm text-zinc-500">coming soon :)</p>
-        ) : (
-          <ul
-            className={[
-              "grid gap-[clamp(1rem,2.5vw,1.5rem)]",
-              "grid-cols-2",
-              "sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]",
-            ].join(" ")}
-            aria-label={`${category} builds`}
-          >
-            {categoryBuilds.map((build) => (
-              <li key={build.path}>
-                <BuildShortcut build={build} />
-              </li>
-            ))}
-          </ul>
-        )}
+        {children}
       </section>
 
       <footer
@@ -149,5 +134,38 @@ export function CategoryDirectory({ category }: CategoryDirectoryProps) {
         />
       </footer>
     </main>
+  );
+}
+
+export function CategoryBuilds({ category }: { category: string }) {
+  const categoryBuilds = buildsInCategory(category);
+
+  if (categoryBuilds.length === 0) {
+    return <p className="text-sm text-zinc-500">coming soon :)</p>;
+  }
+
+  return (
+    <ul
+      className={[
+        "grid gap-[clamp(1rem,2.5vw,1.5rem)]",
+        "grid-cols-2",
+        "sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]",
+      ].join(" ")}
+      aria-label={`${category} builds`}
+    >
+      {categoryBuilds.map((build) => (
+        <li key={build.path}>
+          <BuildShortcut build={build} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function CategoryDirectory({ category }: { category: string }) {
+  return (
+    <CategoryShell category={category}>
+      <CategoryBuilds category={category} />
+    </CategoryShell>
   );
 }

@@ -1,3 +1,5 @@
+import { CategoryShell } from "@/components/category-directory";
+
 function SkeletonPulse({ className = "" }: { className?: string }) {
   return (
     <div
@@ -24,76 +26,39 @@ export function BuildShortcutSkeleton() {
   );
 }
 
-/** Full category directory loading state — sidebar chrome + card boxes. */
-export function CategoryPageSkeleton({ cards = 6 }: { cards?: number }) {
+/** Main content only — real menu stays via CategoryShell. */
+export function CategoryContentSkeleton({ cards = 6 }: { cards?: number }) {
   return (
-    <main
+    <ul
       aria-busy="true"
       aria-label="loading"
-      className="flex min-h-dvh flex-col xl:grid xl:grid-cols-[clamp(13rem,18vw,17rem)_minmax(0,1fr)]"
+      className={[
+        "grid gap-[clamp(1rem,2.5vw,1.5rem)]",
+        "grid-cols-2",
+        "sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]",
+      ].join(" ")}
     >
-      <aside
-        className={[
-          "relative flex flex-col border-zinc-200",
-          "px-[clamp(1.25rem,4.5vw,3.5rem)] pt-[clamp(1.5rem,4vh,3.5rem)]",
-          "max-xl:gap-6 max-xl:border-b max-xl:pb-6",
-          "xl:sticky xl:top-0 xl:h-dvh xl:gap-0 xl:border-r xl:pb-0",
-        ].join(" ")}
-      >
-        <SkeletonPulse className="size-[clamp(4.25rem,18vw,6rem)] rounded-2xl" />
+      {Array.from({ length: cards }, (_, index) => (
+        <li key={index}>
+          <BuildShortcutSkeleton />
+        </li>
+      ))}
+    </ul>
+  );
+}
 
-        <div
-          className={[
-            "flex gap-5",
-            "max-xl:-mx-[clamp(1.25rem,4.5vw,3.5rem)] max-xl:px-[clamp(1.25rem,4.5vw,3.5rem)]",
-            "xl:mt-8 xl:flex-col xl:gap-3 xl:px-0",
-          ].join(" ")}
-        >
-          <SkeletonPulse className="h-5 w-20 shrink-0" />
-          <SkeletonPulse className="h-5 w-24 shrink-0" />
-          <SkeletonPulse className="h-5 w-16 shrink-0" />
-          <SkeletonPulse className="h-5 w-14 shrink-0" />
-        </div>
-
-        <div
-          className={[
-            "mt-auto hidden xl:block",
-            "-mx-[clamp(1.25rem,4.5vw,3.5rem)]",
-            "border-t border-zinc-200",
-            "px-[clamp(1.25rem,4.5vw,3.5rem)]",
-            "py-[clamp(1.25rem,3vh,2rem)]",
-          ].join(" ")}
-        >
-          <div className="flex flex-col gap-3">
-            <SkeletonPulse className="h-5 w-16" />
-            <SkeletonPulse className="h-5 w-14" />
-          </div>
-        </div>
-      </aside>
-
-      <section
-        className={[
-          "flex-1",
-          "px-[clamp(1.25rem,4.5vw,4rem)]",
-          "py-[clamp(1.75rem,5vh,4rem)]",
-          "xl:min-w-0",
-        ].join(" ")}
-      >
-        <ul
-          className={[
-            "grid gap-[clamp(1rem,2.5vw,1.5rem)]",
-            "grid-cols-2",
-            "sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]",
-          ].join(" ")}
-        >
-          {Array.from({ length: cards }, (_, index) => (
-            <li key={index}>
-              <BuildShortcutSkeleton />
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
+/** Category page loading: live sidebar + skeleton card boxes. */
+export function CategoryPageSkeleton({
+  category,
+  cards = 6,
+}: {
+  category: string;
+  cards?: number;
+}) {
+  return (
+    <CategoryShell category={category}>
+      <CategoryContentSkeleton cards={cards} />
+    </CategoryShell>
   );
 }
 
