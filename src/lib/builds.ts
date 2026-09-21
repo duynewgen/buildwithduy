@@ -53,6 +53,11 @@ export const builds: Build[] = [
     title: "angry cake",
     description: "fling a cake to land on your month, day, and year.",
   },
+  {
+    path: "birthday/lottery",
+    title: "lottery",
+    description: "pull each handle to roll your month, day, and year.",
+  },
 ];
 
 export function buildHref(build: Build) {

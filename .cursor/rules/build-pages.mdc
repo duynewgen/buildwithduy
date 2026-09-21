@@ -25,4 +25,5 @@ alwaysApply: true
 - Every build gets a demo thumbnail in `src/components/{name}-demo.tsx`, wired through `BuildShortcut`.
 - Thumbnails must animate **inside the card on hover**, driven by the parent Link’s `group` / `group-hover:` classes (same pattern as slider thumb slide and angry-cake flight).
 - Idle state shows a quiet preview; hover plays a short motion that hints at the interaction. Prefer CSS transitions or keyframes — no autoplay loops while idle.
+- Birthday (and any date-showing) thumbnails always use **today’s date** via `formatToday` / `getTodayParts` from `src/lib/today.ts` — never a hardcoded or random date. Use `suppressHydrationWarning` on the date text.
 - When adding a new build: ship the hover thumbnail animation with the build, not as a follow-up.

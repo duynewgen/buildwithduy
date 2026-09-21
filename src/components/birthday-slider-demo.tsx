@@ -1,12 +1,6 @@
 "use client";
 
-function formatToday() {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  const year = String(now.getFullYear()).padStart(4, "0");
-  return `${month} / ${day} / ${year}`;
-}
+import { formatToday } from "@/lib/today";
 
 export function BirthdaySliderDemo() {
   return (
