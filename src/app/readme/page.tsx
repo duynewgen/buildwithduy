@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/page-metadata";
 import ReactMarkdown from "react-markdown";
 import { BackPill } from "@/components/back-pill";
 import { getReadmeMarkdown } from "@/lib/readme";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "readme.md",
   description: "about buildwithduy — straight from the repo readme.",
-};
+  path: "/readme",
+});
 
 export default function ReadmePage() {
   const markdown = getReadmeMarkdown();

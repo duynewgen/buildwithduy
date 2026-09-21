@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/page-metadata";
 import { BirthdayBounce } from "@/components/birthday-bounce";
 import { BuildExperience } from "@/components/build-experience";
 import { getBuildByPath } from "@/lib/builds";
@@ -6,10 +6,11 @@ import { isCreatorMode } from "@/lib/creator";
 
 const build = getBuildByPath("birthday/bounce")!;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: build.title,
   description: build.description,
-};
+  path: "/birthday/bounce",
+});
 
 type PageProps = {
   searchParams: Promise<{ creator?: string | string[] }>;
