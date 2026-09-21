@@ -52,16 +52,17 @@ function formatYear(value: number) {
   return String(Math.round(value)).padStart(4, "0");
 }
 
-function xToValue(x: number, step: Step) {
-  const range = RANGES[step];
+type FieldRange = { min: number; max: number; step: number };
+
+function xToValue(x: number, range: FieldRange) {
   const t = clamp((x - FIELD_LEFT) / (FIELD_RIGHT - FIELD_LEFT), 0, 1);
   const raw = range.min + t * (range.max - range.min);
   return clamp(snapToStep(raw, range.step), range.min, range.max);
 }
 
-function valueToX(value: number, step: Step) {
-  const range = RANGES[step];
-  const t = (value - range.min) / (range.max - range.min);
+function valueToX(value: number, range: FieldRange) {
+  const span = range.max - range.min;
+  const t = span === 0 ? 0 : (value - range.min) / span;
   return FIELD_LEFT + t * (FIELD_RIGHT - FIELD_LEFT);
 }
 
@@ -136,12 +137,14 @@ export function BirthdayAngryCake({
   const cakeRef = useRef(cake);
   const phaseRef = useRef(phase);
   const stepRef = useRef(step);
+  const yearMinRef = useRef(yearMin);
   const onYearChangeRef = useRef(onYearChange);
   onYearChangeRef.current = onYearChange;
 
   cakeRef.current = cake;
   phaseRef.current = phase;
   stepRef.current = step;
+  yearMinRef.current = yearMin;
 
   const setStepValue = useEffectEvent((next: number) => {
     const current = stepRef.current;
@@ -197,10 +200,18 @@ export function BirthdayAngryCake({
 
         if (Math.abs(vy) < SETTLE_VY && Math.abs(vx) < SETTLE_VX) {
           const landX = clamp(x, FIELD_LEFT, FIELD_RIGHT);
+          const landRange =
+            stepRef.current === "year"
+              ? {
+                  min: yearMinRef.current,
+                  max: CREATOR_YEAR.max,
+                  step: 1,
+                }
+              : RANGES[stepRef.current];
           setCake({ x: landX, y: GROUND_Y - CAKE_R });
           velocityRef.current = { x: 0, y: 0 };
           setPhase("landed");
-          setStepValue(xToValue(landX, stepRef.current));
+          setStepValue(xToValue(landX, landRange));
           return;
         }
       }
@@ -298,7 +309,7 @@ export function BirthdayAngryCake({
   }
 
   const stepIndex = steps.indexOf(step);
-  const range =
+  const range: FieldRange =
     step === "year"
       ? { min: yearMin, max: CREATOR_YEAR.max, step: 1 }
       : RANGES[step];
@@ -465,9 +476,9 @@ export function BirthdayAngryCake({
 
           {phase === "landed" ? (
             <line
-              x1={valueToX(value, step)}
+              x1={valueToX(value, range)}
               y1={GROUND_Y - 56}
-              x2={valueToX(value, step)}
+              x2={valueToX(value, range)}
               y2={GROUND_Y}
               stroke="#18181b"
               strokeWidth={2}

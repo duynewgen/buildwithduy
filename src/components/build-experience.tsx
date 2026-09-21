@@ -28,13 +28,7 @@ export function BuildExperience({
   children,
 }: BuildExperienceProps) {
   if (creator) {
-    return (
-      <CreatorMode
-        backHref={backHref}
-        YearPicker={YearPicker}
-        contentClassName={contentClassName ?? "max-w-md"}
-      />
-    );
+    return <CreatorMode backHref={backHref} YearPicker={YearPicker} />;
   }
 
   return (

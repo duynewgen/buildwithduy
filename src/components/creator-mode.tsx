@@ -16,13 +16,11 @@ import {
 type CreatorModeProps = {
   backHref?: string;
   YearPicker: ComponentType<YearPickerProps>;
-  contentClassName?: string;
 };
 
 export function CreatorMode({
   backHref = "/",
   YearPicker,
-  contentClassName = "max-w-md",
 }: CreatorModeProps) {
   const [name, setName] = useState("");
   const [year, setYear] = useState<number | null>(null);
@@ -71,7 +69,7 @@ export function CreatorMode({
 
       <div className="relative z-0 flex min-h-0 flex-1 items-center justify-center py-8">
         <form
-          className={`w-full space-y-6 ${contentClassName}`}
+          className="w-full max-w-md space-y-6"
           onSubmit={(event) => event.preventDefault()}
         >
           <h1 className="text-lg text-zinc-900">fill out this form</h1>
