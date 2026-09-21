@@ -30,7 +30,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Site root `/` redirects to the default category (`/birthday` for now).
 - Build title is the short build name only (e.g. `slider`), not prefixed with the category.
 - Use `BuildShell` for every experiment/build route; pass `backHref` to the category page.
-- Title + description stay at the **top** (centered). Interactive build content is centered in the **remaining space below the header** (never overlays the title).
+- Title + description stay at the **top** (centered). A subtle word button under the back pill toggles them (`hide title` / `show title`); default shown, not a pill. Interactive build content is centered in the **remaining space below the header** (never overlays the title).
 - Top-left back pill navigates to the category page. Do not put the logo on build pages.
 - Metadata title template uses a hyphen: `%s - buildwithduy` (not a middle dot).
 - Register every public build in `src/lib/builds.ts` (directories + sitemap). After each new build: route + registry entry + confirm sitemap.
