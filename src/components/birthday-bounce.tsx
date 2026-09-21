@@ -24,14 +24,29 @@ const WIDTH = 560;
 const HEIGHT = 320;
 const CAKE_R = 16;
 const LAUNCHER = { x: WIDTH / 2, y: HEIGHT - 36 };
-const MAX_PULL = 88;
 const GRAVITY = 980;
-const LAUNCH_SCALE = 10.5;
-const WALL_BOUNCE = 0.78;
-const GROUND_BOUNCE = 0.62;
-const GROUND_FRICTION = 0.88;
-const SETTLE_VY = 48;
-const SETTLE_VX = 32;
+
+const PHYSICS = {
+  normal: {
+    maxPull: 88,
+    launchScale: 10.5,
+    wallBounce: 0.78,
+    groundBounce: 0.62,
+    groundFriction: 0.88,
+    settleVy: 48,
+    settleVx: 32,
+  },
+  /** Stronger / longer-lived so creator year picks can rack up more hits. */
+  creator: {
+    maxPull: 120,
+    launchScale: 16,
+    wallBounce: 0.92,
+    groundBounce: 0.82,
+    groundFriction: 0.96,
+    settleVy: 28,
+    settleVx: 18,
+  },
+} as const;
 
 const pillButtonBase =
   "inline-flex min-w-24 items-center justify-center rounded-full border px-4 py-2 text-sm transition";
@@ -50,13 +65,18 @@ function formatYear(value: number | null) {
   return String(value).padStart(4, "0");
 }
 
-function pullFromPointer(clientX: number, clientY: number, rect: DOMRect) {
+function pullFromPointer(
+  clientX: number,
+  clientY: number,
+  rect: DOMRect,
+  maxPull: number,
+) {
   const x = ((clientX - rect.left) / rect.width) * WIDTH;
   const y = ((clientY - rect.top) / rect.height) * HEIGHT;
   const dx = x - LAUNCHER.x;
   const dy = y - LAUNCHER.y;
   const dist = Math.hypot(dx, dy);
-  const limited = Math.min(dist, MAX_PULL);
+  const limited = Math.min(dist, maxPull);
   const angle = Math.atan2(dy, dx);
   return {
     x: LAUNCHER.x + Math.cos(angle) * limited,
@@ -101,6 +121,7 @@ export function BirthdayBounce({
   onYearChange,
 }: YearPickerProps = {}) {
   const yearMin = minYear ?? CREATOR_YEAR.min;
+  const physics = yearOnly ? PHYSICS.creator : PHYSICS.normal;
   const steps = yearOnly ? (["year"] as Step[]) : MONTH_DAY_STEPS;
   const svgRef = useRef<SVGSVGElement>(null);
   const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
@@ -118,6 +139,7 @@ export function BirthdayBounce({
   const phaseRef = useRef(phase);
   const bouncesRef = useRef(0);
   const stepRef = useRef(step);
+  const physicsRef = useRef(physics);
   const onYearChangeRef = useRef(onYearChange);
   onYearChangeRef.current = onYearChange;
 
@@ -125,6 +147,7 @@ export function BirthdayBounce({
   phaseRef.current = phase;
   bouncesRef.current = bounces;
   stepRef.current = step;
+  physicsRef.current = physics;
 
   const range =
     step === "year"
@@ -160,10 +183,11 @@ export function BirthdayBounce({
   }, [step, resetAim]);
 
   function updateAimPreview(pos: { x: number; y: number }) {
+    const { launchScale } = physicsRef.current;
     const pullX = LAUNCHER.x - pos.x;
     const pullY = LAUNCHER.y - pos.y;
-    let vx = pullX * LAUNCH_SCALE;
-    let vy = pullY * LAUNCH_SCALE;
+    let vx = pullX * launchScale;
+    let vy = pullY * launchScale;
     let x = LAUNCHER.x;
     let y = LAUNCHER.y;
     const dots: { x: number; y: number }[] = [];
@@ -186,6 +210,13 @@ export function BirthdayBounce({
     const tick = (now: number) => {
       const dt = Math.min(0.032, (now - last) / 1000);
       last = now;
+      const {
+        wallBounce,
+        groundBounce,
+        groundFriction,
+        settleVy,
+        settleVx,
+      } = physicsRef.current;
 
       let { x: vx, y: vy } = velocityRef.current;
       vy += GRAVITY * dt;
@@ -196,25 +227,25 @@ export function BirthdayBounce({
 
       if (x - CAKE_R < 0) {
         x = CAKE_R;
-        vx = Math.abs(vx) * WALL_BOUNCE;
+        vx = Math.abs(vx) * wallBounce;
         hits += 1;
       } else if (x + CAKE_R > WIDTH) {
         x = WIDTH - CAKE_R;
-        vx = -Math.abs(vx) * WALL_BOUNCE;
+        vx = -Math.abs(vx) * wallBounce;
         hits += 1;
       }
 
       if (y - CAKE_R < 0) {
         y = CAKE_R;
-        vy = Math.abs(vy) * WALL_BOUNCE;
+        vy = Math.abs(vy) * wallBounce;
         hits += 1;
       } else if (y + CAKE_R >= HEIGHT) {
         y = HEIGHT - CAKE_R;
-        vy = -Math.abs(vy) * GROUND_BOUNCE;
-        vx *= GROUND_FRICTION;
+        vy = -Math.abs(vy) * groundBounce;
+        vx *= groundFriction;
         hits += 1;
 
-        if (Math.abs(vy) < SETTLE_VY && Math.abs(vx) < SETTLE_VX) {
+        if (Math.abs(vy) < settleVy && Math.abs(vx) < settleVx) {
           if (hits > 0) {
             const next = bouncesRef.current + hits;
             bouncesRef.current = next;
@@ -247,7 +278,12 @@ export function BirthdayBounce({
     if (phaseRef.current !== "aiming") return;
     const rect = svgRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const pos = pullFromPointer(event.clientX, event.clientY, rect);
+    const pos = pullFromPointer(
+      event.clientX,
+      event.clientY,
+      rect,
+      physics.maxPull,
+    );
     setDragging(true);
     setCake(pos);
     updateAimPreview(pos);
@@ -258,7 +294,12 @@ export function BirthdayBounce({
     if (!dragging || phaseRef.current !== "aiming") return;
     const rect = svgRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const pos = pullFromPointer(event.clientX, event.clientY, rect);
+    const pos = pullFromPointer(
+      event.clientX,
+      event.clientY,
+      rect,
+      physics.maxPull,
+    );
     setCake(pos);
     updateAimPreview(pos);
   }
@@ -280,8 +321,8 @@ export function BirthdayBounce({
     bouncesRef.current = 0;
     setBounces(0);
     velocityRef.current = {
-      x: pullX * LAUNCH_SCALE,
-      y: pullY * LAUNCH_SCALE,
+      x: pullX * physics.launchScale,
+      y: pullY * physics.launchScale,
     };
     setCake({ ...LAUNCHER });
     setAimDots([]);
