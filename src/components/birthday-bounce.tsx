@@ -96,9 +96,11 @@ function CakeBall({
 
 export function BirthdayBounce({
   yearOnly = false,
+  minYear,
   initialYear,
   onYearChange,
 }: YearPickerProps = {}) {
+  const yearMin = minYear ?? CREATOR_YEAR.min;
   const steps = yearOnly ? (["year"] as Step[]) : MONTH_DAY_STEPS;
   const svgRef = useRef<SVGSVGElement>(null);
   const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
@@ -124,7 +126,10 @@ export function BirthdayBounce({
   bouncesRef.current = bounces;
   stepRef.current = step;
 
-  const range = RANGES[step];
+  const range =
+    step === "year"
+      ? { min: yearMin, max: CREATOR_YEAR.max }
+      : RANGES[step];
   const stepIndex = steps.indexOf(step);
 
   const lockValue = useEffectEvent((count: number) => {
@@ -132,7 +137,7 @@ export function BirthdayBounce({
     if (current === "month") setMonth(count);
     else if (current === "day") setDay(count);
     else {
-      const nextYear = CREATOR_YEAR.min + count;
+      const nextYear = yearMin + count;
       setYear(nextYear);
       onYearChangeRef.current?.(nextYear);
     }
@@ -292,7 +297,7 @@ export function BirthdayBounce({
   const error =
     phase === "stopped" && !inRange
       ? step === "year"
-        ? `need ${range.min - CREATOR_YEAR.min}–${range.max - CREATOR_YEAR.min} bounces (year ${range.min}–${range.max})`
+        ? `need ${range.min - yearMin}–${range.max - yearMin} bounces (year ${range.min}–${range.max})`
         : step === "month"
           ? `need ${range.min}–${range.max} bounces for a month`
           : `need ${range.min}–${range.max} bounces for a day`
@@ -301,7 +306,7 @@ export function BirthdayBounce({
   const status =
     phase === "aiming"
       ? step === "year"
-        ? "pull back from the launcher. each bounce adds a year from 1900."
+        ? `pull back from the launcher. each bounce adds a year from ${yearMin}.`
         : `pull back from the launcher. wall hits count for ${step}.`
       : phase === "flying"
         ? "bouncing..."
@@ -309,8 +314,7 @@ export function BirthdayBounce({
           ? "settled. bounce again or continue."
           : "out of range. bounce again.";
 
-  const liveYear =
-    step === "year" ? CREATOR_YEAR.min + bounces : null;
+  const liveYear = step === "year" ? yearMin + bounces : null;
 
   return (
     <div className="w-full text-center">
@@ -468,7 +472,7 @@ export function BirthdayBounce({
       )}
       {yearOnly ? (
         <p className="mt-4 text-sm text-zinc-400">
-          year = 1900 + bounces ({range.min}–{range.max})
+          year = {yearMin} + bounces ({range.min}–{range.max})
         </p>
       ) : null}
     </div>

@@ -11,11 +11,6 @@ import {
 
 const MONTH_OPTIONS = rangeToWordOptions(1, 12, monthToWords);
 const DAY_OPTIONS = rangeToWordOptions(1, 31, dayToWords);
-const YEAR_OPTIONS = rangeToWordOptions(
-  CREATOR_YEAR.min,
-  CREATOR_YEAR.max,
-  yearToWords,
-);
 
 const selectClassName = [
   "w-full cursor-pointer appearance-none rounded-full border border-zinc-300",
@@ -57,12 +52,19 @@ function WordSelect({ id, label, value, options, onChange }: WordSelectProps) {
 
 export function BirthdayWords({
   yearOnly = false,
+  minYear,
   initialYear,
   onYearChange,
 }: YearPickerProps = {}) {
+  const yearMin = Math.max(0, minYear ?? CREATOR_YEAR.min);
+  const yearOptions = useMemo(
+    () => rangeToWordOptions(yearMin, CREATOR_YEAR.max, yearToWords),
+    [yearMin],
+  );
+
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
-  const [year, setYear] = useState(initialYear ?? CREATOR_YEAR.min);
+  const [year, setYear] = useState(initialYear ?? yearMin);
 
   useEffect(() => {
     if (yearOnly) onYearChange?.(year);
@@ -116,7 +118,7 @@ export function BirthdayWords({
           id="words-year"
           label="year"
           value={year}
-          options={YEAR_OPTIONS}
+          options={yearOptions}
           onChange={updateYear}
         />
       </div>

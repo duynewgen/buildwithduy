@@ -83,11 +83,12 @@ const pillButtonBase =
 
 export function BirthdaySliders({
   yearOnly = false,
+  minYear,
   initialYear,
   onYearChange,
 }: YearPickerProps = {}) {
   const steps = yearOnly ? (["year"] as Step[]) : ALL_STEPS;
-  const yearMin = yearOnly ? CREATOR_YEAR.min : 0;
+  const yearMin = yearOnly ? (minYear ?? CREATOR_YEAR.min) : 0;
   const yearMax = CREATOR_YEAR.max;
 
   const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");

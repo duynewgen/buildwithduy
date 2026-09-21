@@ -49,6 +49,17 @@ export function underHundredToWords(n: number): string {
   return ones === 0 ? TENS[tens] : `${TENS[tens]} ${ONES[ones]}`;
 }
 
+function underThousandToWords(n: number): string {
+  if (n < 1 || n > 999) {
+    throw new RangeError(`underThousandToWords expects 1–999, got ${n}`);
+  }
+  if (n < 100) return underHundredToWords(n);
+  const hundreds = Math.floor(n / 100);
+  const rest = n % 100;
+  const head = `${ONES[hundreds]} hundred`;
+  return rest === 0 ? head : `${head} ${underHundredToWords(rest)}`;
+}
+
 /** Month 1–12 → one … twelve */
 export function monthToWords(month: number): string {
   if (month < 1 || month > 12) {
@@ -66,13 +77,16 @@ export function dayToWords(day: number): string {
 }
 
 /**
- * Year 1900–2026 in spoken English, e.g.
- * nineteen ninety nine, two thousand sixteen, twenty twenty one
+ * Year 0–2026 in spoken English.
+ * 1900–2026 keep the usual birthday phrasing
+ * (nineteen ninety nine, twenty twenty one, …).
  */
 export function yearToWords(year: number): string {
-  if (year < 1900 || year > 2026) {
-    throw new RangeError(`yearToWords expects 1900–2026, got ${year}`);
+  if (!Number.isInteger(year) || year < 0 || year > 2026) {
+    throw new RangeError(`yearToWords expects 0–2026, got ${year}`);
   }
+
+  if (year === 0) return "zero";
 
   if (year === 1900) return "nineteen hundred";
   if (year > 1900 && year < 1910) {
@@ -89,9 +103,17 @@ export function yearToWords(year: number): string {
   if (year >= 2010 && year < 2020) {
     return `two thousand ${underHundredToWords(year - 2000)}`;
   }
+  if (year >= 2020 && year <= 2026) {
+    return `twenty ${underHundredToWords(year - 2000)}`;
+  }
 
-  // 2020–2026 → twenty twenty … twenty twenty six
-  return `twenty ${underHundredToWords(year - 2000)}`;
+  if (year < 1000) return underThousandToWords(year);
+
+  const thousands = Math.floor(year / 1000);
+  const rest = year % 1000;
+  const head =
+    thousands === 1 ? "one thousand" : `${ONES[thousands]} thousand`;
+  return rest === 0 ? head : `${head} ${underThousandToWords(rest)}`;
 }
 
 export function rangeToWordOptions(

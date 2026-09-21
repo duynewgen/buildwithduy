@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
-import type { YearPickerProps } from "@/lib/creator";
+import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 
 type Phase = "idle" | "spinning" | "stopping" | "done";
 type ReelKey = "month" | "day" | "year";
@@ -271,11 +271,14 @@ function LotteryColumn({
 
 export function BirthdayLottery({
   yearOnly = false,
+  minYear,
   onYearChange,
 }: YearPickerProps = {}) {
+  const yearMin = minYear ?? RANGES.year.min;
+  const yearMax = CREATOR_YEAR.max;
   const month = useLotteryReel(RANGES.month.min, RANGES.month.max);
   const day = useLotteryReel(RANGES.day.min, RANGES.day.max);
-  const year = useLotteryReel(RANGES.year.min, RANGES.year.max);
+  const year = useLotteryReel(yearMin, yearMax);
 
   useEffect(() => {
     if (yearOnly && year.phase === "done") {

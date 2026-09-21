@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import type { YearPickerProps } from "@/lib/creator";
+import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 
 type Step = "month" | "day" | "year";
 type Phase = "aiming" | "flying" | "landed";
@@ -116,15 +116,17 @@ const pillButtonBase =
 
 export function BirthdayAngryCake({
   yearOnly = false,
+  minYear,
   initialYear,
   onYearChange,
 }: YearPickerProps = {}) {
+  const yearMin = minYear ?? RANGES.year.min;
   const steps = yearOnly ? (["year"] as Step[]) : ALL_STEPS;
   const svgRef = useRef<SVGSVGElement>(null);
   const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
-  const [year, setYear] = useState(initialYear ?? 1900);
+  const [year, setYear] = useState(initialYear ?? yearMin);
   const [phase, setPhase] = useState<Phase>("aiming");
   const [cake, setCake] = useState({ x: ANCHOR.x, y: ANCHOR.y });
   const [dragging, setDragging] = useState(false);
@@ -296,7 +298,10 @@ export function BirthdayAngryCake({
   }
 
   const stepIndex = steps.indexOf(step);
-  const range = RANGES[step];
+  const range =
+    step === "year"
+      ? { min: yearMin, max: CREATOR_YEAR.max, step: 1 }
+      : RANGES[step];
   const value = step === "month" ? month : step === "day" ? day : year;
   const display =
     step === "year" ? formatYear(value) : formatMonthOrDay(value);

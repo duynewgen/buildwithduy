@@ -6,7 +6,6 @@ import { rangeToRomanOptions, toRoman } from "@/lib/roman";
 
 const MONTH_OPTIONS = rangeToRomanOptions(1, 12);
 const DAY_OPTIONS = rangeToRomanOptions(1, 31);
-const YEAR_OPTIONS = rangeToRomanOptions(CREATOR_YEAR.min, CREATOR_YEAR.max);
 
 const selectClassName = [
   "w-full cursor-pointer appearance-none rounded-full border border-zinc-300",
@@ -54,12 +53,22 @@ function RomanSelect({
 
 export function BirthdayRoman({
   yearOnly = false,
+  minYear,
   initialYear,
   onYearChange,
 }: YearPickerProps = {}) {
+  // roman numerals start at 1
+  const yearMin = Math.max(1, minYear ?? CREATOR_YEAR.min);
+  const yearOptions = useMemo(
+    () => rangeToRomanOptions(yearMin, CREATOR_YEAR.max),
+    [yearMin],
+  );
+
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
-  const [year, setYear] = useState(initialYear ?? CREATOR_YEAR.min);
+  const [year, setYear] = useState(
+    Math.max(yearMin, initialYear ?? yearMin),
+  );
 
   useEffect(() => {
     if (yearOnly) onYearChange?.(year);
@@ -113,7 +122,7 @@ export function BirthdayRoman({
           id="roman-year"
           label="year"
           value={year}
-          options={YEAR_OPTIONS}
+          options={yearOptions}
           onChange={updateYear}
         />
       </div>
