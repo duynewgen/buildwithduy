@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Rubik, Schoolbell } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${rubik.variable} ${schoolbell.variable}`}>
       <body className="min-h-screen bg-white font-sans text-zinc-900 antialiased">
         {children}
+        <Analytics />
       </body>
     </html>
   );
