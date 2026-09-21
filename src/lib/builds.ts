@@ -63,6 +63,11 @@ export const builds: Build[] = [
     title: "words",
     description: "pick your month, day, and year in words.",
   },
+  {
+    path: "birthday/roman",
+    title: "roman",
+    description: "pick your month, day, and year in roman numerals.",
+  },
 ];
 
 export function buildHref(build: Build) {
