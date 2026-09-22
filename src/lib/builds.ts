@@ -86,6 +86,11 @@ export const builds: Build[] = [
     title: "math",
     description: "pick your month, day, and year as cursed formulas.",
   },
+  {
+    path: "payment/apple-pay",
+    title: "apple pay",
+    description: "pay by catching falling apples. each apple is $1.",
+  },
 ];
 
 export function buildHref(build: Build) {

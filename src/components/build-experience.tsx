@@ -11,9 +11,15 @@ type BuildExperienceProps = {
   description: string;
   backHref?: string;
   contentClassName?: string;
-  YearPicker: ComponentType<YearPickerProps>;
+  /** birthday-style year picker; omit when creator uses the same UI as normal */
+  YearPicker?: ComponentType<YearPickerProps>;
   /** select-based builds: year dropdown sits in the form (no modal) */
   creatorInline?: boolean;
+  /**
+   * creator mode shows the same build as normal (no interest form),
+   * only hides title/description for filming.
+   */
+  creatorSame?: boolean;
   children: ReactNode;
 };
 
@@ -28,9 +34,27 @@ export function BuildExperience({
   contentClassName,
   YearPicker,
   creatorInline = false,
+  creatorSame = false,
   children,
 }: BuildExperienceProps) {
+  if (creator && creatorSame) {
+    return (
+      <BuildShell
+        title={title}
+        description={description}
+        backHref={backHref}
+        contentClassName={contentClassName}
+        filming
+      >
+        {children}
+      </BuildShell>
+    );
+  }
+
   if (creator) {
+    if (!YearPicker) {
+      throw new Error("YearPicker is required unless creatorSame is set");
+    }
     return (
       <CreatorMode
         backHref={backHref}

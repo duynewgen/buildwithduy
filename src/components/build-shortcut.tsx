@@ -8,6 +8,7 @@ import { BirthdayPlinkoDemo } from "@/components/birthday-plinko-demo";
 import { BirthdayRomanDemo } from "@/components/birthday-roman-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
 import { BirthdayWordsDemo } from "@/components/birthday-words-demo";
+import { PaymentApplePayDemo } from "@/components/payment-apple-pay-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -38,6 +39,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "birthday/math") {
     return <BirthdayMathDemo />;
+  }
+  if (path === "payment/apple-pay") {
+    return <PaymentApplePayDemo />;
   }
 
   return (

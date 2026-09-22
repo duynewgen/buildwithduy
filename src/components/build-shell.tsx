@@ -7,6 +7,8 @@ type BuildShellProps = {
   /** where the top-left back pill goes (usually the category page) */
   backHref?: string;
   contentClassName?: string;
+  /** hide title/description (creator filming) */
+  filming?: boolean;
   children: ReactNode;
 };
 
@@ -22,6 +24,7 @@ export function BuildShell({
   description,
   backHref = "/",
   contentClassName = "max-w-xl",
+  filming = false,
   children,
 }: BuildShellProps) {
   return (
@@ -30,16 +33,23 @@ export function BuildShell({
         <BackPill href={backHref} />
       </div>
 
-      <header className="relative z-10 mx-auto w-full max-w-6xl shrink-0 pt-12 text-center sm:pt-4">
-        <h1 className="font-display text-2xl tracking-tight text-zinc-900 sm:text-3xl">
-          {title}
-        </h1>
-        <p className="mx-auto mt-2 max-w-2xl px-2 text-sm text-zinc-600 sm:text-base sm:whitespace-nowrap">
-          {description}
-        </p>
-      </header>
+      {filming ? null : (
+        <header className="relative z-10 mx-auto w-full max-w-6xl shrink-0 pt-12 text-center sm:pt-4">
+          <h1 className="font-display text-2xl tracking-tight text-zinc-900 sm:text-3xl">
+            {title}
+          </h1>
+          <p className="mx-auto mt-2 max-w-2xl px-2 text-sm text-zinc-600 sm:text-base sm:whitespace-nowrap">
+            {description}
+          </p>
+        </header>
+      )}
 
-      <div className="relative z-0 flex min-h-0 flex-1 items-center justify-center py-8">
+      <div
+        className={[
+          "relative z-0 flex min-h-0 flex-1 items-center justify-center py-8",
+          filming ? "pt-14" : "",
+        ].join(" ")}
+      >
         <div className={`w-full ${contentClassName}`}>{children}</div>
       </div>
     </main>
