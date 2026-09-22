@@ -8,6 +8,7 @@
   --animate-click-mash: click-mash 0.9s steps(9, end) forwards;
   --animate-click-flash: click-flash 0.9s ease-out forwards;
   --animate-click-ripple: click-ripple 0.38s ease-out forwards;
+  --animate-plinko-drop: plinko-drop 1s ease-in-out forwards;
 }
 
 @layer base {
@@ -138,5 +139,29 @@
   100% {
     transform: translate(-50%, -50%) scale(1.6);
     opacity: 0;
+  }
+}
+
+@keyframes plinko-drop {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  18% {
+    transform: translate(calc(-50% - 0.55rem), 0.55rem);
+  }
+  36% {
+    transform: translate(calc(-50% + 0.65rem), 1.15rem);
+  }
+  54% {
+    transform: translate(calc(-50% - 0.4rem), 1.75rem);
+  }
+  72% {
+    transform: translate(calc(-50% + 0.35rem), 2.35rem);
+  }
+  88% {
+    transform: translate(calc(-50% + 0.1rem), 2.85rem);
+  }
+  100% {
+    transform: translate(-50%, 3.1rem);
   }
 }

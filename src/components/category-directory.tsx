@@ -166,7 +166,7 @@ export function CategoryBuilds({ category }: { category: string }) {
       aria-label={`${category} builds`}
     >
       {categoryBuilds.map((build) => (
-        <li key={build.path}>
+        <li key={build.path} className="h-full">
           <BuildShortcut build={build} />
         </li>
       ))}

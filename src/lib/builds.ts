@@ -76,6 +76,11 @@ export const builds: Build[] = [
     description:
       "mash the box for 5 seconds to set your month, day, and year.",
   },
+  {
+    path: "birthday/drop-the-cake",
+    title: "drop the cake",
+    description: "drop a cake through the pegs onto your month, day, and year.",
+  },
 ];
 
 export function buildHref(build: Build) {
