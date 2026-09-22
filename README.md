@@ -8,14 +8,10 @@ so, hope you'll find them enjoyable and entertaining :)
 
 ### a few things to keep in mind:
 
----
-
 1. these are just random and dumbass builds, so if you ask for the purposes behind these builds, tbh i have no idea either. i guess it's just a cool way to keep myself existential and less bored ._.
 2. i post these builds to my [instagram](https://www.instagram.com/duynewgen) and [tiktok](https://www.tiktok.com/@buildwithduy). support me by giving those two accounts a follow (and a tour maybe?)!
 
 ### technical stuff
-
----
 
 lmao those are just dumb builds, again. no mcp, no connector, no whatever.
 
