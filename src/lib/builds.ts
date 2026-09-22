@@ -22,12 +22,12 @@ export const categories: Category[] = [
     description: "cursed birthday selection builds.",
   },
   {
-    id: "password",
-    description: "cursed password builds.",
-  },
-  {
     id: "payment",
     description: "cursed payment builds.",
+  },
+  {
+    id: "password",
+    description: "cursed password builds.",
   },
   {
     id: "other",
