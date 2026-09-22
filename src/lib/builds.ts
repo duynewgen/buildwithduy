@@ -91,6 +91,11 @@ export const builds: Build[] = [
     title: "apple pay",
     description: "pay by catching falling apples. each apple is $1.",
   },
+  {
+    path: "payment/no-tip",
+    title: "no tip",
+    description: "skip the tip. unlock a subscription.",
+  },
 ];
 
 export function buildHref(build: Build) {
