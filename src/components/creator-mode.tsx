@@ -16,11 +16,14 @@ import {
 type CreatorModeProps = {
   backHref?: string;
   YearPicker: ComponentType<YearPickerProps>;
+  /** skip modal — year picker renders inline as the birthyear field */
+  inlinePicker?: boolean;
 };
 
 export function CreatorMode({
   backHref = "/",
   YearPicker,
+  inlinePicker = false,
 }: CreatorModeProps) {
   const [name, setName] = useState("build with duy");
   const [year, setYear] = useState<number | null>(null);
@@ -95,21 +98,32 @@ export function CreatorMode({
             <span className="text-sm tracking-wide text-zinc-500">
               when were you born
             </span>
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className={[
-                "flex w-full cursor-pointer items-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-left text-sm outline-none transition hover:border-zinc-900",
-                year === null ? "text-zinc-400" : "text-zinc-900",
-              ].join(" ")}
-            >
-              {year === null ? "add your birthyear" : String(year)}
-            </button>
+            {inlinePicker ? (
+              <YearPicker
+                key={minYear}
+                yearOnly
+                creatorField
+                minYear={minYear}
+                initialYear={year ?? undefined}
+                onYearChange={handleYearChange}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                className={[
+                  "flex w-full cursor-pointer items-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-left text-sm outline-none transition hover:border-zinc-900",
+                  year === null ? "text-zinc-400" : "text-zinc-900",
+                ].join(" ")}
+              >
+                {year === null ? "add your birthyear" : String(year)}
+              </button>
+            )}
           </div>
         </form>
       </div>
 
-      {modalOpen ? (
+      {!inlinePicker && modalOpen ? (
         <CreatorModal onClose={() => setModalOpen(false)}>
           <YearPicker
             key={minYear}

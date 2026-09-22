@@ -1,30 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { CREATOR_YEAR, creatorFieldSelectClassName, type YearPickerProps } from "@/lib/creator";
 import {
-  CREATOR_YEAR,
-  creatorFieldSelectClassName,
-  type YearPickerProps,
-} from "@/lib/creator";
-import {
-  dayToWords,
-  monthToWords,
-  rangeToWordOptions,
-  yearToWords,
-} from "@/lib/number-words";
+  advancedFormulaFor,
+  formulaFor,
+  formulaOptions,
+} from "@/lib/math-formulas";
 
-const MONTH_OPTIONS = rangeToWordOptions(1, 12, monthToWords);
-const DAY_OPTIONS = rangeToWordOptions(1, 31, dayToWords);
+const MONTH_OPTIONS = formulaOptions(1, 12);
+const DAY_OPTIONS = formulaOptions(1, 31);
 
 const selectClassName = [
   "w-full cursor-pointer appearance-none rounded-full border border-zinc-300",
-  "bg-white px-4 py-2.5 pr-10 text-left text-sm text-zinc-900",
+  "bg-white px-4 py-2.5 pr-10 text-left font-sans text-sm text-zinc-900",
   "transition hover:border-zinc-900 focus:border-zinc-900 focus:outline-none",
   "bg-[length:1rem] bg-[right_0.85rem_center] bg-no-repeat",
   "bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%2371717a%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')]",
 ].join(" ");
 
-type WordSelectProps = {
+type FormulaSelectProps = {
   id: string;
   label: string;
   value: number;
@@ -32,7 +27,13 @@ type WordSelectProps = {
   onChange: (value: number) => void;
 };
 
-function WordSelect({ id, label, value, options, onChange }: WordSelectProps) {
+function FormulaSelect({
+  id,
+  label,
+  value,
+  options,
+  onChange,
+}: FormulaSelectProps) {
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-2 text-left">
       <label htmlFor={id} className="text-sm tracking-wide text-zinc-500">
@@ -54,7 +55,15 @@ function WordSelect({ id, label, value, options, onChange }: WordSelectProps) {
   );
 }
 
-export function BirthdayWords({
+function formatMonthOrDay(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+function formatYear(value: number) {
+  return String(value).padStart(4, "0");
+}
+
+export function BirthdayMath({
   yearOnly = false,
   minYear,
   initialYear,
@@ -62,9 +71,15 @@ export function BirthdayWords({
   creatorField = false,
 }: YearPickerProps = {}) {
   const yearMin = Math.max(0, minYear ?? CREATOR_YEAR.min);
+  const advanced = yearOnly || creatorField;
   const yearOptions = useMemo(
-    () => rangeToWordOptions(yearMin, CREATOR_YEAR.max, yearToWords),
-    [yearMin],
+    () =>
+      formulaOptions(
+        yearMin,
+        CREATOR_YEAR.max,
+        advanced ? "advanced" : "normal",
+      ),
+    [yearMin, advanced],
   );
 
   const [month, setMonth] = useState(1);
@@ -111,34 +126,46 @@ export function BirthdayWords({
   }
 
   const safeYear = year ?? yearMin;
-  const summary = yearOnly
-    ? yearToWords(safeYear)
-    : `${monthToWords(month)} / ${dayToWords(day)} / ${yearToWords(safeYear)}`;
+  const formulaSummary = yearOnly
+    ? advancedFormulaFor(safeYear)
+    : `${formulaFor(month)} / ${formulaFor(day)} / ${formulaFor(safeYear)}`;
+
+  const numberSummary = yearOnly
+    ? formatYear(safeYear)
+    : `${formatMonthOrDay(month)} / ${formatMonthOrDay(day)} / ${formatYear(safeYear)}`;
 
   return (
     <div className="w-full text-center">
-      <p className="font-sans text-lg leading-snug text-zinc-900 sm:text-xl">
-        {summary}
+      <p className="font-sans text-3xl tabular-nums tracking-wide text-zinc-900 sm:text-4xl">
+        {numberSummary}
+      </p>
+      <p
+        className={[
+          "mx-auto mt-2 max-w-2xl font-sans leading-snug text-zinc-500",
+          yearOnly ? "text-base sm:text-lg" : "text-sm sm:text-base",
+        ].join(" ")}
+      >
+        {formulaSummary}
       </p>
 
       <div
         className={
           yearOnly
-            ? "mx-auto mt-8 max-w-md"
+            ? "mx-auto mt-6 max-w-md"
             : "mx-auto mt-8 flex max-w-3xl flex-col gap-4 sm:flex-row sm:items-start sm:gap-5"
         }
       >
         {yearOnly ? null : (
           <>
-            <WordSelect
-              id="words-month"
+            <FormulaSelect
+              id="math-month"
               label="month"
               value={month}
               options={MONTH_OPTIONS}
               onChange={setMonth}
             />
-            <WordSelect
-              id="words-day"
+            <FormulaSelect
+              id="math-day"
               label="day"
               value={day}
               options={DAY_OPTIONS}
@@ -146,8 +173,8 @@ export function BirthdayWords({
             />
           </>
         )}
-        <WordSelect
-          id="words-year"
+        <FormulaSelect
+          id="math-year"
           label="year"
           value={safeYear}
           options={yearOptions}

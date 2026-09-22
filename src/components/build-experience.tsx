@@ -12,6 +12,8 @@ type BuildExperienceProps = {
   backHref?: string;
   contentClassName?: string;
   YearPicker: ComponentType<YearPickerProps>;
+  /** select-based builds: year dropdown sits in the form (no modal) */
+  creatorInline?: boolean;
   children: ReactNode;
 };
 
@@ -25,10 +27,17 @@ export function BuildExperience({
   backHref = "/",
   contentClassName,
   YearPicker,
+  creatorInline = false,
   children,
 }: BuildExperienceProps) {
   if (creator) {
-    return <CreatorMode backHref={backHref} YearPicker={YearPicker} />;
+    return (
+      <CreatorMode
+        backHref={backHref}
+        YearPicker={YearPicker}
+        inlinePicker={creatorInline}
+      />
+    );
   }
 
   return (

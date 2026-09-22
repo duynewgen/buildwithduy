@@ -9,6 +9,7 @@
   --animate-click-flash: click-flash 0.9s ease-out forwards;
   --animate-click-ripple: click-ripple 0.38s ease-out forwards;
   --animate-plinko-drop: plinko-drop 1s ease-in-out forwards;
+  --animate-math-flip: math-flip 0.7s ease-in-out forwards;
 }
 
 @layer base {
@@ -163,5 +164,20 @@
   }
   100% {
     transform: translate(-50%, 3.1rem);
+  }
+}
+
+@keyframes math-flip {
+  0% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  40% {
+    transform: rotateX(90deg);
+    opacity: 0.35;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
   }
 }

@@ -26,6 +26,7 @@ export default async function BirthdayRomanPage({ searchParams }: PageProps) {
       description={build.description}
       backHref="/birthday"
       contentClassName="max-w-3xl"
+      creatorInline
       YearPicker={BirthdayRoman}
     >
       <BirthdayRoman />

@@ -3,6 +3,7 @@ import { BirthdayAngryCakeDemo } from "@/components/birthday-angry-cake-demo";
 import { BirthdayBounceDemo } from "@/components/birthday-bounce-demo";
 import { BirthdayClickDemo } from "@/components/birthday-click-demo";
 import { BirthdayLotteryDemo } from "@/components/birthday-lottery-demo";
+import { BirthdayMathDemo } from "@/components/birthday-math-demo";
 import { BirthdayPlinkoDemo } from "@/components/birthday-plinko-demo";
 import { BirthdayRomanDemo } from "@/components/birthday-roman-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
@@ -34,6 +35,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "birthday/drop-the-cake") {
     return <BirthdayPlinkoDemo />;
+  }
+  if (path === "birthday/math") {
+    return <BirthdayMathDemo />;
   }
 
   return (

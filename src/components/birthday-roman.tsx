@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
+import {
+  CREATOR_YEAR,
+  creatorFieldSelectClassName,
+  type YearPickerProps,
+} from "@/lib/creator";
 import { rangeToRomanOptions, toRoman } from "@/lib/roman";
 
 const MONTH_OPTIONS = rangeToRomanOptions(1, 12);
@@ -56,8 +60,8 @@ export function BirthdayRoman({
   minYear,
   initialYear,
   onYearChange,
+  creatorField = false,
 }: YearPickerProps = {}) {
-  // roman numerals start at 1
   const yearMin = Math.max(1, minYear ?? CREATOR_YEAR.min);
   const yearOptions = useMemo(
     () => rangeToRomanOptions(yearMin, CREATOR_YEAR.max),
@@ -66,26 +70,54 @@ export function BirthdayRoman({
 
   const [month, setMonth] = useState(1);
   const [day, setDay] = useState(1);
-  const [year, setYear] = useState(
-    Math.max(yearMin, initialYear ?? yearMin),
+  const [year, setYear] = useState<number | null>(
+    creatorField
+      ? (initialYear ?? null)
+      : Math.max(yearMin, initialYear ?? yearMin),
   );
 
   useEffect(() => {
-    if (yearOnly) onYearChange?.(year);
-  }, [yearOnly, year, onYearChange]);
-
-  const summary = useMemo(
-    () =>
-      yearOnly
-        ? toRoman(year)
-        : `${toRoman(month)} / ${toRoman(day)} / ${toRoman(year)}`,
-    [yearOnly, month, day, year],
-  );
+    if (yearOnly && !creatorField && year !== null) onYearChange?.(year);
+  }, [yearOnly, creatorField, year, onYearChange]);
 
   function updateYear(next: number) {
     setYear(next);
     onYearChange?.(next);
   }
+
+  if (creatorField) {
+    return (
+      <select
+        id="creator-birthyear"
+        aria-label="when were you born"
+        value={year ?? ""}
+        onChange={(event) => {
+          const next = Number(event.target.value);
+          if (!Number.isFinite(next)) return;
+          updateYear(next);
+        }}
+        className={[
+          creatorFieldSelectClassName,
+          "tabular-nums",
+          year === null ? "text-zinc-400" : "text-zinc-900",
+        ].join(" ")}
+      >
+        <option value="" disabled>
+          add your birthyear
+        </option>
+        {yearOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
+  const safeYear = year ?? yearMin;
+  const summary = yearOnly
+    ? toRoman(safeYear)
+    : `${toRoman(month)} / ${toRoman(day)} / ${toRoman(safeYear)}`;
 
   return (
     <div className="w-full text-center">
@@ -121,7 +153,7 @@ export function BirthdayRoman({
         <RomanSelect
           id="roman-year"
           label="year"
-          value={year}
+          value={safeYear}
           options={yearOptions}
           onChange={updateYear}
         />
