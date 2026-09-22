@@ -20,9 +20,6 @@ type FallingFruit = {
 const TOTAL_DOLLARS = 4;
 const OTHER_FRUITS = ["🍌", "🍊", "🍇", "🍐", "🍉", "🍋", "🍑", "🍒"];
 
-const pillButtonBase =
-  "inline-flex min-w-24 items-center justify-center rounded-full border px-4 py-2 text-sm transition";
-
 function randomFruit(id: number): FallingFruit {
   const isApple = Math.random() < 0.38;
   return {
@@ -61,13 +58,6 @@ export function PaymentApplePay() {
     }
     setFruits(starter);
     setPhase("catching");
-  });
-
-  const resetCheckout = useEffectEvent(() => {
-    setPhase("checkout");
-    setFruits([]);
-    setCaught(0);
-    caughtRef.current = 0;
   });
 
   useEffect(() => {
@@ -218,22 +208,12 @@ export function PaymentApplePay() {
     return (
       <div className="mx-auto w-full max-w-sm text-center">
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <p className="text-4xl" aria-hidden>
-            🍎
-          </p>
-          <p className="mt-3 font-sans text-3xl tabular-nums tracking-wide text-zinc-900">
+          <p className="font-sans text-3xl tabular-nums tracking-wide text-zinc-900">
             ${TOTAL_DOLLARS}.00
           </p>
           <p className="mt-2 text-sm text-zinc-600">
-            paid with apple pay. the orchard thanks you.
+            you&apos;re all set. thank you for your purchase.
           </p>
-          <button
-            type="button"
-            onClick={resetCheckout}
-            className={`${pillButtonBase} mt-6 border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800`}
-          >
-            pay again
-          </button>
         </div>
       </div>
     );
