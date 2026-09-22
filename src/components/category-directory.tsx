@@ -25,9 +25,8 @@ const socialLinks = [
   {
     href: siteConfig.instagram,
     label: "instagram",
-    hidden: true,
     external: true,
-  }, // temporarily hidden
+  },
   { href: siteConfig.x, label: "x", hidden: true, external: true }, // temporarily hidden
 ];
 
