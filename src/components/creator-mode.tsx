@@ -72,7 +72,7 @@ export function CreatorMode({
           className="w-full max-w-md space-y-6"
           onSubmit={(event) => event.preventDefault()}
         >
-          <h1 className="text-lg text-zinc-900">fill out this form</h1>
+          <h1 className="text-lg text-zinc-900">interest form</h1>
 
           <div className="space-y-2 text-left">
             <label
