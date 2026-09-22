@@ -157,20 +157,23 @@ export function CategoryBuilds({ category }: { category: string }) {
   }
 
   return (
-    <ul
-      className={[
-        "grid gap-[clamp(1rem,2.5vw,1.5rem)]",
-        "grid-cols-2",
-        "sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]",
-      ].join(" ")}
-      aria-label={`${category} builds`}
-    >
-      {categoryBuilds.map((build) => (
-        <li key={build.path} className="h-full">
-          <BuildShortcut build={build} />
-        </li>
-      ))}
-    </ul>
+    <div>
+      <ul
+        className={[
+          "grid gap-[clamp(1rem,2.5vw,1.5rem)]",
+          "grid-cols-2",
+          "sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]",
+        ].join(" ")}
+        aria-label={`${category} builds`}
+      >
+        {categoryBuilds.map((build) => (
+          <li key={build.path} className="h-full">
+            <BuildShortcut build={build} />
+          </li>
+        ))}
+      </ul>
+      <p className="mt-8 text-sm text-zinc-500">more coming soon</p>
+    </div>
   );
 }
 
