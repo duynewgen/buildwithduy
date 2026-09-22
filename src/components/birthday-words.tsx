@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { IconSelect } from "@/components/icon-select";
 import {
   CREATOR_YEAR,
   creatorFieldSelectClassName,
@@ -17,11 +18,8 @@ const MONTH_OPTIONS = rangeToWordOptions(1, 12, monthToWords);
 const DAY_OPTIONS = rangeToWordOptions(1, 31, dayToWords);
 
 const selectClassName = [
-  "w-full cursor-pointer appearance-none rounded-full border border-zinc-300",
-  "bg-white px-4 py-2.5 pr-10 text-left text-sm text-zinc-900",
-  "transition hover:border-zinc-900 focus:border-zinc-900 focus:outline-none",
-  "bg-[length:1rem] bg-[right_0.85rem_center] bg-no-repeat",
-  "bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%2371717a%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')]",
+  "rounded-full border border-zinc-300 bg-white px-4 py-2.5 text-left text-sm text-zinc-900",
+  "transition hover:border-zinc-900 focus:border-zinc-900",
 ].join(" ");
 
 type WordSelectProps = {
@@ -38,7 +36,7 @@ function WordSelect({ id, label, value, options, onChange }: WordSelectProps) {
       <label htmlFor={id} className="text-sm tracking-wide text-zinc-500">
         {label}
       </label>
-      <select
+      <IconSelect
         id={id}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
@@ -49,7 +47,7 @@ function WordSelect({ id, label, value, options, onChange }: WordSelectProps) {
             {option.label}
           </option>
         ))}
-      </select>
+      </IconSelect>
     </div>
   );
 }
@@ -84,7 +82,7 @@ export function BirthdayWords({
 
   if (creatorField) {
     return (
-      <select
+      <IconSelect
         id="creator-birthyear"
         aria-label="when were you born"
         value={year ?? ""}
@@ -106,7 +104,7 @@ export function BirthdayWords({
             {option.label}
           </option>
         ))}
-      </select>
+      </IconSelect>
     );
   }
 
