@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 type Phase = "checkout" | "paid" | "subscribed";
@@ -20,7 +21,7 @@ const PLANS = [
     name: "basic",
     price: "$4.99",
     period: "/mo",
-    blurb: "for people who tip sometimes.",
+    blurb: "allow no-tip up to 2 times a month.",
     highlight: false,
   },
   {
@@ -28,7 +29,7 @@ const PLANS = [
     name: "pro",
     price: "$12.99",
     period: "/mo",
-    blurb: "for people who meant to tip.",
+    blurb: "allow no-tip up to 4 times a month.",
     highlight: false,
   },
   {
@@ -36,7 +37,7 @@ const PLANS = [
     name: "pro max",
     price: "$29.99",
     period: "/mo",
-    blurb: "for people who clicked no tip.",
+    blurb: "no need to tip forever.",
     highlight: true,
   },
 ] as const;
@@ -49,6 +50,11 @@ export function PaymentNoTip() {
   const [phase, setPhase] = useState<Phase>("checkout");
   const [modalOpen, setModalOpen] = useState(false);
   const [paidTotal, setPaidTotal] = useState(SUBTOTAL);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!modalOpen) return;
@@ -175,95 +181,98 @@ export function PaymentNoTip() {
         </div>
       </div>
 
-      {modalOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8">
-          <button
-            type="button"
-            aria-label="close"
-            className="absolute inset-0 cursor-pointer bg-zinc-900/40"
-            onClick={() => setModalOpen(false)}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="no-tip-plans-title"
-            className="relative z-10 w-full max-w-md overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-xl"
-          >
-            <div className="flex items-start justify-between gap-3 border-b border-zinc-100 px-5 py-4">
-              <div>
-                <p
-                  id="no-tip-plans-title"
-                  className="text-sm tracking-wide text-zinc-900"
-                >
-                  choose a plan
-                </p>
-                <p className="mt-1 text-xs text-zinc-500">
-                  no tip selected. starting your subscription…
-                </p>
-              </div>
+      {mounted && modalOpen
+        ? createPortal(
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
               <button
                 type="button"
-                onClick={() => setModalOpen(false)}
-                className="cursor-pointer rounded-full p-1 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900"
                 aria-label="close"
+                className="absolute inset-0 cursor-pointer bg-zinc-900/40"
+                onClick={() => setModalOpen(false)}
+              />
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="no-tip-plans-title"
+                className="relative z-10 w-full max-w-md overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-xl"
               >
-                <X className="h-4 w-4" strokeWidth={2} />
-              </button>
-            </div>
-
-            <div className="space-y-2 p-4">
-              {PLANS.map((plan) => (
-                <button
-                  key={plan.id}
-                  type="button"
-                  onClick={choosePlan}
-                  className={[
-                    "flex w-full cursor-pointer items-start justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition",
-                    plan.highlight
-                      ? "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800"
-                      : "border-zinc-200 bg-white hover:border-zinc-900",
-                  ].join(" ")}
-                >
+                <div className="flex items-start justify-between gap-3 border-b border-zinc-100 px-5 py-4">
                   <div>
                     <p
-                      className={[
-                        "text-sm",
-                        plan.highlight ? "text-white" : "text-zinc-900",
-                      ].join(" ")}
+                      id="no-tip-plans-title"
+                      className="text-sm tracking-wide text-zinc-900"
                     >
-                      {plan.name}
+                      choose a plan
                     </p>
-                    <p
-                      className={[
-                        "mt-0.5 text-xs",
-                        plan.highlight ? "text-zinc-300" : "text-zinc-500",
-                      ].join(" ")}
-                    >
-                      {plan.blurb}
+                    <p className="mt-1 text-xs text-zinc-500">
+                      no tip selected. starting your subscription…
                     </p>
                   </div>
-                  <p
-                    className={[
-                      "shrink-0 font-sans text-sm tabular-nums",
-                      plan.highlight ? "text-white" : "text-zinc-900",
-                    ].join(" ")}
+                  <button
+                    type="button"
+                    onClick={() => setModalOpen(false)}
+                    className="cursor-pointer rounded-full p-1 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900"
+                    aria-label="close"
                   >
-                    {plan.price}
-                    <span
+                    <X className="h-4 w-4" strokeWidth={2} />
+                  </button>
+                </div>
+
+                <div className="space-y-2 p-4">
+                  {PLANS.map((plan) => (
+                    <button
+                      key={plan.id}
+                      type="button"
+                      onClick={choosePlan}
                       className={[
-                        "text-xs",
-                        plan.highlight ? "text-zinc-400" : "text-zinc-500",
+                        "flex w-full cursor-pointer items-start justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition",
+                        plan.highlight
+                          ? "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800"
+                          : "border-zinc-200 bg-white hover:border-zinc-900",
                       ].join(" ")}
                     >
-                      {plan.period}
-                    </span>
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
+                      <div>
+                        <p
+                          className={[
+                            "text-sm",
+                            plan.highlight ? "text-white" : "text-zinc-900",
+                          ].join(" ")}
+                        >
+                          {plan.name}
+                        </p>
+                        <p
+                          className={[
+                            "mt-0.5 text-xs",
+                            plan.highlight ? "text-zinc-300" : "text-zinc-500",
+                          ].join(" ")}
+                        >
+                          {plan.blurb}
+                        </p>
+                      </div>
+                      <p
+                        className={[
+                          "shrink-0 font-sans text-sm tabular-nums",
+                          plan.highlight ? "text-white" : "text-zinc-900",
+                        ].join(" ")}
+                      >
+                        {plan.price}
+                        <span
+                          className={[
+                            "text-xs",
+                            plan.highlight ? "text-zinc-400" : "text-zinc-500",
+                          ].join(" ")}
+                        >
+                          {plan.period}
+                        </span>
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }
