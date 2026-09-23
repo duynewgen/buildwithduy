@@ -146,6 +146,11 @@ export const builds: Build[] = [
     title: "snake",
     description: "verify with otp. eat six numbered balls.",
   },
+  {
+    path: "authentication/pay-to-prove",
+    title: "pay to prove",
+    description: "verify your account. subscribe to stay human.",
+  },
 ];
 
 export function buildHref(build: Build) {

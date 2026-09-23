@@ -20,6 +20,7 @@ import { AuthOtpDemo } from "@/components/auth-otp-demo";
 import { AuthOtpTwoDemo } from "@/components/auth-otp-two-demo";
 import { AuthFallingNumbersDemo } from "@/components/auth-falling-numbers-demo";
 import { AuthSnakeDemo } from "@/components/auth-snake-demo";
+import { AuthPayToProveDemo } from "@/components/auth-pay-to-prove-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -86,6 +87,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "authentication/snake") {
     return <AuthSnakeDemo />;
+  }
+  if (path === "authentication/pay-to-prove") {
+    return <AuthPayToProveDemo />;
   }
 
   return (
