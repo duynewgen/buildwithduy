@@ -9,6 +9,7 @@ import { BirthdayRomanDemo } from "@/components/birthday-roman-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
 import { BirthdayWordsDemo } from "@/components/birthday-words-demo";
 import { PaymentApplePayDemo } from "@/components/payment-apple-pay-demo";
+import { PaymentCancelDemo } from "@/components/payment-cancel-demo";
 import { PaymentCardDemo } from "@/components/payment-card-demo";
 import { PaymentNoTipDemo } from "@/components/payment-no-tip-demo";
 import type { Build } from "@/lib/builds";
@@ -50,6 +51,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "payment/card") {
     return <PaymentCardDemo />;
+  }
+  if (path === "payment/cancel") {
+    return <PaymentCancelDemo />;
   }
 
   return (

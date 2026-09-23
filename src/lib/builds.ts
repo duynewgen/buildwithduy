@@ -101,6 +101,11 @@ export const builds: Build[] = [
     title: "card",
     description: "pay with card. flip poker cards until you hit the total.",
   },
+  {
+    path: "payment/cancel",
+    title: "cancel",
+    description: "cancel your subscription. pay to leave.",
+  },
 ];
 
 export function buildHref(build: Build) {
