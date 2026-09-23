@@ -66,13 +66,13 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
   const allCategories = buildCategories();
 
   return (
-    <main className="flex min-h-dvh flex-col xl:grid xl:grid-cols-[clamp(13rem,18vw,17rem)_minmax(0,1fr)]">
+    <main className="flex h-dvh flex-col overflow-hidden xl:grid xl:grid-cols-[clamp(13rem,18vw,17rem)_minmax(0,1fr)]">
       <aside
         className={[
-          "relative flex flex-col border-zinc-200",
+          "relative flex shrink-0 flex-col border-zinc-200",
           "px-[clamp(1.25rem,4.5vw,3.5rem)] pt-[clamp(1.5rem,4vh,3.5rem)]",
           "max-xl:gap-6 max-xl:border-b max-xl:pb-6",
-          "xl:sticky xl:top-0 xl:h-dvh xl:gap-0 xl:border-r xl:pb-0",
+          "xl:h-full xl:gap-0 xl:overflow-hidden xl:border-r xl:pb-0",
         ].join(" ")}
       >
         <div className="w-[clamp(4.25rem,18vw,6rem)] shrink-0">
@@ -84,7 +84,7 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
             "flex snap-x snap-mandatory gap-5 overflow-x-auto",
             "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
             "max-xl:-mx-[clamp(1.25rem,4.5vw,3.5rem)] max-xl:px-[clamp(1.25rem,4.5vw,3.5rem)]",
-            "xl:mt-8 xl:flex-col xl:gap-2 xl:overflow-visible xl:px-0",
+            "xl:mt-8 xl:min-h-0 xl:flex-1 xl:flex-col xl:gap-2 xl:overflow-y-auto xl:px-0",
           ].join(" ")}
           aria-label="categories"
         >
@@ -110,7 +110,7 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
 
         <div
           className={[
-            "mt-auto hidden xl:block",
+            "mt-auto hidden shrink-0 xl:block",
             "-mx-[clamp(1.25rem,4.5vw,3.5rem)]",
             "border-t border-zinc-200",
             "px-[clamp(1.25rem,4.5vw,3.5rem)]",
@@ -121,28 +121,30 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
         </div>
       </aside>
 
-      <section
-        className={[
-          "flex-1",
-          "px-[clamp(1.25rem,4.5vw,4rem)]",
-          "py-[clamp(1.75rem,5vh,4rem)]",
-          "xl:min-w-0",
-        ].join(" ")}
-      >
-        {children}
-      </section>
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <section
+          className={[
+            "flex-1",
+            "px-[clamp(1.25rem,4.5vw,4rem)]",
+            "py-[clamp(1.75rem,5vh,4rem)]",
+            "xl:min-w-0",
+          ].join(" ")}
+        >
+          {children}
+        </section>
 
-      <footer
-        className={[
-          "mt-auto px-[clamp(1.25rem,4.5vw,4rem)] pb-[clamp(1.5rem,4vh,3rem)] pt-2",
-          "xl:hidden",
-        ].join(" ")}
-      >
-        <SocialLinks
-          className="flex flex-wrap justify-end gap-x-3 gap-y-1"
-          linkClass="font-display text-base tracking-tight text-zinc-600 underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] duration-300 ease-out hover:text-zinc-900 hover:decoration-current"
-        />
-      </footer>
+        <footer
+          className={[
+            "mt-auto px-[clamp(1.25rem,4.5vw,4rem)] pb-[clamp(1.5rem,4vh,3rem)] pt-2",
+            "xl:hidden",
+          ].join(" ")}
+        >
+          <SocialLinks
+            className="flex flex-wrap justify-end gap-x-3 gap-y-1"
+            linkClass="font-display text-base tracking-tight text-zinc-600 underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] duration-300 ease-out hover:text-zinc-900 hover:decoration-current"
+          />
+        </footer>
+      </div>
     </main>
   );
 }
