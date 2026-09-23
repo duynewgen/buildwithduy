@@ -18,6 +18,7 @@ import { PasswordTwoFactorDemo } from "@/components/password-two-factor-demo";
 import { PasswordTwoFactorTwoDemo } from "@/components/password-two-factor-two-demo";
 import { AuthOtpDemo } from "@/components/auth-otp-demo";
 import { AuthOtpTwoDemo } from "@/components/auth-otp-two-demo";
+import { AuthFallingNumbersDemo } from "@/components/auth-falling-numbers-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -73,11 +74,14 @@ function BuildDemo({ path }: { path: string }) {
   if (path === "authentication/two-factor-2") {
     return <PasswordTwoFactorTwoDemo />;
   }
-  if (path === "authentication/otp") {
+  if (path === "authentication/otp-hint") {
     return <AuthOtpDemo />;
   }
-  if (path === "authentication/otp-2") {
+  if (path === "authentication/rotary-phone") {
     return <AuthOtpTwoDemo />;
+  }
+  if (path === "authentication/falling-numbers") {
+    return <AuthFallingNumbersDemo />;
   }
 
   return (

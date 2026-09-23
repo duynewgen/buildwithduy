@@ -1,22 +1,22 @@
 import { pageMetadata } from "@/lib/page-metadata";
-import { AuthOtpTwo } from "@/components/auth-otp-two";
+import { AuthFallingNumbers } from "@/components/auth-falling-numbers";
 import { BuildExperience } from "@/components/build-experience";
 import { getBuildByPath } from "@/lib/builds";
 import { isCreatorMode } from "@/lib/creator";
 
-const build = getBuildByPath("authentication/otp-2")!;
+const build = getBuildByPath("authentication/falling-numbers")!;
 
 export const metadata = pageMetadata({
   title: build.title,
   description: build.description,
-  path: "/authentication/otp-2",
+  path: "/authentication/falling-numbers",
 });
 
 type PageProps = {
   searchParams: Promise<{ creator?: string | string[] }>;
 };
 
-export default async function AuthenticationOtpTwoPage({
+export default async function AuthenticationFallingNumbersPage({
   searchParams,
 }: PageProps) {
   const params = await searchParams;
@@ -30,7 +30,7 @@ export default async function AuthenticationOtpTwoPage({
       backHref="/authentication"
       contentClassName="max-w-lg"
     >
-      <AuthOtpTwo />
+      <AuthFallingNumbers />
     </BuildExperience>
   );
 }

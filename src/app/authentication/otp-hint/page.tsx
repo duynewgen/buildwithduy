@@ -4,19 +4,21 @@ import { BuildExperience } from "@/components/build-experience";
 import { getBuildByPath } from "@/lib/builds";
 import { isCreatorMode } from "@/lib/creator";
 
-const build = getBuildByPath("authentication/otp")!;
+const build = getBuildByPath("authentication/otp-hint")!;
 
 export const metadata = pageMetadata({
   title: build.title,
   description: build.description,
-  path: "/authentication/otp",
+  path: "/authentication/otp-hint",
 });
 
 type PageProps = {
   searchParams: Promise<{ creator?: string | string[] }>;
 };
 
-export default async function AuthenticationOtpPage({ searchParams }: PageProps) {
+export default async function AuthenticationOtpHintPage({
+  searchParams,
+}: PageProps) {
   const params = await searchParams;
 
   return (

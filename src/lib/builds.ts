@@ -127,14 +127,19 @@ export const builds: Build[] = [
     description: "sign in. verify with conversion factors.",
   },
   {
-    path: "authentication/otp",
-    title: "otp",
-    description: "verify with otp. check your sms for the opt.",
+    path: "authentication/otp-hint",
+    title: "otp hint",
+    description: "verify with otp. the hint is right there.",
   },
   {
-    path: "authentication/otp-2",
-    title: "otp, part 2",
+    path: "authentication/rotary-phone",
+    title: "rotary phone",
     description: "verify with otp. dial any six digits.",
+  },
+  {
+    path: "authentication/falling-numbers",
+    title: "falling numbers",
+    description: "verify with otp. catch any six digits.",
   },
 ];
 
