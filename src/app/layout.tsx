@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Rubik, Schoolbell } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SiteJsonLd } from "@/components/site-json-ld";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -28,6 +29,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png", sizes: "512x512" }],
+    apple: [{ url: "/icon.png", type: "image/png", sizes: "512x512" }],
+  },
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,
@@ -35,11 +40,20 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: siteConfig.logo.src,
+        width: siteConfig.logo.width,
+        height: siteConfig.logo.height,
+        alt: siteConfig.logo.alt,
+      },
+    ],
   },
   twitter: {
     card: "summary",
     title: siteConfig.name,
     description: siteConfig.description,
+    images: [siteConfig.logo.src],
   },
   robots: {
     index: true,
@@ -51,6 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${rubik.variable} ${schoolbell.variable}`}>
       <body className="min-h-screen bg-white font-sans text-zinc-900 antialiased">
+        <SiteJsonLd />
         {children}
         <Analytics />
       </body>

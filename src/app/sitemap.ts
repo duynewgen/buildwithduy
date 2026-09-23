@@ -26,10 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: `${siteConfig.url}/readme`,
+      url: siteConfig.url,
       lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
+      changeFrequency: "weekly" as const,
+      priority: 1,
     },
     ...categoryEntries,
     ...buildEntries,

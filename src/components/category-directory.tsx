@@ -18,7 +18,6 @@ const linkClassName =
   "font-display text-lg tracking-tight text-zinc-600 underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] duration-300 ease-out hover:text-zinc-900 hover:decoration-current";
 
 const socialLinks = [
-  { href: "/readme", label: "readme.md", external: false },
   { href: siteConfig.about, label: "about", hidden: true, external: true }, // temporarily hidden
   { href: siteConfig.github, label: "github", external: true },
   { href: siteConfig.tiktok, label: "tiktok", external: true },
