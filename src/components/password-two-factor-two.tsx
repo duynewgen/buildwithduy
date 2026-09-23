@@ -8,29 +8,40 @@ type Phase = "login" | "checked-in";
 
 const USERNAME = "buildwithduy";
 const PASSWORD = "hunter2";
-const POLYNOMIAL = "x² + 12x + 20";
 const MODAL_MS = 220;
 
-const ACCEPTED = new Set(["(x+2)(x+10)", "(x+10)(x+2)"]);
+const MILE_KM = 1.609344;
+const TWO_LB_KG = 0.90718474;
 
-function normalizeAnswer(raw: string) {
-  return raw
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/·/g, "")
-    .replace(/\*/g, "")
-    .replace(/×/g, "");
+function parseNumber(raw: string): number | null {
+  const match = raw.replace(/,/g, "").match(/-?\d*\.?\d+(?:e[+-]?\d+)?/i);
+  if (!match) return null;
+  const n = Number(match[0]);
+  return Number.isFinite(n) ? n : null;
 }
 
-function isCorrectFactorization(raw: string) {
-  return ACCEPTED.has(normalizeAnswer(raw));
+function near(value: number, expected: number, tol: number) {
+  return Math.abs(value - expected) <= tol;
 }
 
-export function PasswordTwoFactor() {
+function isCorrectMile(raw: string) {
+  const n = parseNumber(raw);
+  if (n === null) return false;
+  return near(n, MILE_KM, 0.02) || near(n, 1.6, 0.005);
+}
+
+function isCorrectLbs(raw: string) {
+  const n = parseNumber(raw);
+  if (n === null) return false;
+  return near(n, TWO_LB_KG, 0.02) || near(n, 0.9, 0.015);
+}
+
+export function PasswordTwoFactorTwo() {
   const [phase, setPhase] = useState<Phase>("login");
   const [modalMounted, setModalMounted] = useState(false);
   const [modalActive, setModalActive] = useState(false);
-  const [answer, setAnswer] = useState("");
+  const [mileAnswer, setMileAnswer] = useState("");
+  const [lbsAnswer, setLbsAnswer] = useState("");
   const [error, setError] = useState(false);
   const [mounted, setMounted] = useState(false);
   const closeTimerRef = useRef(0);
@@ -63,7 +74,8 @@ export function PasswordTwoFactor() {
   function openModal() {
     window.clearTimeout(closeTimerRef.current);
     window.clearTimeout(finishTimerRef.current);
-    setAnswer("");
+    setMileAnswer("");
+    setLbsAnswer("");
     setError(false);
     setModalMounted(true);
     requestAnimationFrame(() => {
@@ -76,7 +88,8 @@ export function PasswordTwoFactor() {
     window.clearTimeout(closeTimerRef.current);
     closeTimerRef.current = window.setTimeout(() => {
       setModalMounted(false);
-      setAnswer("");
+      setMileAnswer("");
+      setLbsAnswer("");
       setError(false);
       after?.();
     }, MODAL_MS);
@@ -84,7 +97,7 @@ export function PasswordTwoFactor() {
 
   function submitFactor(event: FormEvent) {
     event.preventDefault();
-    if (!isCorrectFactorization(answer)) {
+    if (!isCorrectMile(mileAnswer) || !isCorrectLbs(lbsAnswer)) {
       setError(true);
       return;
     }
@@ -157,7 +170,7 @@ export function PasswordTwoFactor() {
               <div
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby="two-factor-title"
+                aria-labelledby="two-factor-two-title"
                 className={[
                   "relative z-10 w-full max-w-sm overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-xl transition duration-200 ease-out",
                   modalActive
@@ -169,7 +182,7 @@ export function PasswordTwoFactor() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p
-                        id="two-factor-title"
+                        id="two-factor-two-title"
                         className="text-sm tracking-wide text-zinc-900"
                       >
                         two-factor authentication
@@ -185,34 +198,58 @@ export function PasswordTwoFactor() {
                     </button>
                   </div>
 
-                  <p className="mt-6 text-center font-sans text-xl tabular-nums tracking-tight text-zinc-900 sm:text-2xl">
-                    {POLYNOMIAL}
-                  </p>
+                  <div className="mt-5 space-y-4">
+                    <label className="block">
+                      <span className="font-sans text-sm tabular-nums text-zinc-900">
+                        1. 1 mile = ? km
+                      </span>
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        inputMode="decimal"
+                        value={mileAnswer}
+                        onChange={(event) => {
+                          setMileAnswer(event.target.value);
+                          if (error) setError(false);
+                        }}
+                        autoComplete="off"
+                        spellCheck={false}
+                        placeholder="km"
+                        className={[
+                          "mt-1.5 w-full rounded-xl border bg-zinc-50 px-3 py-2.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition placeholder:text-zinc-400",
+                          error
+                            ? "border-rose-300 focus:border-rose-400"
+                            : "border-zinc-200 focus:border-zinc-400",
+                        ].join(" ")}
+                        aria-invalid={error}
+                      />
+                    </label>
 
-                  <label className="mt-5 block">
-                    <span className="text-sm text-zinc-500">
-                      your factorization
-                    </span>
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={answer}
-                      onChange={(event) => {
-                        setAnswer(event.target.value);
-                        if (error) setError(false);
-                      }}
-                      autoComplete="off"
-                      spellCheck={false}
-                      placeholder="(x+?)(x+?)"
-                      className={[
-                        "mt-1.5 w-full rounded-xl border bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400",
-                        error
-                          ? "border-rose-300 focus:border-rose-400"
-                          : "border-zinc-200 focus:border-zinc-400",
-                      ].join(" ")}
-                      aria-invalid={error}
-                    />
-                  </label>
+                    <label className="block">
+                      <span className="font-sans text-sm tabular-nums text-zinc-900">
+                        2. 2 lbs = ? kg
+                      </span>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={lbsAnswer}
+                        onChange={(event) => {
+                          setLbsAnswer(event.target.value);
+                          if (error) setError(false);
+                        }}
+                        autoComplete="off"
+                        spellCheck={false}
+                        placeholder="kg"
+                        className={[
+                          "mt-1.5 w-full rounded-xl border bg-zinc-50 px-3 py-2.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition placeholder:text-zinc-400",
+                          error
+                            ? "border-rose-300 focus:border-rose-400"
+                            : "border-zinc-200 focus:border-zinc-400",
+                        ].join(" ")}
+                        aria-invalid={error}
+                      />
+                    </label>
+                  </div>
 
                   {error ? (
                     <p className="mt-2 text-sm text-rose-600">

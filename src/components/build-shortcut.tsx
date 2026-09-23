@@ -15,6 +15,7 @@ import { PaymentCardDemo } from "@/components/payment-card-demo";
 import { PaymentNoTipDemo } from "@/components/payment-no-tip-demo";
 import { PaymentSplitDemo } from "@/components/payment-split-demo";
 import { PasswordTwoFactorDemo } from "@/components/password-two-factor-demo";
+import { PasswordTwoFactorTwoDemo } from "@/components/password-two-factor-two-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -66,6 +67,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "password/two-factor") {
     return <PasswordTwoFactorDemo />;
+  }
+  if (path === "password/two-factor-2") {
+    return <PasswordTwoFactorTwoDemo />;
   }
 
   return (

@@ -121,6 +121,11 @@ export const builds: Build[] = [
     title: "two-factor",
     description: "sign in. verify with two factors.",
   },
+  {
+    path: "password/two-factor-2",
+    title: "two-factor, part 2",
+    description: "sign in. verify with conversion factors.",
+  },
 ];
 
 export function buildHref(build: Build) {
