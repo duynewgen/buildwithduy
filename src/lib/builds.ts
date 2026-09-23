@@ -131,6 +131,11 @@ export const builds: Build[] = [
     title: "otp",
     description: "verify with otp. check your sms for the opt.",
   },
+  {
+    path: "authentication/otp-2",
+    title: "otp, part 2",
+    description: "verify with otp. dial any six digits.",
+  },
 ];
 
 export function buildHref(build: Build) {
