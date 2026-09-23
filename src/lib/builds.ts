@@ -106,6 +106,11 @@ export const builds: Build[] = [
     title: "cancel",
     description: "cancel your subscription. pay to leave.",
   },
+  {
+    path: "payment/cancel-2",
+    title: "cancel, part 2",
+    description: "cancel again. survive the confirmation gauntlet.",
+  },
 ];
 
 export function buildHref(build: Build) {
