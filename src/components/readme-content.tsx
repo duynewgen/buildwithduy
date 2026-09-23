@@ -18,7 +18,7 @@ export function ReadmeContent() {
               </h1>
             ),
             h2: ({ children }) => (
-              <h2 className="pt-4 font-display text-2xl tracking-tight text-zinc-900">
+              <h2 className="pt-4 font-display text-xl tracking-tight text-zinc-900">
                 {children}
               </h2>
             ),
@@ -28,7 +28,7 @@ export function ReadmeContent() {
               </h3>
             ),
             p: ({ children }) => (
-              <p className="text-base leading-relaxed text-zinc-700">
+              <p className="text-sm leading-relaxed text-zinc-600 sm:text-md">
                 {children}
               </p>
             ),
@@ -36,12 +36,12 @@ export function ReadmeContent() {
               <strong className="font-medium text-zinc-900">{children}</strong>
             ),
             ol: ({ children }) => (
-              <ol className="list-decimal space-y-3 pl-5 text-base leading-relaxed text-zinc-700">
+              <ol className="list-decimal space-y-3 pl-5 text-sm leading-relaxed text-zinc-600 sm:text-md">
                 {children}
               </ol>
             ),
             ul: ({ children }) => (
-              <ul className="list-disc space-y-3 pl-5 text-base leading-relaxed text-zinc-700">
+              <ul className="list-disc space-y-3 pl-5 text-sm leading-relaxed text-zinc-600 sm:text-md">
                 {children}
               </ul>
             ),
