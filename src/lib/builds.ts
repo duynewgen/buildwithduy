@@ -96,6 +96,11 @@ export const builds: Build[] = [
     title: "no tip",
     description: "skip the tip. unlock a subscription.",
   },
+  {
+    path: "payment/card",
+    title: "card",
+    description: "pay with card. flip poker cards until you hit the total.",
+  },
 ];
 
 export function buildHref(build: Build) {
