@@ -13,6 +13,7 @@ import { PaymentCancelDemo } from "@/components/payment-cancel-demo";
 import { PaymentCancelTwoDemo } from "@/components/payment-cancel-two-demo";
 import { PaymentCardDemo } from "@/components/payment-card-demo";
 import { PaymentNoTipDemo } from "@/components/payment-no-tip-demo";
+import { PaymentSplitDemo } from "@/components/payment-split-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -58,6 +59,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "payment/cancel-2") {
     return <PaymentCancelTwoDemo />;
+  }
+  if (path === "payment/split") {
+    return <PaymentSplitDemo />;
   }
 
   return (

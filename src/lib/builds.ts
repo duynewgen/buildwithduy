@@ -111,6 +111,11 @@ export const builds: Build[] = [
     title: "cancel, part 2",
     description: "cancel again. survive the confirmation gauntlet.",
   },
+  {
+    path: "payment/split",
+    title: "split",
+    description: "split the check. literally.",
+  },
 ];
 
 export function buildHref(build: Build) {

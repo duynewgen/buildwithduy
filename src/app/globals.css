@@ -207,3 +207,15 @@
     opacity: 1;
   }
 }
+
+@keyframes split-half-out {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translate(var(--split-x), var(--split-y)) scale(0.92);
+  }
+}
