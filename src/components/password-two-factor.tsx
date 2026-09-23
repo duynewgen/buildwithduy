@@ -174,9 +174,6 @@ export function PasswordTwoFactor() {
                       >
                         two-factor authentication
                       </p>
-                      <p className="mt-1 text-xs text-zinc-500">
-                        factor the polynomial. both factors, please.
-                      </p>
                     </div>
                     <button
                       type="button"
