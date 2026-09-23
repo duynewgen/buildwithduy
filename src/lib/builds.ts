@@ -141,6 +141,11 @@ export const builds: Build[] = [
     title: "falling numbers",
     description: "verify with otp. catch any six digits.",
   },
+  {
+    path: "authentication/snake",
+    title: "snake",
+    description: "verify with otp. eat six numbered balls.",
+  },
 ];
 
 export function buildHref(build: Build) {

@@ -19,6 +19,7 @@ import { PasswordTwoFactorTwoDemo } from "@/components/password-two-factor-two-d
 import { AuthOtpDemo } from "@/components/auth-otp-demo";
 import { AuthOtpTwoDemo } from "@/components/auth-otp-two-demo";
 import { AuthFallingNumbersDemo } from "@/components/auth-falling-numbers-demo";
+import { AuthSnakeDemo } from "@/components/auth-snake-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -82,6 +83,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "authentication/falling-numbers") {
     return <AuthFallingNumbersDemo />;
+  }
+  if (path === "authentication/snake") {
+    return <AuthSnakeDemo />;
   }
 
   return (
