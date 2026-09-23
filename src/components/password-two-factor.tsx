@@ -134,7 +134,7 @@ export function PasswordTwoFactor() {
             <button
               type="button"
               onClick={openModal}
-              className="mt-5 w-full cursor-pointer rounded-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600 transition hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-900"
+              className="mt-5 w-full cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
             >
               continue with two-factor authentication
             </button>

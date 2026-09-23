@@ -1,22 +1,22 @@
 import { pageMetadata } from "@/lib/page-metadata";
-import { PasswordTwoFactorTwo } from "@/components/password-two-factor-two";
+import { PasswordTwoFactor } from "@/components/password-two-factor";
 import { BuildExperience } from "@/components/build-experience";
 import { getBuildByPath } from "@/lib/builds";
 import { isCreatorMode } from "@/lib/creator";
 
-const build = getBuildByPath("password/two-factor-2")!;
+const build = getBuildByPath("authentication/two-factor")!;
 
 export const metadata = pageMetadata({
   title: build.title,
   description: build.description,
-  path: "/password/two-factor-2",
+  path: "/authentication/two-factor",
 });
 
 type PageProps = {
   searchParams: Promise<{ creator?: string | string[] }>;
 };
 
-export default async function PasswordTwoFactorTwoPage({
+export default async function AuthenticationTwoFactorPage({
   searchParams,
 }: PageProps) {
   const params = await searchParams;
@@ -27,10 +27,10 @@ export default async function PasswordTwoFactorTwoPage({
       creatorSame
       title={build.title}
       description={build.description}
-      backHref="/password"
+      backHref="/authentication"
       contentClassName="max-w-lg"
     >
-      <PasswordTwoFactorTwo />
+      <PasswordTwoFactor />
     </BuildExperience>
   );
 }

@@ -16,6 +16,7 @@ import { PaymentNoTipDemo } from "@/components/payment-no-tip-demo";
 import { PaymentSplitDemo } from "@/components/payment-split-demo";
 import { PasswordTwoFactorDemo } from "@/components/password-two-factor-demo";
 import { PasswordTwoFactorTwoDemo } from "@/components/password-two-factor-two-demo";
+import { AuthOtpDemo } from "@/components/auth-otp-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -65,11 +66,14 @@ function BuildDemo({ path }: { path: string }) {
   if (path === "payment/split") {
     return <PaymentSplitDemo />;
   }
-  if (path === "password/two-factor") {
+  if (path === "authentication/two-factor") {
     return <PasswordTwoFactorDemo />;
   }
-  if (path === "password/two-factor-2") {
+  if (path === "authentication/two-factor-2") {
     return <PasswordTwoFactorTwoDemo />;
+  }
+  if (path === "authentication/otp") {
+    return <AuthOtpDemo />;
   }
 
   return (

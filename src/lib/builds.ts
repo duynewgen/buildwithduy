@@ -26,8 +26,8 @@ export const categories: Category[] = [
     description: "cursed payment builds.",
   },
   {
-    id: "password",
-    description: "cursed password builds.",
+    id: "authentication",
+    description: "cursed authentication builds.",
   },
   {
     id: "other",
@@ -117,14 +117,19 @@ export const builds: Build[] = [
     description: "split the check. literally.",
   },
   {
-    path: "password/two-factor",
+    path: "authentication/two-factor",
     title: "two-factor",
     description: "sign in. verify with two factors.",
   },
   {
-    path: "password/two-factor-2",
+    path: "authentication/two-factor-2",
     title: "two-factor, part 2",
     description: "sign in. verify with conversion factors.",
+  },
+  {
+    path: "authentication/otp",
+    title: "otp",
+    description: "verify with otp. check your sms for the opt.",
   },
 ];
 

@@ -1,52 +1,39 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+  type ClipboardEvent,
+} from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 type Phase = "login" | "checked-in";
 
-const USERNAME = "buildwithduy";
-const PASSWORD = "hunter2";
+const PHONE = "0123456789";
 const MODAL_MS = 220;
+const OTP_LENGTH = 6;
 
-const MILE_KM = 1.609344;
-const TWO_LB_KG = 0.90718474;
-
-function parseNumber(raw: string): number | null {
-  const match = raw.replace(/,/g, "").match(/-?\d*\.?\d+(?:e[+-]?\d+)?/i);
-  if (!match) return null;
-  const n = Number(match[0]);
-  return Number.isFinite(n) ? n : null;
+function randomOtp() {
+  return String(Math.floor(100000 + Math.random() * 900000));
 }
 
-function near(value: number, expected: number, tol: number) {
-  return Math.abs(value - expected) <= tol;
-}
-
-function isCorrectMile(raw: string) {
-  const n = parseNumber(raw);
-  if (n === null) return false;
-  return near(n, MILE_KM, 0.02) || near(n, 1.6, 0.005);
-}
-
-function isCorrectLbs(raw: string) {
-  const n = parseNumber(raw);
-  if (n === null) return false;
-  return near(n, TWO_LB_KG, 0.02) || near(n, 0.9, 0.015);
-}
-
-export function PasswordTwoFactorTwo() {
+export function AuthOtp() {
   const [phase, setPhase] = useState<Phase>("login");
   const [modalMounted, setModalMounted] = useState(false);
   const [modalActive, setModalActive] = useState(false);
-  const [mileAnswer, setMileAnswer] = useState("");
-  const [lbsAnswer, setLbsAnswer] = useState("");
+  const [code, setCode] = useState("");
+  const [digits, setDigits] = useState<string[]>(() =>
+    Array.from({ length: OTP_LENGTH }, () => ""),
+  );
   const [error, setError] = useState(false);
   const [mounted, setMounted] = useState(false);
   const closeTimerRef = useRef(0);
   const finishTimerRef = useRef(0);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -58,7 +45,7 @@ export function PasswordTwoFactorTwo() {
 
   useEffect(() => {
     if (!modalMounted) return;
-    const onKey = (event: KeyboardEvent) => {
+    const onKey = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") closeModal();
     };
     window.addEventListener("keydown", onKey);
@@ -67,15 +54,15 @@ export function PasswordTwoFactorTwo() {
 
   useEffect(() => {
     if (modalActive) {
-      inputRef.current?.focus();
+      digitRefs.current[0]?.focus();
     }
   }, [modalActive]);
 
   function openModal() {
     window.clearTimeout(closeTimerRef.current);
     window.clearTimeout(finishTimerRef.current);
-    setMileAnswer("");
-    setLbsAnswer("");
+    setCode(randomOtp());
+    setDigits(Array.from({ length: OTP_LENGTH }, () => ""));
     setError(false);
     setModalMounted(true);
     requestAnimationFrame(() => {
@@ -88,16 +75,69 @@ export function PasswordTwoFactorTwo() {
     window.clearTimeout(closeTimerRef.current);
     closeTimerRef.current = window.setTimeout(() => {
       setModalMounted(false);
-      setMileAnswer("");
-      setLbsAnswer("");
+      setDigits(Array.from({ length: OTP_LENGTH }, () => ""));
       setError(false);
       after?.();
     }, MODAL_MS);
   }
 
-  function submitFactor(event: FormEvent) {
+  function setDigitAt(index: number, value: string) {
+    const next = [...digits];
+    next[index] = value;
+    setDigits(next);
+    if (error) setError(false);
+    return next;
+  }
+
+  function onDigitChange(index: number, raw: string) {
+    const cleaned = raw.replace(/\D/g, "");
+    if (!cleaned) {
+      setDigitAt(index, "");
+      return;
+    }
+
+    const chars = cleaned.slice(0, OTP_LENGTH - index).split("");
+    const next = [...digits];
+    chars.forEach((char, offset) => {
+      next[index + offset] = char;
+    });
+    setDigits(next);
+    if (error) setError(false);
+
+    const focusIndex = Math.min(index + chars.length, OTP_LENGTH - 1);
+    digitRefs.current[focusIndex]?.focus();
+  }
+
+  function onDigitKeyDown(index: number, event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Backspace" && !digits[index] && index > 0) {
+      digitRefs.current[index - 1]?.focus();
+      setDigitAt(index - 1, "");
+    }
+    if (event.key === "ArrowLeft" && index > 0) {
+      digitRefs.current[index - 1]?.focus();
+    }
+    if (event.key === "ArrowRight" && index < OTP_LENGTH - 1) {
+      digitRefs.current[index + 1]?.focus();
+    }
+  }
+
+  function onPaste(event: ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
-    if (!isCorrectMile(mileAnswer) || !isCorrectLbs(lbsAnswer)) {
+    const pasted = event.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, OTP_LENGTH);
+    if (!pasted) return;
+    const next = Array.from({ length: OTP_LENGTH }, (_, i) => pasted[i] ?? "");
+    setDigits(next);
+    if (error) setError(false);
+    digitRefs.current[Math.min(pasted.length, OTP_LENGTH - 1)]?.focus();
+  }
+
+  function submitOtp(event: FormEvent) {
+    event.preventDefault();
+    const entered = digits.join("");
+    if (entered !== code) {
       setError(true);
       return;
     }
@@ -123,24 +163,13 @@ export function PasswordTwoFactorTwo() {
             <p className="text-sm tracking-wide text-zinc-500">sign in</p>
 
             <label className="mt-4 block">
-              <span className="text-sm text-zinc-500">username</span>
+              <span className="text-sm text-zinc-500">phone number</span>
               <input
-                type="text"
-                value={USERNAME}
+                type="tel"
+                value={PHONE}
                 readOnly
                 tabIndex={-1}
-                className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
-              />
-            </label>
-
-            <label className="mt-3 block">
-              <span className="text-sm text-zinc-500">password</span>
-              <input
-                type="password"
-                value={PASSWORD}
-                readOnly
-                tabIndex={-1}
-                className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
+                className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm tabular-nums text-zinc-900 outline-none"
               />
             </label>
 
@@ -149,7 +178,7 @@ export function PasswordTwoFactorTwo() {
               onClick={openModal}
               className="mt-5 w-full cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
             >
-              continue with two-factor authentication
+              verify with otp
             </button>
           </div>
         </div>
@@ -170,7 +199,7 @@ export function PasswordTwoFactorTwo() {
               <div
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby="two-factor-two-title"
+                aria-labelledby="otp-title"
                 className={[
                   "relative z-10 w-full max-w-sm overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-xl transition duration-200 ease-out",
                   modalActive
@@ -178,14 +207,14 @@ export function PasswordTwoFactorTwo() {
                     : "translate-y-2 scale-[0.98] opacity-0",
                 ].join(" ")}
               >
-                <form onSubmit={submitFactor} className="p-5 sm:p-6">
+                <form onSubmit={submitOtp} className="p-5 sm:p-6">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p
-                        id="two-factor-two-title"
+                        id="otp-title"
                         className="text-sm tracking-wide text-zinc-900"
                       >
-                        two-factor authentication
+                        enter otp
                       </p>
                     </div>
                     <button
@@ -198,57 +227,39 @@ export function PasswordTwoFactorTwo() {
                     </button>
                   </div>
 
-                  <div className="mt-5 space-y-4">
-                    <label className="block">
-                      <span className="font-sans text-sm tabular-nums text-zinc-900">
-                        1. 1 mile = ? km
-                      </span>
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        inputMode="decimal"
-                        value={mileAnswer}
-                        onChange={(event) => {
-                          setMileAnswer(event.target.value);
-                          if (error) setError(false);
-                        }}
-                        autoComplete="off"
-                        spellCheck={false}
-                        placeholder="km"
-                        className={[
-                          "mt-1.5 w-full rounded-xl border bg-zinc-50 px-3 py-2.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition placeholder:text-zinc-400",
-                          error
-                            ? "border-rose-300 focus:border-rose-400"
-                            : "border-zinc-200 focus:border-zinc-400",
-                        ].join(" ")}
-                        aria-invalid={error}
-                      />
-                    </label>
+                  <p className="mt-4 text-sm text-zinc-600">
+                    please check your sms or phone for opt
+                  </p>
+                  <p className="mt-2 font-sans text-sm tabular-nums text-zinc-500">
+                    hint: your otp is {code}
+                  </p>
 
-                    <label className="block">
-                      <span className="font-sans text-sm tabular-nums text-zinc-900">
-                        2. 2 lbs = ? kg
-                      </span>
+                  <div className="mt-5 flex justify-between gap-2">
+                    {digits.map((digit, index) => (
                       <input
-                        type="text"
-                        inputMode="decimal"
-                        value={lbsAnswer}
-                        onChange={(event) => {
-                          setLbsAnswer(event.target.value);
-                          if (error) setError(false);
+                        key={index}
+                        ref={(el) => {
+                          digitRefs.current[index] = el;
                         }}
-                        autoComplete="off"
-                        spellCheck={false}
-                        placeholder="kg"
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete={index === 0 ? "one-time-code" : "off"}
+                        maxLength={1}
+                        value={digit}
+                        onChange={(event) =>
+                          onDigitChange(index, event.target.value)
+                        }
+                        onKeyDown={(event) => onDigitKeyDown(index, event)}
+                        onPaste={onPaste}
+                        aria-label={`digit ${index + 1}`}
                         className={[
-                          "mt-1.5 w-full rounded-xl border bg-zinc-50 px-3 py-2.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition placeholder:text-zinc-400",
+                          "h-12 w-10 rounded-xl border bg-zinc-50 text-center font-sans text-lg tabular-nums text-zinc-900 outline-none transition sm:h-14 sm:w-11",
                           error
                             ? "border-rose-300 focus:border-rose-400"
                             : "border-zinc-200 focus:border-zinc-400",
                         ].join(" ")}
-                        aria-invalid={error}
                       />
-                    </label>
+                    ))}
                   </div>
 
                   {error ? (
