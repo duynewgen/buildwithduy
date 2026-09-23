@@ -116,6 +116,11 @@ export const builds: Build[] = [
     title: "split",
     description: "split the check. literally.",
   },
+  {
+    path: "password/two-factor",
+    title: "two-factor",
+    description: "sign in. verify with two factors.",
+  },
 ];
 
 export function buildHref(build: Build) {
