@@ -37,3 +37,20 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Creator filming mode: `?creator=true` on a build URL — no title/description; name + birth-year form; year field opens year-only build modal via `BuildExperience`.
 - Every build ships a shortcut thumbnail demo that animates on card hover via `group-hover` (idle preview → short motion that hints at the interaction). Wire it in `BuildShortcut`. No idle autoplay loops.
 - Date thumbnails always show today’s date (`src/lib/today.ts`); never hardcode or randomize. Use `suppressHydrationWarning` on the date text.
+
+# Project context
+
+Living conventions (also in `.cursor/rules/project-context.mdc`). Idea backlog: personal AgentStore `cursed-ideas.md` — private, never publish.
+
+## Site
+
+- Categories so far: `birthday`, `payment`, `authentication` (renamed from `password`).
+- `/` = readme homepage. Category pages: fixed sidebar + scrolling content.
+- Assets under `public/{category}/`. New build = route + `builds.ts` + hover demo + sitemap.
+
+## Authentication builds
+
+- Fake sign-in → cursed challenge → `you're checked in`.
+- Demo phone `0123456789` (readonly). Dark zinc pill CTA (`verify with otp`). Card: `rounded-2xl … border-zinc-200`. Inputs `rounded-xl`; buttons `rounded-full`.
+- Modals: portal + ~220ms fade (`modalMounted` / `modalActive`), Escape to close.
+- OTP/games collect digits via play; prefer any-order unless the gag needs a fixed code. Tabular `font-sans` numbers only.
