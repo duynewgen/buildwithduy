@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { BuildShortcut } from "@/components/build-shortcut";
 import { Logo } from "@/components/logo";
+import { MobileTopbar } from "@/components/mobile-topbar";
 import {
   buildCategories,
   buildsInCategory,
@@ -61,17 +62,58 @@ function SocialLinks({
   );
 }
 
+function CategoryNav({
+  category,
+  categories,
+  className,
+}: {
+  category: string;
+  categories: string[];
+  className?: string;
+}) {
+  return (
+    <nav className={className} aria-label="categories">
+      {categories.map((id) => {
+        const isCurrent = id === category;
+        return (
+          <Link
+            key={id}
+            href={categoryHref(id)}
+            aria-current={isCurrent ? "page" : undefined}
+            className={[
+              "shrink-0 snap-start",
+              isCurrent
+                ? "font-display text-lg tracking-tight text-zinc-900"
+                : linkClassName,
+            ].join(" ")}
+          >
+            {id}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 /** Persistent directory chrome (logo, categories, social). Main content is `children`. */
 export function CategoryShell({ category, children }: CategoryShellProps) {
   const allCategories = buildCategories();
 
   return (
-    <main className="flex h-dvh flex-col overflow-hidden xl:grid xl:grid-cols-[clamp(13rem,18vw,17rem)_minmax(0,1fr)]">
+    <main
+      className={[
+        // Mobile: document scrolls so browser chrome (Safari tab bar) can collapse.
+        "flex min-h-dvh flex-col",
+        // Desktop: locked viewport + sidebar, content panel scrolls.
+        "xl:grid xl:h-dvh xl:grid-cols-[clamp(13rem,18vw,17rem)_minmax(0,1fr)] xl:overflow-hidden",
+      ].join(" ")}
+    >
+      <MobileTopbar category={category} categories={allCategories} />
+
       <aside
         className={[
-          "relative flex shrink-0 flex-col border-zinc-200",
+          "relative hidden shrink-0 flex-col border-zinc-200 xl:flex",
           "px-[clamp(1.25rem,4.5vw,3.5rem)] pt-[clamp(1.5rem,4vh,3.5rem)]",
-          "max-xl:gap-6 max-xl:border-b max-xl:pb-6",
           "xl:h-full xl:gap-0 xl:overflow-hidden xl:border-r xl:pb-0",
         ].join(" ")}
       >
@@ -79,38 +121,15 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
           <Logo priority size={96} />
         </div>
 
-        <nav
-          className={[
-            "flex snap-x snap-mandatory gap-5 overflow-x-auto",
-            "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-            "max-xl:-mx-[clamp(1.25rem,4.5vw,3.5rem)] max-xl:px-[clamp(1.25rem,4.5vw,3.5rem)]",
-            "xl:mt-8 xl:min-h-0 xl:flex-1 xl:flex-col xl:gap-2 xl:overflow-y-auto xl:px-0",
-          ].join(" ")}
-          aria-label="categories"
-        >
-          {allCategories.map((id) => {
-            const isCurrent = id === category;
-            return (
-              <Link
-                key={id}
-                href={categoryHref(id)}
-                aria-current={isCurrent ? "page" : undefined}
-                className={[
-                  "shrink-0 snap-start",
-                  isCurrent
-                    ? "font-display text-lg tracking-tight text-zinc-900"
-                    : linkClassName,
-                ].join(" ")}
-              >
-                {id}
-              </Link>
-            );
-          })}
-        </nav>
+        <CategoryNav
+          category={category}
+          categories={allCategories}
+          className="mt-8 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto"
+        />
 
         <div
           className={[
-            "mt-auto hidden shrink-0 xl:block",
+            "mt-auto shrink-0",
             "-mx-[clamp(1.25rem,4.5vw,3.5rem)]",
             "border-t border-zinc-200",
             "px-[clamp(1.25rem,4.5vw,3.5rem)]",
@@ -121,7 +140,7 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
         </div>
       </aside>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col xl:overflow-y-auto">
         <section
           className={[
             "flex-1",
@@ -135,7 +154,8 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
 
         <footer
           className={[
-            "mt-auto px-[clamp(1.25rem,4.5vw,4rem)] pb-[clamp(1.5rem,4vh,3rem)] pt-2",
+            "mt-auto px-[clamp(1.25rem,4.5vw,4rem)] pt-2",
+            "pb-[max(clamp(1.5rem,4vh,3rem),env(safe-area-inset-bottom))]",
             "xl:hidden",
           ].join(" ")}
         >
