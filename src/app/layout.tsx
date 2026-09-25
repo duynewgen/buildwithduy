@@ -6,7 +6,7 @@ import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const rubik = Rubik({
-  subsets: ["latin"],
+  subsets: ["latin", "arabic"],
   variable: "--font-rubik",
   display: "swap",
 });

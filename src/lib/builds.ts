@@ -66,6 +66,11 @@ export const builds: Build[] = [
     description: "pick your birth year in roman numerals.",
   },
   {
+    path: "form/arabic",
+    title: "arabic",
+    description: "pick your birth year in arabic numbers.",
+  },
+  {
     path: "form/bounce",
     title: "bounce",
     description: "bounce a cake off the walls to count your birth year.",

@@ -5,6 +5,7 @@ import { BirthdayClickDemo } from "@/components/birthday-click-demo";
 import { BirthdayLotteryDemo } from "@/components/birthday-lottery-demo";
 import { BirthdayMathDemo } from "@/components/birthday-math-demo";
 import { BirthdayPlinkoDemo } from "@/components/birthday-plinko-demo";
+import { BirthdayArabicDemo } from "@/components/birthday-arabic-demo";
 import { BirthdayRomanDemo } from "@/components/birthday-roman-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
 import { BirthdayWordsDemo } from "@/components/birthday-words-demo";
@@ -40,6 +41,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "form/roman") {
     return <BirthdayRomanDemo />;
+  }
+  if (path === "form/arabic") {
+    return <BirthdayArabicDemo />;
   }
   if (path === "form/bounce") {
     return <BirthdayBounceDemo />;
