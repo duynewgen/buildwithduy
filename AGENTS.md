@@ -45,7 +45,7 @@ Living conventions (also in `.cursor/rules/project-context.mdc`). Idea backlog: 
 ## Site
 
 - Categories so far: `form` (renamed from `birthday`), `payment`, `authentication` (renamed from `password`).
-- Phone layout height uses `100dvh` (not `100vh`) so the page tracks the browser chrome. Category shell is `h-dvh`; build pages are `min-h-dvh`. Viewport uses `interactive-widget=resizes-content`.
+- Phone layout height uses `100dvh` (not `100vh`) so the page tracks the browser chrome. Below `xl` the document scrolls so the search bar can collapse; the locked sidebar shell starts at `xl`. Viewport uses `interactive-widget=resizes-content`.
 - `/` = readme homepage. Category pages: fixed sidebar + scrolling content.
 - Assets under `public/{category}/`. New build = route + `builds.ts` + hover demo + sitemap.
 

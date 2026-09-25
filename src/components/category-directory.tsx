@@ -66,7 +66,7 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
   const allCategories = buildCategories();
 
   return (
-    <main className="flex h-dvh max-h-dvh flex-col overflow-hidden overscroll-none xl:grid xl:grid-cols-[clamp(13rem,18vw,17rem)_minmax(0,1fr)]">
+    <main className="flex min-h-dvh flex-col xl:grid xl:h-dvh xl:max-h-dvh xl:grid-cols-[clamp(13rem,18vw,17rem)_minmax(0,1fr)] xl:overflow-hidden xl:overscroll-none">
       <aside
         className={[
           "relative flex shrink-0 flex-col border-zinc-200",
@@ -121,7 +121,7 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
         </div>
       </aside>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div className="flex flex-1 flex-col xl:min-h-0 xl:overflow-y-auto">
         <section
           className={[
             "flex-1",
