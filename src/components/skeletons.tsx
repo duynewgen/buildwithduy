@@ -68,7 +68,7 @@ export function BuildPageSkeleton() {
     <main
       aria-busy="true"
       aria-label="loading"
-      className="relative flex min-h-screen flex-col px-6 py-10 sm:px-10 lg:px-16"
+      className="relative flex min-h-dvh flex-col px-6 py-10 sm:px-10 lg:px-16"
     >
       <div className="absolute left-6 top-6 z-20 sm:left-10 lg:left-16">
         <SkeletonPulse className="h-9 w-20 rounded-full" />

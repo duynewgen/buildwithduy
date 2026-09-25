@@ -28,7 +28,7 @@ export function BuildShell({
   children,
 }: BuildShellProps) {
   return (
-    <main className="relative flex min-h-screen flex-col px-6 py-10 sm:px-10 lg:px-16">
+    <main className="relative flex min-h-dvh flex-col px-6 py-10 sm:px-10 lg:px-16">
       <div className="absolute left-6 top-6 z-20 sm:left-10 lg:left-16">
         <BackPill href={backHref} />
       </div>

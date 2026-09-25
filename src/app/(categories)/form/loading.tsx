@@ -1,5 +1,5 @@
 import { CategoryPageSkeleton } from "@/components/skeletons";
 
 export default function Loading() {
-  return <CategoryPageSkeleton category="birthday" cards={6} />;
+  return <CategoryPageSkeleton category="form" cards={6} />;
 }

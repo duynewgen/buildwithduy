@@ -26,31 +26,31 @@ import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
 function BuildDemo({ path }: { path: string }) {
-  if (path === "birthday/slider") {
+  if (path === "form/slider") {
     return <BirthdaySliderDemo />;
   }
-  if (path === "birthday/angry-cake") {
+  if (path === "form/angry-cake") {
     return <BirthdayAngryCakeDemo />;
   }
-  if (path === "birthday/lottery") {
+  if (path === "form/lottery") {
     return <BirthdayLotteryDemo />;
   }
-  if (path === "birthday/words") {
+  if (path === "form/words") {
     return <BirthdayWordsDemo />;
   }
-  if (path === "birthday/roman") {
+  if (path === "form/roman") {
     return <BirthdayRomanDemo />;
   }
-  if (path === "birthday/bounce") {
+  if (path === "form/bounce") {
     return <BirthdayBounceDemo />;
   }
-  if (path === "birthday/click") {
+  if (path === "form/click") {
     return <BirthdayClickDemo />;
   }
-  if (path === "birthday/drop-the-cake") {
+  if (path === "form/drop-the-cake") {
     return <BirthdayPlinkoDemo />;
   }
-  if (path === "birthday/math") {
+  if (path === "form/math") {
     return <BirthdayMathDemo />;
   }
   if (path === "payment/apple-pay") {

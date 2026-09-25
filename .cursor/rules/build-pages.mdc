@@ -5,11 +5,11 @@ alwaysApply: true
 
 # Build pages
 
-- URL shape: `/{category}/{build}` (e.g. `/birthday/slider`). Never put a build at a bare category root.
-- Category pages live at `/{category}` (e.g. `/birthday`) — a simple directory: small logo, category nav, builds listed as shortcuts. Do not redirect category roots into a build.
+- URL shape: `/{category}/{build}` (e.g. `/form/slider`). Never put a build at a bare category root.
+- Category pages live at `/{category}` (e.g. `/form`) — a simple directory: small logo, category nav, builds listed as shortcuts. Do not redirect category roots into a build.
 - Categories are listed in `src/lib/builds.ts` (`categories`) in sidebar order. Empty categories are allowed for scaffolding.
 - Site root `/` is the homepage (readme.md content). Logo links here. Categories live at `/{category}`.
-- Build **title** is the short build name only (e.g. `slider`), not `birthday slider`. Category lives in the path.
+- Build **title** is the short build name only (e.g. `slider`), not `form slider`. Category lives in the path.
 - Use `BuildShell` (`src/components/build-shell.tsx`) for every experiment/build route. Pass `backHref` to the category page.
 - Title + description at the **top** (centered).
 - Interactive build content is vertically + horizontally centered in the **remaining space below the header** — never absolutely centered over the full viewport (that overlays the title).

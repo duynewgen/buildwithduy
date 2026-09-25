@@ -1,5 +1,5 @@
 export type Build = {
-  /** path under site root, e.g. "birthday/slider" */
+  /** path under site root, e.g. "form/slider" */
   path: string;
   title: string;
   description: string;
@@ -18,8 +18,8 @@ export type Category = {
  */
 export const categories: Category[] = [
   {
-    id: "birthday",
-    description: "cursed birthday selection builds.",
+    id: "form",
+    description: "cursed form builds.",
   },
   {
     id: "payment",
@@ -41,48 +41,48 @@ export const categories: Category[] = [
  */
 export const builds: Build[] = [
   {
-    path: "birthday/slider",
+    path: "form/slider",
     title: "slider",
     description: "slide to your month, day, and year.",
   },
   {
-    path: "birthday/angry-cake",
+    path: "form/angry-cake",
     title: "angry cake",
     description: "fling a cake to land on your month, day, and year.",
   },
   {
-    path: "birthday/lottery",
+    path: "form/lottery",
     title: "lottery",
     description: "pull each handle to roll your month, day, and year.",
   },
   {
-    path: "birthday/words",
+    path: "form/words",
     title: "words",
     description: "pick your month, day, and year in words.",
   },
   {
-    path: "birthday/roman",
+    path: "form/roman",
     title: "roman",
     description: "pick your month, day, and year in roman numerals.",
   },
   {
-    path: "birthday/bounce",
+    path: "form/bounce",
     title: "bounce",
     description: "bounce a cake off the walls to count your month and day.",
   },
   {
-    path: "birthday/click",
+    path: "form/click",
     title: "click",
     description:
       "mash the box for 5 seconds to set your month, day, and year.",
   },
   {
-    path: "birthday/drop-the-cake",
+    path: "form/drop-the-cake",
     title: "drop the cake",
     description: "drop a cake through the pegs onto your month, day, and year.",
   },
   {
-    path: "birthday/math",
+    path: "form/math",
     title: "math",
     description: "pick your month, day, and year as cursed formulas.",
   },

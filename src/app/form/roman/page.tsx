@@ -4,12 +4,12 @@ import { BuildExperience } from "@/components/build-experience";
 import { getBuildByPath } from "@/lib/builds";
 import { isCreatorMode } from "@/lib/creator";
 
-const build = getBuildByPath("birthday/roman")!;
+const build = getBuildByPath("form/roman")!;
 
 export const metadata = pageMetadata({
   title: build.title,
   description: build.description,
-  path: "/birthday/roman",
+  path: "/form/roman",
 });
 
 type PageProps = {
@@ -24,7 +24,7 @@ export default async function BirthdayRomanPage({ searchParams }: PageProps) {
       creator={isCreatorMode(params.creator)}
       title={build.title}
       description={build.description}
-      backHref="/birthday"
+      backHref="/form"
       contentClassName="max-w-3xl"
       creatorInline
       YearPicker={BirthdayRoman}

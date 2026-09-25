@@ -30,6 +30,20 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  async redirects() {
+    return [
+      {
+        source: "/birthday",
+        destination: "/form",
+        permanent: true,
+      },
+      {
+        source: "/birthday/:path*",
+        destination: "/form/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

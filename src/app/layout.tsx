@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Rubik, Schoolbell } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SiteJsonLd } from "@/components/site-json-ld";
@@ -17,6 +17,14 @@ const schoolbell = Schoolbell({
   variable: "--font-schoolbell",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  // Keep layout height in step with the phone browser chrome and keyboard.
+  interactiveWidget: "resizes-content",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -64,7 +72,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${rubik.variable} ${schoolbell.variable}`}>
-      <body className="min-h-screen bg-white font-sans text-zinc-900 antialiased">
+      <body className="min-h-dvh bg-white font-sans text-zinc-900 antialiased">
         <SiteJsonLd />
         {children}
         <Analytics />

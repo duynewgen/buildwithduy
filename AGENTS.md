@@ -24,7 +24,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Build pages
 
-- URL shape: `/{category}/{build}` (e.g. `/birthday/slider`). Do not put a build at a bare category root.
+- URL shape: `/{category}/{build}` (e.g. `/form/slider`). Do not put a build at a bare category root.
 - Category pages at `/{category}` are simple directories (small logo + category nav + build shortcuts). Do not redirect them into a build.
 - Categories live in `src/lib/builds.ts` (`categories`) in sidebar order; empty categories are allowed.
 - Site root `/` is the homepage (readme.md content). Logo links here. Categories live at `/{category}`.
@@ -44,7 +44,8 @@ Living conventions (also in `.cursor/rules/project-context.mdc`). Idea backlog: 
 
 ## Site
 
-- Categories so far: `birthday`, `payment`, `authentication` (renamed from `password`).
+- Categories so far: `form` (renamed from `birthday`), `payment`, `authentication` (renamed from `password`).
+- Phone layout height uses `100dvh` (not `100vh`) so the page tracks the browser chrome. Category shell is `h-dvh`; build pages are `min-h-dvh`. Viewport uses `interactive-widget=resizes-content`.
 - `/` = readme homepage. Category pages: fixed sidebar + scrolling content.
 - Assets under `public/{category}/`. New build = route + `builds.ts` + hover demo + sitemap.
 

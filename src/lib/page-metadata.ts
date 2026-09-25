@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site";
 type PageMetadataInput = {
   title: string;
   description: string;
-  /** path relative to site root, e.g. "/birthday/slider" or "/" */
+  /** path relative to site root, e.g. "/form/slider" or "/" */
   path: string;
 };
 

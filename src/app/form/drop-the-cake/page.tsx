@@ -4,12 +4,12 @@ import { BuildExperience } from "@/components/build-experience";
 import { getBuildByPath } from "@/lib/builds";
 import { isCreatorMode } from "@/lib/creator";
 
-const build = getBuildByPath("birthday/drop-the-cake")!;
+const build = getBuildByPath("form/drop-the-cake")!;
 
 export const metadata = pageMetadata({
   title: build.title,
   description: build.description,
-  path: "/birthday/drop-the-cake",
+  path: "/form/drop-the-cake",
 });
 
 type PageProps = {
@@ -26,7 +26,7 @@ export default async function BirthdayDropTheCakePage({
       creator={isCreatorMode(params.creator)}
       title={build.title}
       description={build.description}
-      backHref="/birthday"
+      backHref="/form"
       contentClassName="max-w-2xl"
       YearPicker={BirthdayPlinko}
     >

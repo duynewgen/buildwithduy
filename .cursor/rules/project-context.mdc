@@ -5,7 +5,13 @@ alwaysApply: true
 
 # Project context (buildwithduy)
 
-Cursed UI experiments site. Categories so far: `birthday`, `payment`, `authentication` (renamed from `password`). Idea backlog lives in the **personal** Cursor AgentStore file `cursed-ideas.md` — keep it private; do not commit or publish.
+Cursed UI experiments site. Categories so far: `form` (renamed from `birthday`), `payment`, `authentication` (renamed from `password`). Old `/birthday` URLs permanently redirect to `/form`. Idea backlog lives in the **personal** Cursor AgentStore file `cursed-ideas.md` — keep it private; do not commit or publish.
+
+## Phone viewport
+
+- Page height follows the visible browser chrome via `100dvh`, not `100vh` / `min-h-screen`.
+- Document: `min-h-dvh` on `html`/`body`. Category shell: `h-dvh` + `overflow-hidden` so only the content panel scrolls. Build pages: `min-h-dvh`.
+- Root viewport: `viewport-fit=cover` and `interactive-widget=resizes-content`.
 
 ## Site
 
