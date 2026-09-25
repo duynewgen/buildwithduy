@@ -37,7 +37,7 @@ Fake “sign in” shells that resolve via a cursed challenge, then show success
 
 ## Birthday / creator
 
-- Public builds: full date interaction. Creator filming: `?creator=true` → name + birth-year form; year field opens year-only modal via `BuildExperience` / `YearPickerProps`.
+- Public form builds use the interest form (name + when were you born) and a **year-only** cursed picker. Select builds (words, roman, math) put the year control inline; the others open it in a modal. `?creator=true` adds the start-year filming control.
 - Date thumbnails: today’s date from `src/lib/today.ts` + `suppressHydrationWarning`.
 
 ## Tone

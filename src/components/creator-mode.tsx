@@ -18,12 +18,15 @@ type CreatorModeProps = {
   YearPicker: ComponentType<YearPickerProps>;
   /** skip modal — year picker renders inline as the birthyear field */
   inlinePicker?: boolean;
+  /** filming control: typed floor for the year range */
+  showStartYear?: boolean;
 };
 
 export function CreatorMode({
   backHref = "/",
   YearPicker,
   inlinePicker = false,
+  showStartYear = false,
 }: CreatorModeProps) {
   const [name, setName] = useState("build with duy");
   const [year, setYear] = useState<number | null>(null);
@@ -52,22 +55,24 @@ export function CreatorMode({
     <main className="relative flex min-h-dvh flex-col px-6 py-10 sm:px-10 lg:px-16">
       <div className="absolute left-6 top-6 z-20 flex flex-col items-start gap-3 sm:left-10 lg:left-16">
         <BackPill href={backHref} />
-        <div className="space-y-1.5">
-          <label
-            htmlFor="creator-start-year"
-            className="block text-sm tracking-wide text-zinc-500"
-          >
-            start year
-          </label>
-          <input
-            id="creator-start-year"
-            type="text"
-            inputMode="numeric"
-            value={startYearText}
-            onChange={handleStartYearChange}
-            className="w-24 rounded-md border border-zinc-300 bg-white px-3 py-1.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition hover:border-zinc-900 focus:border-zinc-900"
-          />
-        </div>
+        {showStartYear ? (
+          <div className="space-y-1.5">
+            <label
+              htmlFor="creator-start-year"
+              className="block text-sm tracking-wide text-zinc-500"
+            >
+              start year
+            </label>
+            <input
+              id="creator-start-year"
+              type="text"
+              inputMode="numeric"
+              value={startYearText}
+              onChange={handleStartYearChange}
+              className="w-24 rounded-md border border-zinc-300 bg-white px-3 py-1.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition hover:border-zinc-900 focus:border-zinc-900"
+            />
+          </div>
+        ) : null}
       </div>
 
       <div className="relative z-0 flex min-h-0 flex-1 items-center justify-center py-8">

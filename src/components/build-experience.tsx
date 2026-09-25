@@ -24,7 +24,9 @@ type BuildExperienceProps = {
 };
 
 /**
- * Normal build page, or creator filming mode when `?creator=true`.
+ * Form builds with a YearPicker use the interest form and a year-only picker.
+ * `?creator=true` adds the start-year filming control.
+ * Other builds use BuildShell; creatorSame hides the title for filming.
  */
 export function BuildExperience({
   creator,
@@ -51,15 +53,13 @@ export function BuildExperience({
     );
   }
 
-  if (creator) {
-    if (!YearPicker) {
-      throw new Error("YearPicker is required unless creatorSame is set");
-    }
+  if (YearPicker) {
     return (
       <CreatorMode
         backHref={backHref}
         YearPicker={YearPicker}
         inlinePicker={creatorInline}
+        showStartYear={creator}
       />
     );
   }
