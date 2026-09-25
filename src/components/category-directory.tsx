@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { BuildShortcut } from "@/components/build-shortcut";
 import { Logo } from "@/components/logo";
+import { MobileNav } from "@/components/mobile-nav";
 import {
   buildCategories,
   buildsInCategory,
@@ -69,22 +70,22 @@ export function CategoryShell({ category, children }: CategoryShellProps) {
     <main className="flex min-h-dvh flex-col xl:grid xl:h-dvh xl:max-h-dvh xl:grid-cols-[clamp(13rem,18vw,17rem)_minmax(0,1fr)] xl:overflow-hidden xl:overscroll-none">
       <aside
         className={[
-          "relative flex shrink-0 flex-col border-zinc-200",
-          "px-[clamp(1.25rem,4.5vw,3.5rem)] pt-[clamp(1.5rem,4vh,3.5rem)]",
-          "max-xl:gap-6 max-xl:border-b max-xl:pb-6",
-          "xl:h-full xl:gap-0 xl:overflow-hidden xl:border-r xl:pb-0",
+          "relative flex shrink-0 border-zinc-200",
+          "px-[clamp(1.25rem,4.5vw,3.5rem)] pt-[clamp(1.25rem,3.5vh,3.5rem)]",
+          "max-xl:flex-row max-xl:items-center max-xl:justify-between max-xl:border-b max-xl:pb-4",
+          "xl:h-full xl:flex-col xl:overflow-hidden xl:border-r xl:pb-0",
         ].join(" ")}
       >
         <div className="w-[clamp(4.25rem,18vw,6rem)] shrink-0">
           <Logo priority size={96} />
         </div>
 
+        <MobileNav category={category} />
+
         <nav
           className={[
-            "flex snap-x snap-mandatory gap-5 overflow-x-auto",
-            "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-            "max-xl:-mx-[clamp(1.25rem,4.5vw,3.5rem)] max-xl:px-[clamp(1.25rem,4.5vw,3.5rem)]",
-            "xl:mt-8 xl:min-h-0 xl:flex-1 xl:flex-col xl:gap-2 xl:overflow-y-auto xl:px-0",
+            "hidden",
+            "xl:mt-8 xl:flex xl:min-h-0 xl:flex-1 xl:flex-col xl:gap-2 xl:overflow-y-auto",
           ].join(" ")}
           aria-label="categories"
         >

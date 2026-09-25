@@ -16,6 +16,7 @@ Cursed UI experiments site. Categories so far: `form` (renamed from `birthday`),
 ## Site
 
 - `/` = homepage from `readme.md` (not a category). Logo → `/`.
+- Phone chrome: logo stays top-left. Categories open from a pill menu into a right-side drawer. The desktop sidebar stays from `xl` up.
 - Category pages: fixed left sidebar + scrolling content panel (`category-directory.tsx`).
 - New builds: route `src/app/{category}/{build}/page.tsx` + registry in `src/lib/builds.ts` + hover demo in `BuildShortcut` + sitemap check.
 - Wire build pages through `BuildExperience` (supports `?creator=true`).
