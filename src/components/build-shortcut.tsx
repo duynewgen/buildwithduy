@@ -5,6 +5,7 @@ import { BirthdayClickDemo } from "@/components/birthday-click-demo";
 import { BirthdayLotteryDemo } from "@/components/birthday-lottery-demo";
 import { BirthdayMathDemo } from "@/components/birthday-math-demo";
 import { BirthdayPlinkoDemo } from "@/components/birthday-plinko-demo";
+import { BirthdayChineseDemo } from "@/components/birthday-chinese-demo";
 import { BirthdayArabicDemo } from "@/components/birthday-arabic-demo";
 import { BirthdayRomanDemo } from "@/components/birthday-roman-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
@@ -44,6 +45,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "form/arabic") {
     return <BirthdayArabicDemo />;
+  }
+  if (path === "form/chinese") {
+    return <BirthdayChineseDemo />;
   }
   if (path === "form/bounce") {
     return <BirthdayBounceDemo />;

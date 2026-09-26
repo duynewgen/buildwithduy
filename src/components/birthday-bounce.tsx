@@ -36,16 +36,16 @@ const PHYSICS = {
     settleVy: 48,
     settleVx: 32,
   },
-  /** Stronger / longer-lived so creator year picks can rack up more hits. */
-  creator: {
-    maxPull: 120,
-    launchScale: 16,
-    wallBounce: 0.92,
-    groundBounce: 0.82,
-    groundFriction: 0.96,
-    settleVy: 28,
-    settleVx: 18,
-  },
+    /** Stronger, and the last hops keep counting until the cake actually rests. */
+    creator: {
+      maxPull: 120,
+      launchScale: 16,
+      wallBounce: 0.94,
+      groundBounce: 0.9,
+      groundFriction: 0.985,
+      settleVy: 16,
+      settleVx: 10,
+    },
 } as const;
 
 const pillButtonBase =
@@ -141,6 +141,8 @@ export function BirthdayBounce({
   const cakeRef = useRef(cake);
   const phaseRef = useRef(phase);
   const bouncesRef = useRef(0);
+  const airborneRef = useRef(true);
+  const restRef = useRef(0);
   const stepRef = useRef(step);
   const physicsRef = useRef(physics);
   const onYearChangeRef = useRef(onYearChange);
@@ -176,6 +178,8 @@ export function BirthdayBounce({
     setCake(LAUNCHER);
     setBounces(0);
     bouncesRef.current = 0;
+    airborneRef.current = true;
+    restRef.current = 0;
     velocityRef.current = { x: 0, y: 0 };
     setDragging(false);
     setAimDots([]);
@@ -222,42 +226,50 @@ export function BirthdayBounce({
       } = physicsRef.current;
 
       let { x: vx, y: vy } = velocityRef.current;
-      vy += GRAVITY * dt;
-
-      let x = cakeRef.current.x + vx * dt;
-      let y = cakeRef.current.y + vy * dt;
+      let x = cakeRef.current.x;
+      let y = cakeRef.current.y;
       let hits = 0;
+      const substeps = 4;
+      const stepDt = dt / substeps;
 
-      if (x - CAKE_R < 0) {
-        x = CAKE_R;
-        vx = Math.abs(vx) * wallBounce;
-        hits += 1;
-      } else if (x + CAKE_R > WIDTH) {
-        x = WIDTH - CAKE_R;
-        vx = -Math.abs(vx) * wallBounce;
-        hits += 1;
-      }
+      for (let stepIndex = 0; stepIndex < substeps; stepIndex += 1) {
+        vy += GRAVITY * stepDt;
+        x += vx * stepDt;
+        y += vy * stepDt;
 
-      if (y - CAKE_R < 0) {
-        y = CAKE_R;
-        vy = Math.abs(vy) * wallBounce;
-        hits += 1;
-      } else if (y + CAKE_R >= HEIGHT) {
-        y = HEIGHT - CAKE_R;
-        vy = -Math.abs(vy) * groundBounce;
-        vx *= groundFriction;
-        hits += 1;
+        if (x - CAKE_R < 0) {
+          x = CAKE_R;
+          vx = Math.abs(vx) * wallBounce;
+          hits += 1;
+        } else if (x + CAKE_R > WIDTH) {
+          x = WIDTH - CAKE_R;
+          vx = -Math.abs(vx) * wallBounce;
+          hits += 1;
+        }
 
-        if (Math.abs(vy) < settleVy && Math.abs(vx) < settleVx) {
-          if (hits > 0) {
-            const next = bouncesRef.current + hits;
-            bouncesRef.current = next;
-            setBounces(next);
+        if (y - CAKE_R < 0) {
+          y = CAKE_R;
+          vy = Math.abs(vy) * wallBounce;
+          hits += 1;
+        }
+
+        const floor = HEIGHT - CAKE_R;
+        if (y >= floor && vy >= 0) {
+          y = floor;
+          vy = -Math.abs(vy) * groundBounce;
+          vx *= groundFriction;
+          if (airborneRef.current) {
+            hits += 1;
+            airborneRef.current = false;
           }
-          setCake({ x, y });
-          velocityRef.current = { x: 0, y: 0 };
-          lockValue(bouncesRef.current);
-          return;
+          if (Math.abs(vy) < settleVy && Math.abs(vx) < settleVx) {
+            restRef.current += stepDt;
+          } else {
+            restRef.current = 0;
+          }
+        } else {
+          if (y < floor - 1) airborneRef.current = true;
+          restRef.current = 0;
         }
       }
 
@@ -268,6 +280,12 @@ export function BirthdayBounce({
         const next = bouncesRef.current + hits;
         bouncesRef.current = next;
         setBounces(next);
+      }
+
+      if (restRef.current > 0.45) {
+        velocityRef.current = { x: 0, y: 0 };
+        lockValue(bouncesRef.current);
+        return;
       }
 
       frame = requestAnimationFrame(tick);
@@ -322,6 +340,8 @@ export function BirthdayBounce({
     }
 
     bouncesRef.current = 0;
+    airborneRef.current = true;
+    restRef.current = 0;
     setBounces(0);
     velocityRef.current = {
       x: pullX * physics.launchScale,

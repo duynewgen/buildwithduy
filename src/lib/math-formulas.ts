@@ -75,168 +75,95 @@ function sumOfOddsFormula(n: number): string | null {
   return `Σ(2k-1) for k=1…${root}`;
 }
 
-/** Extra-cursed formulas for creator year mode. */
+/** Extra-cursed formulas for the age / year picker. */
 export function advancedFormulaFor(n: number): string {
   if (!Number.isFinite(n) || !Number.isInteger(n)) return String(n);
 
-  // Keep a few iconic years looking intentionally fancy.
-  const specials: Record<number, string> = {
-    1900: "19×10²",
-    1969: "11×179",
-    1984: "2⁶×31",
-    1999: "2×10³-1",
-    2000: "2×10³",
-    2001: "3×23×29",
-    2012: "2²×503",
-    2020: "2²×5×101",
-    2024: "2³×11×23",
-    2025: "45²",
-    2026: "2×1013",
-  };
-  if (specials[n] !== undefined) return specials[n];
+  const options = wildFormulas(n);
+  if (options.length === 0) return digitPolynomial(n);
+  return options.sort((a, b) => scoreFormula(b) - scoreFormula(a))[0]!;
+}
+
+function scoreFormula(label: string) {
+  let score = label.length;
+  if (label.includes("!")) score += 12;
+  if (label.includes("C(")) score += 10;
+  if (label.includes("²") || label.includes("³")) score += 6;
+  if (label.includes("×")) score += 4;
+  if (label.includes("÷")) score += 3;
+  return score;
+}
+
+function wildFormulas(n: number): string[] {
+  const options: string[] = [];
+  const abs = Math.abs(n);
+
+  if (n === 0) return ["0!", "3!-3!", "(2!)!÷2!"];
+  if (n === 1) return ["0!", "1!", "2!-1", "3!÷3!"];
+  if (n < 0) return [`-(${advancedFormulaFor(-n)})`];
+
+  const factorial = [1, 1, 2, 6, 24, 120, 720];
+  for (let i = 2; i < factorial.length; i += 1) {
+    const fact = factorial[i]!;
+    const delta = n - fact;
+    if (delta === 0) options.push(`${i}!`);
+    else if (Math.abs(delta) <= 16) {
+      options.push(delta > 0 ? `${i}!+${delta}` : `${i}!-${-delta}`);
+    }
+    if (n % fact === 0 && n / fact >= 2 && n / fact <= 12) {
+      options.push(`${i}!×${n / fact}`);
+    }
+  }
+
+  if (abs >= 2 && options.length === 0) {
+    options.push(`${n}!÷${n - 1}!`);
+  }
 
   if (isPerfectSquare(n)) {
     const root = Math.round(Math.sqrt(n));
-    return `(${root})²`;
+    options.push(`${root}²`, `(${root})²`, `${root}!÷${root - 1}!×${root}`);
   }
 
-  const v = advancedVariant(n);
+  const cubeRoot = Math.round(Math.cbrt(Math.max(n, 0)));
+  for (const c of [cubeRoot - 1, cubeRoot, cubeRoot + 1]) {
+    if (c < 2) continue;
+    const delta = n - c ** 3;
+    if (delta !== 0 && Math.abs(delta) <= 24) {
+      options.push(delta > 0 ? `${c}³+${delta}` : `${c}³-${-delta}`);
+    }
+  }
+
   const factors = factorize(n);
-
-  switch (v) {
-    case 0: {
-      if (factors.length >= 2) return joinProduct(factors);
-      return digitPolynomial(n);
-    }
-    case 1: {
-      const { exp, delta } = nearestPowerOfTwo(n);
-      if (exp >= 2 && Math.abs(delta) <= 200 && delta !== 0) {
-        return delta > 0 ? `2${toSuper(exp)}+${delta}` : `2${toSuper(exp)}-${-delta}`;
-      }
-      return digitPolynomial(n);
-    }
-    case 2: {
-      // a³ + b
-      const cubeRoot = Math.round(Math.cbrt(n));
-      for (const c of [cubeRoot, cubeRoot - 1, cubeRoot + 1]) {
-        if (c < 2) continue;
-        const cube = c ** 3;
-        const delta = n - cube;
-        if (Math.abs(delta) > 0 && Math.abs(delta) < 400) {
-          return delta > 0 ? `${c}³+${delta}` : `${c}³-${-delta}`;
-        }
-      }
-      return digitPolynomial(n);
-    }
-    case 3: {
-      // a² + b² + c  (try small search)
-      for (let a = Math.floor(Math.sqrt(n)); a >= 2; a--) {
-        const rem = n - a * a;
-        for (let b = Math.floor(Math.sqrt(rem)); b >= 2; b--) {
-          const c = rem - b * b;
-          if (c >= 0 && c <= 80) {
-            return c === 0 ? `${a}²+${b}²` : `${a}²+${b}²+${c}`;
-          }
-        }
-        if (a < Math.floor(Math.sqrt(n)) - 40) break;
-      }
-      return digitPolynomial(n);
-    }
-    case 4: {
-      // 6! ± k  (720), 7! too big
-      const base = 720;
-      const delta = n - base;
-      if (Math.abs(delta) < 1500) {
-        return delta > 0 ? `6!+${delta}` : delta < 0 ? `6!-${-delta}` : "6!";
-      }
-      return joinProduct(factors.length >= 2 ? factors : [n]);
-    }
-    case 5: {
-      // (a×100) + b with a also expanded
-      const hi = Math.floor(n / 100);
-      const lo = n % 100;
-      const hiPart =
-        hi > 1 && factorize(hi).length >= 2 ? joinProduct(factorize(hi)) : String(hi);
-      if (lo === 0) return `(${hiPart})×100`;
-      return `(${hiPart})×100+${lo}`;
-    }
-    case 6: {
-      // consecutive sum: n = k+(k+1)+...+(k+m-1) = m×(2k+m-1)/2
-      for (let m = 3; m <= 15; m++) {
-        const twoN = 2 * n;
-        if (twoN % m !== 0) continue;
-        const inner = twoN / m - m + 1;
-        if (inner % 2 !== 0) continue;
-        const k = inner / 2;
-        if (k > 0) return `${k}+…+${k + m - 1}`;
-      }
-      return digitPolynomial(n);
-    }
-    case 7: {
-      // mixed: 10³ + a²×b ± c
-      const rest = n - 1000;
-      if (rest > 0) {
-        for (let a = 2; a <= 30; a++) {
-          if (rest % (a * a) === 0) {
-            const b = rest / (a * a);
-            if (b >= 2 && b <= 40) return `10³+${a}²×${b}`;
-          }
-        }
-        return `10³+${rest}`;
-      }
-      if (rest < 0) return `10³-${-rest}`;
-      return "10³";
-    }
-    case 8: {
-      if (factors.length >= 3) return joinProduct(factors);
-      const oddSum = sumOfOddsFormula(n);
-      if (oddSum) return oddSum;
-      return `${n + 7}-7`;
-    }
-    case 9: {
-      // binomial vibes: C(a,2) = a(a-1)/2
-      for (let a = Math.ceil((1 + Math.sqrt(1 + 8 * n)) / 2); a >= 3; a--) {
-        const binom = (a * (a - 1)) / 2;
-        const delta = n - binom;
-        if (delta === 0) return `C(${a},2)`;
-        if (Math.abs(delta) <= 60) {
-          return delta > 0
-            ? `C(${a},2)+${delta}`
-            : `C(${a},2)-${-delta}`;
-        }
-        if (a < 20) break;
-      }
-      return digitPolynomial(n);
-    }
-    case 10: {
-      // nested: ((a×b)+c)×d + e  from prime-ish split
-      if (factors.length >= 2) {
-        const a = factors[0]!;
-        const rest = n / a;
-        return `${a}×(${advancedSimple(rest)})`;
-      }
-      return digitPolynomial(n);
-    }
-    case 11: {
-      const root = Math.floor(Math.sqrt(n));
-      const sq = root * root;
-      const delta = n - sq;
-      if (delta > 0) return `${root}²+${delta}`;
-      return digitPolynomial(n);
-    }
-    case 12: {
-      // base-ish: 7×288 + 1 style
-      for (const base of [7, 9, 11, 13, 17, 19]) {
-        if (n % base === 0) return `${base}×${n / base}`;
-        const q = Math.floor(n / base);
-        const r = n % base;
-        if (q > 10) return `${base}×${q}+${r}`;
-      }
-      return digitPolynomial(n);
-    }
-    default:
-      return digitPolynomial(n);
+  if (factors.length >= 2) options.push(joinProduct(factors));
+  if (factors.length >= 3) {
+    options.push(`${factors[0]}×(${joinProduct(factors.slice(1))})`);
   }
+
+  const root = Math.floor(Math.sqrt(n));
+  const squareGap = n - root * root;
+  if (root >= 2 && squareGap > 0 && squareGap <= 18) {
+    options.push(`${root}²+${squareGap}`, `(${root})²+${squareGap}`);
+  }
+
+  for (let m = 3; m <= 8; m += 1) {
+    const twice = 2 * n;
+    if (twice % m !== 0) continue;
+    const inner = twice / m - m + 1;
+    if (inner % 2 !== 0) continue;
+    const start = inner / 2;
+    if (start > 0) options.push(`${start}+…+${start + m - 1}`);
+  }
+
+  for (let a = Math.ceil((1 + Math.sqrt(1 + 8 * n)) / 2); a >= 4; a -= 1) {
+    const choose = (a * (a - 1)) / 2;
+    const delta = n - choose;
+    if (Math.abs(delta) <= 9) {
+      options.push(delta === 0 ? `C(${a},2)` : delta > 0 ? `C(${a},2)+${delta}` : `C(${a},2)-${-delta}`);
+    }
+    if (a < 8) break;
+  }
+
+  return options.filter((label) => label !== String(n));
 }
 
 function toSuper(exp: number): string {

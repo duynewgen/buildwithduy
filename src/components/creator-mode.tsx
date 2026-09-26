@@ -58,14 +58,14 @@ export function CreatorMode({
   );
 
   return (
-    <main className="relative flex min-h-dvh flex-col px-6 py-10 sm:px-10 lg:px-16">
-      <div className="absolute left-6 top-6 z-20 flex flex-col items-start gap-3 sm:left-10 lg:left-16">
+    <main className="relative flex min-h-dvh flex-col bg-[#f0ebf8] px-4 py-10 sm:px-8">
+      <div className="absolute left-4 top-4 z-20 sm:left-8">
         <BackPill href={backHref} />
         {showStartYear && !askingAge ? (
-          <div className="space-y-1.5">
+          <div className="mt-3 space-y-1.5">
             <label
               htmlFor="creator-start-year"
-              className="block text-sm tracking-wide text-zinc-500"
+              className="block text-sm text-[#5f6368]"
             >
               start year
             </label>
@@ -75,7 +75,7 @@ export function CreatorMode({
               inputMode="numeric"
               value={startYearText}
               onChange={handleStartYearChange}
-              className="w-24 rounded-md border border-zinc-300 bg-white px-3 py-1.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition hover:border-zinc-900 focus:border-zinc-900"
+              className="w-24 border-b border-[#dadce0] bg-transparent px-0 py-1.5 font-sans text-sm tabular-nums text-[#202124] outline-none transition focus:border-[#673ab7]"
             />
           </div>
         ) : null}
@@ -83,17 +83,17 @@ export function CreatorMode({
 
       <div className="relative z-0 flex min-h-0 flex-1 items-center justify-center py-8">
         <form
-          className="w-full max-w-md space-y-6"
+          className="w-full max-w-xl space-y-3"
           onSubmit={(event) => event.preventDefault()}
         >
-          <h1 className="text-lg text-zinc-900">interest form</h1>
+          <div className="overflow-hidden rounded-lg bg-[#673ab7] px-6 py-7 text-white shadow-sm">
+            <h1 className="font-sans text-3xl">interest form</h1>
+            <p className="mt-2 text-sm text-white/80">all questions are required</p>
+          </div>
 
-          <div className="space-y-2 text-left">
-            <label
-              htmlFor="creator-name"
-              className="text-sm tracking-wide text-zinc-500"
-            >
-              name
+          <div className="rounded-lg border-t-[10px] border-[#673ab7] bg-white px-6 py-6 shadow-sm">
+            <label htmlFor="creator-name" className="text-base text-[#202124]">
+              name <span className="text-[#d93025]">*</span>
             </label>
             <input
               id="creator-name"
@@ -101,14 +101,17 @@ export function CreatorMode({
               value={name}
               onChange={(event) => setName(event.target.value)}
               autoComplete="name"
-              className="w-full rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none transition hover:border-zinc-900 focus:border-zinc-900"
+              placeholder="your answer"
+              className="mt-4 w-full border-b border-[#dadce0] bg-transparent px-0 py-2 font-sans text-base text-[#202124] outline-none transition placeholder:text-[#80868b] hover:border-[#673ab7] focus:border-[#673ab7]"
             />
           </div>
 
-          <div className="space-y-2 text-left">
-            <span className="text-sm tracking-wide text-zinc-500">
-              {askingAge ? "how old are you" : "when were you born"}
+          <div className="rounded-lg bg-white px-6 py-6 shadow-sm">
+            <span className="text-base text-[#202124]">
+              {askingAge ? "how old are you" : "when were you born"}{" "}
+              <span className="text-[#d93025]">*</span>
             </span>
+            <div className="mt-4">
             {inlinePicker ? (
               <YearPicker
                 key={`${minYear}-${maxYear}`}
@@ -124,8 +127,8 @@ export function CreatorMode({
                 type="button"
                 onClick={() => setModalOpen(true)}
                 className={[
-                  "flex w-full cursor-pointer items-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-left font-sans text-sm tabular-nums outline-none transition hover:border-zinc-900",
-                  year === null ? "text-zinc-400" : "text-zinc-900",
+                  "flex w-full cursor-pointer items-center border-b border-[#dadce0] bg-transparent px-0 py-2.5 text-left font-sans text-base tabular-nums outline-none transition hover:border-[#673ab7]",
+                  year === null ? "text-[#80868b]" : "text-[#202124]",
                 ].join(" ")}
               >
                 {year === null
@@ -135,6 +138,7 @@ export function CreatorMode({
                   : String(year)}
               </button>
             )}
+            </div>
           </div>
         </form>
       </div>
@@ -178,7 +182,7 @@ function CreatorModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="relative z-10 flex max-h-[min(92vh,52rem)] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-xl"
+        className="relative z-10 flex max-h-[min(92vh,52rem)] w-full max-w-3xl flex-col overflow-hidden rounded-lg border-t-[10px] border-[#673ab7] bg-white shadow-xl"
       >
         <div className="flex shrink-0 items-center justify-between border-b border-zinc-100 px-5 py-3">
           <span className="text-sm text-zinc-500">{title}</span>
