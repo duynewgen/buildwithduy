@@ -68,20 +68,23 @@ function formatYear(value: number) {
 export function BirthdayMath({
   yearOnly = false,
   minYear,
+  maxYear,
   initialYear,
   onYearChange,
   creatorField = false,
 }: YearPickerProps = {}) {
   const yearMin = Math.max(0, minYear ?? CREATOR_YEAR.min);
+  const yearMax = maxYear ?? CREATOR_YEAR.max;
+  const countingAge = yearMax <= 100 && yearMin === 0;
   const advanced = yearOnly || creatorField;
   const yearOptions = useMemo(
     () =>
       formulaOptions(
         yearMin,
-        CREATOR_YEAR.max,
+        yearMax,
         advanced ? "advanced" : "normal",
       ),
-    [yearMin, advanced],
+    [yearMin, yearMax, advanced],
   );
 
   const [month, setMonth] = useState(1);
@@ -103,7 +106,7 @@ export function BirthdayMath({
     return (
       <IconSelect
         id="creator-birthyear"
-        aria-label="when were you born"
+        aria-label={countingAge ? "how old are you" : "when were you born"}
         value={year ?? ""}
         onChange={(event) => {
           const next = Number(event.target.value);
@@ -116,7 +119,7 @@ export function BirthdayMath({
         ].join(" ")}
       >
         <option value="" disabled>
-          add your birthyear
+          {countingAge ? "add your age" : "add your birthyear"}
         </option>
         {yearOptions.map((option) => (
           <option key={option.value} value={option.value}>
@@ -133,7 +136,9 @@ export function BirthdayMath({
     : `${formulaFor(month)} / ${formulaFor(day)} / ${formulaFor(safeYear)}`;
 
   const numberSummary = yearOnly
-    ? formatYear(safeYear)
+    ? countingAge
+      ? String(safeYear)
+      : formatYear(safeYear)
     : `${formatMonthOrDay(month)} / ${formatMonthOrDay(day)} / ${formatYear(safeYear)}`;
 
   return (

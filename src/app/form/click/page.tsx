@@ -26,6 +26,7 @@ export default async function BirthdayClickPage({ searchParams }: PageProps) {
       description={build.description}
       backHref="/form"
       contentClassName="max-w-md"
+      prompt="age"
       YearPicker={BirthdayClick}
     >
       <BirthdayClick />

@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
+import { CREATOR_AGE, CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 
 type Step = "month" | "day" | "year";
 type Phase = "idle" | "running" | "done";
@@ -37,9 +37,9 @@ function formatMonthOrDay(value: number | null) {
   return String(value).padStart(2, "0");
 }
 
-function formatYear(value: number | null) {
-  if (value === null) return "----";
-  return String(value).padStart(4, "0");
+function formatYear(value: number | null, compact = false) {
+  if (value === null) return compact ? "--" : "----";
+  return compact ? String(value) : String(value).padStart(4, "0");
 }
 
 function clicksToValue(step: Step, clicks: number, yearMin: number) {
@@ -50,10 +50,13 @@ function clicksToValue(step: Step, clicks: number, yearMin: number) {
 export function BirthdayClick({
   yearOnly = false,
   minYear,
+  maxYear,
   initialYear,
   onYearChange,
 }: YearPickerProps = {}) {
   const yearMin = minYear ?? CREATOR_YEAR.min;
+  const yearMax = maxYear ?? CREATOR_YEAR.max;
+  const countingAge = yearMax <= CREATOR_AGE.max && yearMin === CREATOR_AGE.min;
   const steps = yearOnly ? (["year"] as Step[]) : ALL_STEPS;
   const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
   const [month, setMonth] = useState<number | null>(null);
@@ -80,7 +83,7 @@ export function BirthdayClick({
 
   const range =
     step === "year"
-      ? { min: yearMin, max: CREATOR_YEAR.max }
+      ? { min: yearMin, max: yearMax }
       : RANGES[step];
   const stepIndex = steps.indexOf(step);
 
@@ -212,7 +215,9 @@ export function BirthdayClick({
   const error =
     phase === "done" && !inRange
       ? step === "year"
-        ? `need ${range.min - yearMin}–${range.max - yearMin} clicks (year ${range.min}–${range.max})`
+        ? countingAge
+          ? `need ${range.min}–${range.max} clicks`
+          : `need ${range.min - yearMin}–${range.max - yearMin} clicks (year ${range.min}–${range.max})`
         : `need ${range.min}–${range.max} clicks for a ${step}`
       : null;
 
@@ -236,13 +241,15 @@ export function BirthdayClick({
     <div className="w-full text-center">
       <p className="font-sans text-3xl tabular-nums tracking-wide text-zinc-900 sm:text-4xl">
         {yearOnly
-          ? formatYear(summaryYear)
+          ? formatYear(summaryYear, countingAge)
           : `${formatMonthOrDay(summaryMonth)} / ${formatMonthOrDay(summaryDay)} / ${formatYear(summaryYear)}`}
       </p>
 
       <div className="mt-8 space-y-3 text-left">
         <div className="flex items-baseline justify-between gap-4">
-          <span className="text-sm tracking-wide text-zinc-500">{step}</span>
+          <span className="text-sm tracking-wide text-zinc-500">
+            {countingAge && step === "year" ? "age" : step}
+          </span>
           <span className="font-sans text-2xl tabular-nums text-zinc-900">
             {clicks}{" "}
             <span className="text-base text-zinc-500">clicks</span>
@@ -334,7 +341,9 @@ export function BirthdayClick({
           <p className="mt-4 text-sm text-zinc-400">
             step {stepIndex + 1} of {steps.length}: {step} (
             {step === "year"
-              ? `${range.min - yearMin}–${range.max - yearMin} clicks → year ${range.min}–${range.max}`
+              ? countingAge
+                ? `${range.min}–${range.max} clicks`
+                : `${range.min - yearMin}–${range.max - yearMin} clicks → year ${range.min}–${range.max}`
               : `${range.min}–${range.max} clicks`}
             )
           </p>
@@ -342,7 +351,9 @@ export function BirthdayClick({
       )}
       {yearOnly ? (
         <p className="mt-4 text-sm text-zinc-400">
-          year = {yearMin} + clicks ({range.min}–{range.max})
+          {countingAge
+            ? `age = clicks (${range.min}–${range.max})`
+            : `year = ${yearMin} + clicks (${range.min}–${range.max})`}
         </p>
       ) : null}
     </div>

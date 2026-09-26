@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
+import { CREATOR_AGE, CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 
 type Step = "month" | "day" | "year";
 type Phase = "aiming" | "falling" | "landed";
@@ -73,19 +73,19 @@ function formatMonthOrDay(value: number | null) {
   return String(value).padStart(2, "0");
 }
 
-function formatYear(value: number | null) {
-  if (value === null) return "----";
-  return String(value).padStart(4, "0");
+function formatYear(value: number | null, compact = false) {
+  if (value === null) return compact ? "--" : "----";
+  return compact ? String(value) : String(value).padStart(4, "0");
 }
 
-function slotValuesFor(step: Step, yearMin: number): number[] {
+function slotValuesFor(step: Step, yearMin: number, yearMax: number): number[] {
   if (step === "month") {
     return Array.from({ length: 12 }, (_, i) => i + 1);
   }
   if (step === "day") {
     return Array.from({ length: 31 }, (_, i) => i + 1);
   }
-  const max = CREATOR_YEAR.max;
+  const max = yearMax;
   const count = max - yearMin + 1;
   const nSlots = Math.min(count, MAX_YEAR_SLOTS);
   if (nSlots === count) {
@@ -140,6 +140,7 @@ function CakeBall({
 export function BirthdayPlinko({
   yearOnly = false,
   minYear,
+  maxYear,
   initialYear,
   onYearChange,
 }: YearPickerProps = {}) {
@@ -147,6 +148,8 @@ export function BirthdayPlinko({
   const pegs = buildPegs(layout);
   const boardBottom = layout.height - layout.slotH;
   const yearMin = minYear ?? CREATOR_YEAR.min;
+  const yearMax = maxYear ?? CREATOR_YEAR.max;
+  const countingAge = yearMax <= CREATOR_AGE.max && yearMin === CREATOR_AGE.min;
   const steps = yearOnly ? (["year"] as Step[]) : ALL_STEPS;
   const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
   const [month, setMonth] = useState<number | null>(null);
@@ -180,7 +183,7 @@ export function BirthdayPlinko({
   pegsRef.current = pegs;
   boardBottomRef.current = boardBottom;
 
-  const values = slotValuesFor(step, yearMin);
+  const values = slotValuesFor(step, yearMin, yearMax);
   valuesRef.current = values;
   const slotCount = values.length;
   const slotW = layout.width / slotCount;
@@ -364,7 +367,7 @@ export function BirthdayPlinko({
         ].join(" ")}
       >
         {yearOnly
-          ? formatYear(liveValue ?? null)
+          ? formatYear(liveValue ?? null, countingAge)
           : `${formatMonthOrDay(step === "month" ? (liveValue ?? month) : month)} / ${formatMonthOrDay(step === "day" ? (liveValue ?? day) : day)} / ${formatYear(step === "year" ? (liveValue ?? year) : year)}`}
       </p>
 

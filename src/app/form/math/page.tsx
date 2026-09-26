@@ -27,6 +27,7 @@ export default async function BirthdayMathPage({ searchParams }: PageProps) {
       backHref="/form"
       contentClassName="max-w-3xl"
       creatorInline
+      prompt="age"
       YearPicker={BirthdayMath}
     >
       <BirthdayMath />

@@ -1,7 +1,7 @@
 import { getTodayParts } from "@/lib/today";
 
 export function BirthdayBounceDemo() {
-  const { month, day } = getTodayParts();
+  const { year } = getTodayParts();
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#f7f4ef] px-3">
@@ -19,7 +19,7 @@ export function BirthdayBounceDemo() {
         suppressHydrationWarning
         className="font-sans text-sm tabular-nums text-zinc-700"
       >
-        {month} / {day}
+        {year}
       </p>
     </div>
   );

@@ -73,23 +73,23 @@ export const builds: Build[] = [
   {
     path: "form/bounce",
     title: "bounce",
-    description: "bounce a cake off the walls to count your birth year.",
+    description: "bounce a cake off the walls to count your age.",
   },
   {
     path: "form/click",
     title: "click",
     description:
-      "mash the box for 5 seconds to set your birth year.",
+      "mash the box for 5 seconds to set your age.",
   },
   {
     path: "form/drop-the-cake",
     title: "drop the cake",
-    description: "drop a cake through the pegs onto your birth year.",
+    description: "drop a cake through the pegs onto your age.",
   },
   {
     path: "form/math",
     title: "math",
-    description: "pick your birth year as a cursed formula.",
+    description: "pick your age as a cursed formula.",
   },
   {
     path: "payment/apple-pay",

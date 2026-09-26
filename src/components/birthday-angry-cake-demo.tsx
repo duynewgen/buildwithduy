@@ -1,4 +1,4 @@
-import { formatToday } from "@/lib/today";
+import { getTodayParts } from "@/lib/today";
 
 export function BirthdayAngryCakeDemo() {
   return (
@@ -98,7 +98,7 @@ export function BirthdayAngryCakeDemo() {
         suppressHydrationWarning
         className="font-sans text-sm tabular-nums text-zinc-700"
       >
-        {formatToday()}
+        {getTodayParts().year}
       </p>
     </div>
   );

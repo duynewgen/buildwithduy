@@ -9,6 +9,8 @@ export type YearPickerProps = {
   yearOnly?: boolean;
   /** inclusive floor for the year range (default CREATOR_YEAR.min) */
   minYear?: number;
+  /** inclusive ceiling (default CREATOR_YEAR.max; age builds use 100) */
+  maxYear?: number;
   initialYear?: number;
   onYearChange?: (year: number) => void;
   /**
@@ -21,6 +23,11 @@ export type YearPickerProps = {
 export const CREATOR_YEAR = {
   min: 1900,
   max: 2026,
+} as const;
+
+export const CREATOR_AGE = {
+  min: 0,
+  max: 100,
 } as const;
 
 /** Parse a typed start year; falls back to CREATOR_YEAR.min when empty/invalid. */

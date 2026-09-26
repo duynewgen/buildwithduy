@@ -37,7 +37,7 @@ Fake “sign in” shells that resolve via a cursed challenge, then show success
 
 ## Birthday / creator
 
-- Public form builds use the interest form (name + when were you born) and a **year-only** cursed picker. Select builds (words, roman, math) put the year control inline; the others open it in a modal. `?creator=true` adds the start-year filming control.
+- Public form builds use the interest form and a year-only cursed picker. Select builds (words, roman, math, arabic) put the control inline; the others open it in a modal. Bounce, click, drop the cake, and math ask `how old are you` from 0 to 100. `?creator=true` adds the start-year filming control on birth-year builds.
 - Date thumbnails: today’s date from `src/lib/today.ts` + `suppressHydrationWarning`.
 
 ## Tone

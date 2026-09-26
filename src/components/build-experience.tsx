@@ -15,6 +15,8 @@ type BuildExperienceProps = {
   YearPicker?: ComponentType<YearPickerProps>;
   /** select-based builds: year dropdown sits in the form (no modal) */
   creatorInline?: boolean;
+  /** age builds ask how old you are instead of a birth year */
+  prompt?: "born" | "age";
   /**
    * creator mode shows the same build as normal (no interest form),
    * only hides title/description for filming.
@@ -36,6 +38,7 @@ export function BuildExperience({
   contentClassName,
   YearPicker,
   creatorInline = false,
+  prompt = "born",
   creatorSame = false,
   children,
 }: BuildExperienceProps) {
@@ -59,6 +62,7 @@ export function BuildExperience({
         backHref={backHref}
         YearPicker={YearPicker}
         inlinePicker={creatorInline}
+        prompt={prompt}
         showStartYear={creator}
       />
     );

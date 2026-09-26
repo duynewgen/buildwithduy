@@ -8,6 +8,7 @@ import {
 } from "react";
 import { BackPill } from "@/components/back-pill";
 import {
+  CREATOR_AGE,
   CREATOR_YEAR,
   parseStartYear,
   type YearPickerProps,
@@ -20,6 +21,8 @@ type CreatorModeProps = {
   inlinePicker?: boolean;
   /** filming control: typed floor for the year range */
   showStartYear?: boolean;
+  /** age builds ask how old you are, from 0 to 100 */
+  prompt?: "born" | "age";
 };
 
 export function CreatorMode({
@@ -27,13 +30,16 @@ export function CreatorMode({
   YearPicker,
   inlinePicker = false,
   showStartYear = false,
+  prompt = "born",
 }: CreatorModeProps) {
   const [name, setName] = useState("build with duy");
   const [year, setYear] = useState<number | null>(null);
   const [startYearText, setStartYearText] = useState(String(CREATOR_YEAR.min));
   const [modalOpen, setModalOpen] = useState(false);
 
-  const minYear = parseStartYear(startYearText);
+  const askingAge = prompt === "age";
+  const minYear = askingAge ? CREATOR_AGE.min : parseStartYear(startYearText);
+  const maxYear = askingAge ? CREATOR_AGE.max : CREATOR_YEAR.max;
 
   const handleYearChange = useCallback((next: number) => {
     setYear(next);
@@ -55,7 +61,7 @@ export function CreatorMode({
     <main className="relative flex min-h-dvh flex-col px-6 py-10 sm:px-10 lg:px-16">
       <div className="absolute left-6 top-6 z-20 flex flex-col items-start gap-3 sm:left-10 lg:left-16">
         <BackPill href={backHref} />
-        {showStartYear ? (
+        {showStartYear && !askingAge ? (
           <div className="space-y-1.5">
             <label
               htmlFor="creator-start-year"
@@ -101,14 +107,15 @@ export function CreatorMode({
 
           <div className="space-y-2 text-left">
             <span className="text-sm tracking-wide text-zinc-500">
-              when were you born
+              {askingAge ? "how old are you" : "when were you born"}
             </span>
             {inlinePicker ? (
               <YearPicker
-                key={minYear}
+                key={`${minYear}-${maxYear}`}
                 yearOnly
                 creatorField
                 minYear={minYear}
+                maxYear={maxYear}
                 initialYear={year ?? undefined}
                 onYearChange={handleYearChange}
               />
@@ -117,11 +124,15 @@ export function CreatorMode({
                 type="button"
                 onClick={() => setModalOpen(true)}
                 className={[
-                  "flex w-full cursor-pointer items-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-left text-sm outline-none transition hover:border-zinc-900",
+                  "flex w-full cursor-pointer items-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-left font-sans text-sm tabular-nums outline-none transition hover:border-zinc-900",
                   year === null ? "text-zinc-400" : "text-zinc-900",
                 ].join(" ")}
               >
-                {year === null ? "add your birthyear" : String(year)}
+                {year === null
+                  ? askingAge
+                    ? "add your age"
+                    : "add your birthyear"
+                  : String(year)}
               </button>
             )}
           </div>
@@ -129,11 +140,15 @@ export function CreatorMode({
       </div>
 
       {!inlinePicker && modalOpen ? (
-        <CreatorModal onClose={() => setModalOpen(false)}>
+        <CreatorModal
+          title={askingAge ? "pick an age" : "pick a year"}
+          onClose={() => setModalOpen(false)}
+        >
           <YearPicker
-            key={minYear}
+            key={`${minYear}-${maxYear}`}
             yearOnly
             minYear={minYear}
+            maxYear={maxYear}
             initialYear={year ?? undefined}
             onYearChange={handleYearChange}
           />
@@ -146,9 +161,11 @@ export function CreatorMode({
 function CreatorModal({
   children,
   onClose,
+  title,
 }: {
   children: ReactNode;
   onClose: () => void;
+  title: string;
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8">
@@ -164,7 +181,7 @@ function CreatorModal({
         className="relative z-10 flex max-h-[min(92vh,52rem)] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-xl"
       >
         <div className="flex shrink-0 items-center justify-between border-b border-zinc-100 px-5 py-3">
-          <span className="text-sm text-zinc-500">pick a year</span>
+          <span className="text-sm text-zinc-500">{title}</span>
           <button
             type="button"
             onClick={onClose}

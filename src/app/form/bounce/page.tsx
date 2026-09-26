@@ -28,6 +28,7 @@ export default async function BirthdayBouncePage({
       description={build.description}
       backHref="/form"
       contentClassName="max-w-2xl"
+      prompt="age"
       YearPicker={BirthdayBounce}
     >
       <BirthdayBounce />

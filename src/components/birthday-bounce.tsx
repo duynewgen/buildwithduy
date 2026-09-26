@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
+import { CREATOR_AGE, CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 
 type Step = "month" | "day" | "year";
 type Phase = "aiming" | "flying" | "stopped";
@@ -60,9 +60,9 @@ function formatMonthOrDay(value: number | null) {
   return String(value).padStart(2, "0");
 }
 
-function formatYear(value: number | null) {
-  if (value === null) return "----";
-  return String(value).padStart(4, "0");
+function formatYear(value: number | null, compact = false) {
+  if (value === null) return compact ? "--" : "----";
+  return compact ? String(value) : String(value).padStart(4, "0");
 }
 
 function pullFromPointer(
@@ -117,10 +117,13 @@ function CakeBall({
 export function BirthdayBounce({
   yearOnly = false,
   minYear,
+  maxYear,
   initialYear,
   onYearChange,
 }: YearPickerProps = {}) {
   const yearMin = minYear ?? CREATOR_YEAR.min;
+  const yearMax = maxYear ?? CREATOR_YEAR.max;
+  const countingAge = yearMax <= CREATOR_AGE.max && yearMin === CREATOR_AGE.min;
   const physics = yearOnly ? PHYSICS.creator : PHYSICS.normal;
   const steps = yearOnly ? (["year"] as Step[]) : MONTH_DAY_STEPS;
   const svgRef = useRef<SVGSVGElement>(null);
@@ -151,7 +154,7 @@ export function BirthdayBounce({
 
   const range =
     step === "year"
-      ? { min: yearMin, max: CREATOR_YEAR.max }
+      ? { min: yearMin, max: yearMax }
       : RANGES[step];
   const stepIndex = steps.indexOf(step);
 
@@ -338,7 +341,9 @@ export function BirthdayBounce({
   const error =
     phase === "stopped" && !inRange
       ? step === "year"
-        ? `need ${range.min - yearMin}–${range.max - yearMin} bounces (year ${range.min}–${range.max})`
+        ? countingAge
+          ? `need ${range.min}–${range.max} bounces`
+          : `need ${range.min - yearMin}–${range.max - yearMin} bounces (year ${range.min}–${range.max})`
         : step === "month"
           ? `need ${range.min}–${range.max} bounces for a month`
           : `need ${range.min}–${range.max} bounces for a day`
@@ -347,7 +352,9 @@ export function BirthdayBounce({
   const status =
     phase === "aiming"
       ? step === "year"
-        ? `pull back from the launcher. each bounce adds a year from ${yearMin}.`
+        ? countingAge
+          ? "pull back from the launcher. each bounce is a year older."
+          : `pull back from the launcher. each bounce adds a year from ${yearMin}.`
         : `pull back from the launcher. wall hits count for ${step}.`
       : phase === "flying"
         ? "bouncing..."
@@ -365,13 +372,16 @@ export function BirthdayBounce({
               phase === "flying" || phase === "aiming"
                 ? liveYear
                 : year,
+              countingAge,
             )
           : `${formatMonthOrDay(month)} / ${formatMonthOrDay(day)}`}
       </p>
 
       <div className="mt-8 space-y-3 text-left">
         <div className="flex items-baseline justify-between gap-4">
-          <span className="text-sm tracking-wide text-zinc-500">{step}</span>
+          <span className="text-sm tracking-wide text-zinc-500">
+            {countingAge && step === "year" ? "age" : step}
+          </span>
           <span className="font-sans text-2xl tabular-nums text-zinc-900">
             {bounces}{" "}
             <span className="text-base text-zinc-500">bounces</span>
@@ -513,7 +523,9 @@ export function BirthdayBounce({
       )}
       {yearOnly ? (
         <p className="mt-4 text-sm text-zinc-400">
-          year = {yearMin} + bounces ({range.min}–{range.max})
+          {countingAge
+            ? `age = bounces (${range.min}–${range.max})`
+            : `year = ${yearMin} + bounces (${range.min}–${range.max})`}
         </p>
       ) : null}
     </div>

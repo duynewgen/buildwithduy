@@ -1,15 +1,17 @@
 "use client";
 
-import { formatToday } from "@/lib/today";
+import { getTodayParts } from "@/lib/today";
 
 export function BirthdaySliderDemo() {
+  const { year } = getTodayParts();
+
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-zinc-50 px-4">
       <p
         suppressHydrationWarning
         className="font-sans text-lg tabular-nums tracking-wide text-zinc-900 transition-transform duration-500 ease-out group-hover:scale-105"
       >
-        {formatToday()}
+        {year}
       </p>
       <div className="w-full max-w-[7.5rem]">
         <div className="h-1 w-full rounded-full bg-zinc-200">
