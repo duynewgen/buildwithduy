@@ -76,6 +76,11 @@ export const builds: Build[] = [
     description: "pick your birth year in chinese.",
   },
   {
+    path: "form/chemistry",
+    title: "chemistry",
+    description: "pick your age as a chemical formula.",
+  },
+  {
     path: "form/bounce",
     title: "bounce",
     description: "bounce a cake off the walls to count your age.",
