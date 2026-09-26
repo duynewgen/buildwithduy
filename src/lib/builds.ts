@@ -76,6 +76,11 @@ export const builds: Build[] = [
     description: "pick your birth year in chinese.",
   },
   {
+    path: "form/math",
+    title: "math",
+    description: "pick your age as a cursed formula.",
+  },
+  {
     path: "form/chemistry",
     title: "chemistry",
     description: "pick your age as a chemical formula.",
@@ -84,6 +89,11 @@ export const builds: Build[] = [
     path: "form/physics",
     title: "physics",
     description: "pick your age as a physics equation.",
+  },
+  {
+    path: "form/morse",
+    title: "morse",
+    description: "tap and hold morse for your age.",
   },
   {
     path: "form/wheel-of-fortune",
@@ -105,11 +115,6 @@ export const builds: Build[] = [
     path: "form/drop-the-cake",
     title: "drop the cake",
     description: "drop a cake through the pegs onto your age.",
-  },
-  {
-    path: "form/math",
-    title: "math",
-    description: "pick your age as a cursed formula.",
   },
   {
     path: "payment/apple-pay",

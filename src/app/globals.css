@@ -11,6 +11,7 @@
   --animate-plinko-drop: plinko-drop 1s ease-in-out forwards;
   --animate-math-flip: math-flip 0.7s ease-in-out forwards;
   --animate-apple-fall: apple-fall 0.95s ease-in forwards;
+  --animate-morse-lamp: morse-lamp 1.1s ease-in-out;
 }
 
 @layer base {
@@ -203,6 +204,28 @@
   100% {
     transform: translate(-50%, 2.6rem);
     opacity: 1;
+  }
+}
+
+@keyframes morse-lamp {
+  0%,
+  100% {
+    background: #e4e4e7;
+  }
+  8%,
+  16% {
+    background: #facc15;
+    box-shadow: 0 0 12px #facc15;
+  }
+  24%,
+  32% {
+    background: #facc15;
+    box-shadow: 0 0 12px #facc15;
+  }
+  44%,
+  68% {
+    background: #facc15;
+    box-shadow: 0 0 12px #facc15;
   }
 }
 
