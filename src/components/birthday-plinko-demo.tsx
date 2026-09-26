@@ -1,7 +1,4 @@
-import { getTodayParts } from "@/lib/today";
-
 export function BirthdayPlinkoDemo() {
-  const { year } = getTodayParts();
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#f7f4ef] px-3">
       <div className="relative h-16 w-28 overflow-hidden rounded-xl border border-zinc-200 bg-[#faf7f2]">
@@ -40,12 +37,7 @@ export function BirthdayPlinkoDemo() {
           🎂
         </span>
       </div>
-      <p
-        suppressHydrationWarning
-        className="font-sans text-sm tabular-nums text-zinc-700"
-      >
-        {year}
-      </p>
+      <p className="font-sans text-sm tabular-nums text-zinc-700">10</p>
     </div>
   );
 }
