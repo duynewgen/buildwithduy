@@ -86,6 +86,11 @@ export const builds: Build[] = [
     description: "pick your age as a physics equation.",
   },
   {
+    path: "form/wheel-of-fortune",
+    title: "wheel of fortune",
+    description: "spin the wheel to land on your age.",
+  },
+  {
     path: "form/bounce",
     title: "bounce",
     description: "bounce a cake off the walls to count your age.",
