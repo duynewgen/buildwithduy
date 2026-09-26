@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useCreatorFieldClass, useCreatorFieldTextClass } from "@/components/form-chrome";
 import { IconSelect } from "@/components/icon-select";
 import {
   CREATOR_AGE,
   CREATOR_YEAR,
-  creatorFieldSelectClassName,
   type YearPickerProps,
 } from "@/lib/creator";
 import { physicsFor, physicsOptions } from "@/lib/physics";
@@ -17,6 +17,7 @@ export function BirthdayPhysics({
   onYearChange,
   creatorField = false,
 }: YearPickerProps = {}) {
+  const creatorFieldSelectClassName = useCreatorFieldClass();
   const yearMin = Math.max(0, minYear ?? CREATOR_AGE.min);
   const yearMax = maxYear ?? (yearMin === 0 ? CREATOR_AGE.max : CREATOR_YEAR.max);
   const countingAge = yearMax <= CREATOR_AGE.max && yearMin === CREATOR_AGE.min;
@@ -28,6 +29,8 @@ export function BirthdayPhysics({
   const [year, setYear] = useState<number | null>(
     creatorField ? (initialYear ?? null) : Math.max(yearMin, initialYear ?? yearMin),
   );
+
+  const creatorFieldTextClassName = useCreatorFieldTextClass(year === null);
 
   function updateYear(next: number) {
     setYear(next);
@@ -48,7 +51,7 @@ export function BirthdayPhysics({
         className={[
           creatorFieldSelectClassName,
           "font-sans",
-          year === null ? "text-[#80868b]" : "text-[#202124]",
+          creatorFieldTextClassName,
         ].join(" ")}
       >
         <option value="" disabled>

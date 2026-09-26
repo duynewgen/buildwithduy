@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useCreatorFieldClass, useCreatorFieldTextClass } from "@/components/form-chrome";
 import { IconSelect } from "@/components/icon-select";
 import {
   CREATOR_YEAR,
-  creatorFieldSelectClassName,
   type YearPickerProps,
 } from "@/lib/creator";
 import { rangeToChineseOptions, toChineseWords } from "@/lib/chinese";
@@ -16,6 +16,7 @@ export function BirthdayChinese({
   onYearChange,
   creatorField = false,
 }: YearPickerProps = {}) {
+  const creatorFieldSelectClassName = useCreatorFieldClass();
   const yearMin = Math.max(0, minYear ?? CREATOR_YEAR.min);
   const yearMax = maxYear ?? CREATOR_YEAR.max;
   const yearOptions = useMemo(
@@ -26,6 +27,8 @@ export function BirthdayChinese({
   const [year, setYear] = useState<number | null>(
     creatorField ? (initialYear ?? null) : Math.max(yearMin, initialYear ?? yearMin),
   );
+
+  const creatorFieldTextClassName = useCreatorFieldTextClass(year === null);
 
   function updateYear(next: number) {
     setYear(next);
@@ -46,7 +49,7 @@ export function BirthdayChinese({
         className={[
           creatorFieldSelectClassName,
           "font-sans",
-          year === null ? "text-[#80868b]" : "text-[#202124]",
+          creatorFieldTextClassName,
         ].join(" ")}
       >
         <option value="" disabled>

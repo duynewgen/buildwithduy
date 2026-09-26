@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useCreatorFieldClass, useCreatorFieldTextClass } from "@/components/form-chrome";
 import { IconSelect } from "@/components/icon-select";
 import {
   CREATOR_YEAR,
-  creatorFieldSelectClassName,
   type YearPickerProps,
 } from "@/lib/creator";
 import { rangeToRomanOptions, toRoman } from "@/lib/roman";
@@ -60,6 +60,7 @@ export function BirthdayRoman({
   onYearChange,
   creatorField = false,
 }: YearPickerProps = {}) {
+  const creatorFieldSelectClassName = useCreatorFieldClass();
   const yearMin = Math.max(1, minYear ?? CREATOR_YEAR.min);
   const yearOptions = useMemo(
     () => rangeToRomanOptions(yearMin, CREATOR_YEAR.max),
@@ -77,6 +78,8 @@ export function BirthdayRoman({
   useEffect(() => {
     if (yearOnly && !creatorField && year !== null) onYearChange?.(year);
   }, [yearOnly, creatorField, year, onYearChange]);
+
+  const creatorFieldTextClassName = useCreatorFieldTextClass(year === null);
 
   function updateYear(next: number) {
     setYear(next);
@@ -97,7 +100,7 @@ export function BirthdayRoman({
         className={[
           creatorFieldSelectClassName,
           "tabular-nums",
-          year === null ? "text-zinc-400" : "text-zinc-900",
+          creatorFieldTextClassName,
         ].join(" ")}
       >
         <option value="" disabled>

@@ -39,83 +39,125 @@ export const categories: Category[] = [
  * Registry of every public build. Homepage + sitemap read from this.
  * When adding a build: add a route at `src/app/{path}/page.tsx` AND an entry here.
  */
-export const builds: Build[] = [
+export type FormPrompt = "born" | "age";
+
+export type FormExperiment = {
+  slug: string;
+  title: string;
+  description: string;
+  prompt: FormPrompt;
+  inline?: boolean;
+};
+
+/** Shared form builds. Chrome is `?type=form1` (plain) or `?type=form2` (google). */
+export const formExperiments: FormExperiment[] = [
   {
-    path: "form/slider",
+    slug: "slider",
     title: "slider",
     description: "slide to your birth year.",
+    prompt: "born",
   },
   {
-    path: "form/angry-cake",
+    slug: "angry-cake",
     title: "angry cake",
     description: "fling a cake to land on your birth year.",
+    prompt: "born",
   },
   {
-    path: "form/lottery",
+    slug: "lottery",
     title: "lottery",
     description: "pull the handle to roll your birth year.",
+    prompt: "born",
   },
   {
-    path: "form/words",
+    slug: "words",
     title: "words",
     description: "pick your birth year in words.",
+    prompt: "born",
+    inline: true,
   },
   {
-    path: "form/roman",
+    slug: "roman",
     title: "roman",
     description: "pick your birth year in roman numerals.",
+    prompt: "born",
+    inline: true,
   },
   {
-    path: "form/arabic",
+    slug: "arabic",
     title: "arabic",
     description: "pick your birth year in arabic words.",
+    prompt: "born",
+    inline: true,
   },
   {
-    path: "form/chinese",
+    slug: "chinese",
     title: "chinese",
     description: "pick your birth year in chinese.",
+    prompt: "born",
+    inline: true,
   },
   {
-    path: "form/math",
+    slug: "math",
     title: "math",
     description: "pick your age as a cursed formula.",
+    prompt: "age",
+    inline: true,
   },
   {
-    path: "form/chemistry",
+    slug: "chemistry",
     title: "chemistry",
     description: "pick your age as a chemical formula.",
+    prompt: "age",
+    inline: true,
   },
   {
-    path: "form/physics",
+    slug: "physics",
     title: "physics",
     description: "pick your age as a physics equation.",
+    prompt: "age",
+    inline: true,
   },
   {
-    path: "form/morse",
+    slug: "morse",
     title: "morse",
     description: "tap and hold morse for your age.",
+    prompt: "age",
   },
   {
-    path: "form/wheel-of-fortune",
+    slug: "wheel-of-fortune",
     title: "wheel of fortune",
     description: "spin the wheel to land on your age.",
+    prompt: "age",
   },
   {
-    path: "form/bounce",
+    slug: "bounce",
     title: "bounce",
     description: "bounce a cake off the walls to count your age.",
+    prompt: "age",
   },
   {
-    path: "form/click",
+    slug: "click",
     title: "click",
-    description:
-      "mash the box for 5 seconds to set your age.",
+    description: "mash the box for 5 seconds to set your age.",
+    prompt: "age",
   },
   {
-    path: "form/drop-the-cake",
+    slug: "drop-the-cake",
     title: "drop the cake",
     description: "drop a cake through the pegs onto your age.",
+    prompt: "age",
   },
+];
+
+export const formSlugs = formExperiments.map((build) => build.slug);
+
+export const builds: Build[] = [
+  ...formExperiments.map((build) => ({
+    path: `form/${build.slug}`,
+    title: build.title,
+    description: build.description,
+  })),
   {
     path: "payment/apple-pay",
     title: "apple pay",

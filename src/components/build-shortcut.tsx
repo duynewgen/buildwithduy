@@ -32,49 +32,50 @@ import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
 function BuildDemo({ path }: { path: string }) {
-  if (path === "form/slider") {
+  const id = path.replace(/^form[12]\//, "form/");
+  if (id === "form/slider") {
     return <BirthdaySliderDemo />;
   }
-  if (path === "form/angry-cake") {
+  if (id === "form/angry-cake") {
     return <BirthdayAngryCakeDemo />;
   }
-  if (path === "form/lottery") {
+  if (id === "form/lottery") {
     return <BirthdayLotteryDemo />;
   }
-  if (path === "form/words") {
+  if (id === "form/words") {
     return <BirthdayWordsDemo />;
   }
-  if (path === "form/roman") {
+  if (id === "form/roman") {
     return <BirthdayRomanDemo />;
   }
-  if (path === "form/arabic") {
+  if (id === "form/arabic") {
     return <BirthdayArabicDemo />;
   }
-  if (path === "form/chinese") {
+  if (id === "form/chinese") {
     return <BirthdayChineseDemo />;
   }
-  if (path === "form/chemistry") {
+  if (id === "form/chemistry") {
     return <BirthdayChemistryDemo />;
   }
-  if (path === "form/physics") {
+  if (id === "form/physics") {
     return <BirthdayPhysicsDemo />;
   }
-  if (path === "form/morse") {
+  if (id === "form/morse") {
     return <BirthdayMorseDemo />;
   }
-  if (path === "form/wheel-of-fortune") {
+  if (id === "form/wheel-of-fortune") {
     return <BirthdayWheelDemo />;
   }
-  if (path === "form/bounce") {
+  if (id === "form/bounce") {
     return <BirthdayBounceDemo />;
   }
-  if (path === "form/click") {
+  if (id === "form/click") {
     return <BirthdayClickDemo />;
   }
-  if (path === "form/drop-the-cake") {
+  if (id === "form/drop-the-cake") {
     return <BirthdayPlinkoDemo />;
   }
-  if (path === "form/math") {
+  if (id === "form/math") {
     return <BirthdayMathDemo />;
   }
   if (path === "payment/apple-pay") {

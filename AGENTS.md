@@ -34,7 +34,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Top-left back pill navigates to the category page. Do not put the logo on build pages.
 - Metadata title template uses a hyphen: `%s - buildwithduy` (not a middle dot).
 - Register every public build in `src/lib/builds.ts` (directories + sitemap). After each new build: route + registry entry + confirm sitemap.
-- Form builds: interest form (name + when were you born) and a year-only cursed picker. No month or day. `?creator=true` adds the start-year filming control. Wire pages through `BuildExperience`.
+- Form builds: interest form (name + when were you born) and a year-only cursed picker. No month or day. `?creator=true` adds the start-year filming control. `?type=form1` is the plain form; `?type=form2` (default) is the google form. Wire pages through `BuildExperience`.
 - Every build ships a shortcut thumbnail demo that animates on card hover via `group-hover` (idle preview → short motion that hints at the interaction). Wire it in `BuildShortcut`. No idle autoplay loops.
 - Date thumbnails always show today’s date (`src/lib/today.ts`); never hardcode or randomize. Use `suppressHydrationWarning` on the date text.
 
@@ -44,7 +44,7 @@ Living conventions (also in `.cursor/rules/project-context.mdc`). Idea backlog: 
 
 ## Site
 
-- Categories so far: `form` (renamed from `birthday`), `payment`, `authentication` (renamed from `password`).
+- Categories so far: `form` (renamed from `birthday`), `payment`, `authentication` (renamed from `password`). `/birthday` redirects to `/form`.
 - Phone layout height uses `100dvh` (not `100vh`) so the page tracks the browser chrome. Below `xl` the document scrolls so the search bar can collapse; the locked sidebar shell starts at `xl`. Viewport uses `interactive-widget=resizes-content`.
 - `/` = readme homepage. Category pages: fixed sidebar + scrolling content from `xl` up. On the phone, the logo stays top-left and categories open in a right-side drawer.
 - Assets under `public/{category}/`. New build = route + `builds.ts` + hover demo + sitemap.

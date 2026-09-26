@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useCreatorFieldClass, useCreatorFieldTextClass } from "@/components/form-chrome";
 import { IconSelect } from "@/components/icon-select";
 import {
   CREATOR_YEAR,
-  creatorFieldSelectClassName,
   type YearPickerProps,
 } from "@/lib/creator";
 import {
@@ -59,6 +59,7 @@ export function BirthdayWords({
   onYearChange,
   creatorField = false,
 }: YearPickerProps = {}) {
+  const creatorFieldSelectClassName = useCreatorFieldClass();
   const yearMin = Math.max(0, minYear ?? CREATOR_YEAR.min);
   const yearOptions = useMemo(
     () => rangeToWordOptions(yearMin, CREATOR_YEAR.max, yearToWords),
@@ -74,6 +75,8 @@ export function BirthdayWords({
   useEffect(() => {
     if (yearOnly && !creatorField && year !== null) onYearChange?.(year);
   }, [yearOnly, creatorField, year, onYearChange]);
+
+  const creatorFieldTextClassName = useCreatorFieldTextClass(year === null);
 
   function updateYear(next: number) {
     setYear(next);
@@ -93,7 +96,7 @@ export function BirthdayWords({
         }}
         className={[
           creatorFieldSelectClassName,
-          year === null ? "text-zinc-400" : "text-zinc-900",
+          creatorFieldTextClassName,
         ].join(" ")}
       >
         <option value="" disabled>

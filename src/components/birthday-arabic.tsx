@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useCreatorFieldClass, useCreatorFieldTextClass } from "@/components/form-chrome";
 import { IconSelect } from "@/components/icon-select";
 import {
   CREATOR_YEAR,
-  creatorFieldSelectClassName,
   type YearPickerProps,
 } from "@/lib/creator";
 import { rangeToArabicOptions, toArabicWords } from "@/lib/arabic";
@@ -15,6 +15,7 @@ export function BirthdayArabic({
   onYearChange,
   creatorField = false,
 }: YearPickerProps = {}) {
+  const creatorFieldSelectClassName = useCreatorFieldClass();
   const yearMin = Math.max(0, minYear ?? CREATOR_YEAR.min);
   const yearOptions = useMemo(
     () => rangeToArabicOptions(yearMin, CREATOR_YEAR.max),
@@ -24,6 +25,8 @@ export function BirthdayArabic({
   const [year, setYear] = useState<number | null>(
     creatorField ? (initialYear ?? null) : Math.max(yearMin, initialYear ?? yearMin),
   );
+
+  const creatorFieldTextClassName = useCreatorFieldTextClass(year === null);
 
   function updateYear(next: number) {
     setYear(next);
@@ -45,7 +48,7 @@ export function BirthdayArabic({
         className={[
           creatorFieldSelectClassName,
           "font-sans",
-          year === null ? "text-zinc-400" : "text-zinc-900",
+          creatorFieldTextClassName,
         ].join(" ")}
       >
         <option value="" disabled>

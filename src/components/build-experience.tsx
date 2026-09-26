@@ -3,6 +3,7 @@
 import type { ComponentType, ReactNode } from "react";
 import { BuildShell } from "@/components/build-shell";
 import { CreatorMode } from "@/components/creator-mode";
+import type { FormShell } from "@/components/form-chrome";
 import type { YearPickerProps } from "@/lib/creator";
 
 type BuildExperienceProps = {
@@ -17,6 +18,8 @@ type BuildExperienceProps = {
   creatorInline?: boolean;
   /** age builds ask how old you are instead of a birth year */
   prompt?: "born" | "age";
+  /** form1 plain form, or form2 google form (the default) */
+  shell?: FormShell;
   /**
    * creator mode shows the same build as normal (no interest form),
    * only hides title/description for filming.
@@ -39,6 +42,7 @@ export function BuildExperience({
   YearPicker,
   creatorInline = false,
   prompt = "born",
+  shell = "google",
   creatorSame = false,
   children,
 }: BuildExperienceProps) {
@@ -63,6 +67,7 @@ export function BuildExperience({
         YearPicker={YearPicker}
         inlinePicker={creatorInline}
         prompt={prompt}
+        shell={shell}
         showStartYear={creator}
       />
     );
