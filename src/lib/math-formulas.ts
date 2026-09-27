@@ -75,95 +75,286 @@ function sumOfOddsFormula(n: number): string | null {
   return `Σ(2k-1) for k=1…${root}`;
 }
 
-/** Extra-cursed formulas for the age / year picker. */
-export function advancedFormulaFor(n: number): string {
+/**
+ * Long creator formulas. Built so they equal `n`, then ranked so the list
+ * does not collapse into factorials.
+ */
+export function advancedFormulaFor(n: number, avoid?: Set<string>): string {
   if (!Number.isFinite(n) || !Number.isInteger(n)) return String(n);
+  if (n < 0) return `-(${advancedFormulaFor(-n)})`;
 
-  const options = wildFormulas(n);
-  if (options.length === 0) return digitPolynomial(n);
-  return options.sort((a, b) => scoreFormula(b) - scoreFormula(a))[0]!;
+  const ranked = rankCreatorFormulas(n);
+  const choice =
+    ranked.find((label) => !avoid?.has(label)) ??
+    ranked[0] ??
+    digitPolynomial(n);
+  return choice;
 }
 
-function scoreFormula(label: string) {
-  let score = label.length;
-  if (label.includes("!")) score += 12;
-  if (label.includes("C(")) score += 10;
-  if (label.includes("²") || label.includes("³")) score += 6;
-  if (label.includes("×")) score += 4;
-  if (label.includes("÷")) score += 3;
+const creatorFamilies = [
+  "run",
+  "diff",
+  "squares",
+  "product",
+  "gap",
+  "base",
+  "choose3",
+  "choose2",
+] as const;
+
+function rankCreatorFormulas(n: number): string[] {
+  const grouped = new Map<string, string[]>();
+  const seen: string[] = [];
+  for (const item of creatorFormulas(n)) {
+    if (item.label === String(n) || isTrivialFactorial(item.label)) continue;
+    if (item.label.includes("!")) continue;
+    if (seen.includes(item.label)) continue;
+    seen.push(item.label);
+    const bucket = grouped.get(item.family) ?? [];
+    bucket.push(item.label);
+    grouped.set(item.family, bucket);
+  }
+  const longest = seen.reduce((max, label) => Math.max(max, label.length), 0);
+  const floor = longest >= 9 ? 9 : 0;
+
+  const preferred = creatorFamilies[Math.abs(n * 5 + 2) % creatorFamilies.length]!;
+  const strict = rankFamilies(grouped, preferred, floor, false);
+  if (strict.length > 0) return strict;
+  return rankFamilies(grouped, preferred, floor, true);
+}
+
+function rankFamilies(
+  grouped: Map<string, string[]>,
+  preferred: (typeof creatorFamilies)[number],
+  floor: number,
+  allowChoose: boolean,
+) {
+  const ranked: string[] = [];
+  const start = creatorFamilies.indexOf(preferred);
+  for (let step = 0; step < creatorFamilies.length; step += 1) {
+    const family = creatorFamilies[(start + step) % creatorFamilies.length]!;
+    if (
+      !allowChoose &&
+      (family === "choose2" || family === "choose3") &&
+      family !== preferred
+    ) {
+      continue;
+    }
+    const labels = (grouped.get(family) ?? []).filter(
+      (label) => label.length >= floor,
+    );
+    labels.sort(
+      (a, b) => scoreCreator(b) - scoreCreator(a) || a.localeCompare(b),
+    );
+    for (const label of labels) {
+      if (!ranked.includes(label)) ranked.push(label);
+    }
+  }
+  return ranked;
+}
+
+function isTrivialFactorial(label: string) {
+  return /^\d+!$/.test(label) || /^\d+!÷\d+!$/.test(label);
+}
+
+function scoreCreator(label: string) {
+  const pluses = label.split("+").length - 1;
+  let score = Math.min(label.length, 36);
+  if (/[²³⁴⁵⁶⁷⁸⁹]/.test(label) || label.includes("¹⁰") || label.includes("¹¹")) {
+    score += 8;
+  }
+  if (label.includes("×")) score += 7;
+  if (label.includes("÷")) score += 9;
+  if (label.includes("(")) score += 6;
+  if (label.includes("-")) score += 4;
+  if (pluses > 1) score += 3;
+  if (label.includes("!")) score -= 18;
+  if (/^[0-9+]+$/.test(label)) score -= 14;
+  if (label.length < 8) score -= 12;
+  if (label.length > 46) score -= label.length - 46;
   return score;
 }
 
-function wildFormulas(n: number): string[] {
-  const options: string[] = [];
-  const abs = Math.abs(n);
-
-  if (n === 0) return ["0!", "3!-3!", "(2!)!÷2!"];
-  if (n === 1) return ["0!", "1!", "2!-1", "3!÷3!"];
-  if (n < 0) return [`-(${advancedFormulaFor(-n)})`];
-
-  const factorial = [1, 1, 2, 6, 24, 120, 720];
-  for (let i = 2; i < factorial.length; i += 1) {
-    const fact = factorial[i]!;
-    const delta = n - fact;
-    if (delta === 0) options.push(`${i}!`);
-    else if (Math.abs(delta) <= 16) {
-      options.push(delta > 0 ? `${i}!+${delta}` : `${i}!-${-delta}`);
-    }
-    if (n % fact === 0 && n / fact >= 2 && n / fact <= 12) {
-      options.push(`${i}!×${n / fact}`);
-    }
-  }
-
-  if (abs >= 2 && options.length === 0) {
-    options.push(`${n}!÷${n - 1}!`);
-  }
-
-  if (isPerfectSquare(n)) {
-    const root = Math.round(Math.sqrt(n));
-    options.push(`${root}²`, `(${root})²`, `${root}!÷${root - 1}!×${root}`);
-  }
-
-  const cubeRoot = Math.round(Math.cbrt(Math.max(n, 0)));
-  for (const c of [cubeRoot - 1, cubeRoot, cubeRoot + 1]) {
-    if (c < 2) continue;
-    const delta = n - c ** 3;
-    if (delta !== 0 && Math.abs(delta) <= 24) {
-      options.push(delta > 0 ? `${c}³+${delta}` : `${c}³-${-delta}`);
-    }
-  }
-
+function prettyPart(n: number): string {
+  if (n < 0) return `-${prettyPart(-n)}`;
+  if (isPerfectSquare(n) && n >= 4) return `${Math.round(Math.sqrt(n))}²`;
   const factors = factorize(n);
-  if (factors.length >= 2) options.push(joinProduct(factors));
-  if (factors.length >= 3) {
-    options.push(`${factors[0]}×(${joinProduct(factors.slice(1))})`);
+  if (n > 3 && factors.length >= 2) return joinProduct(factors);
+  return String(n);
+}
+
+type CreatorFormula = { family: string; label: string };
+
+function creatorFormulas(n: number): CreatorFormula[] {
+  if (n === 0) {
+    return [
+      { family: "product", label: "(4²×3)-(6×8)" },
+      { family: "product", label: "(2³×9)-(8×9)" },
+      { family: "diff", label: "(3³+5)-(4×8)" },
+    ];
+  }
+  if (n === 1) {
+    return [
+      { family: "diff", label: "(5×5)-(4×6)" },
+      { family: "gap", label: "(3³)-(2×13)" },
+      { family: "product", label: "(7×8)-(5×11)" },
+      { family: "product", label: "(2²×7)-3³" },
+    ];
   }
 
-  const root = Math.floor(Math.sqrt(n));
-  const squareGap = n - root * root;
-  if (root >= 2 && squareGap > 0 && squareGap <= 18) {
-    options.push(`${root}²+${squareGap}`, `(${root})²+${squareGap}`);
-  }
+  const options: CreatorFormula[] = [];
 
-  for (let m = 3; m <= 8; m += 1) {
-    const twice = 2 * n;
-    if (twice % m !== 0) continue;
-    const inner = twice / m - m + 1;
-    if (inner % 2 !== 0) continue;
-    const start = inner / 2;
-    if (start > 0) options.push(`${start}+…+${start + m - 1}`);
-  }
-
-  for (let a = Math.ceil((1 + Math.sqrt(1 + 8 * n)) / 2); a >= 4; a -= 1) {
-    const choose = (a * (a - 1)) / 2;
-    const delta = n - choose;
-    if (Math.abs(delta) <= 9) {
-      options.push(delta === 0 ? `C(${a},2)` : delta > 0 ? `C(${a},2)+${delta}` : `C(${a},2)-${-delta}`);
+  for (const base of [3, 4, 5, 6, 7, 8]) {
+    const written = fromBase(n, base);
+    if (written.includes("+") || written.includes("×")) {
+      options.push({ family: "base", label: written });
     }
-    if (a < 8) break;
   }
 
-  return options.filter((label) => label !== String(n));
+  for (let factor = 1; factor * factor <= n; factor += 1) {
+    if (factor < 2 || n % factor !== 0) continue;
+    const other = n / factor;
+    if ((factor + other) % 2 !== 0) continue;
+    const sum = (factor + other) / 2;
+    const diff = (other - factor) / 2;
+    if (diff <= 1 || sum <= 1) continue;
+    options.push({ family: "diff", label: `${sum}²-${diff}²` });
+    options.push({
+      family: "diff",
+      label: `(${sum}+${diff})×(${sum}-${diff})`,
+    });
+  }
+
+  for (let k = 5; k <= 24; k += 1) {
+    const choose2 = (k * (k - 1)) / 2;
+    if (choose2 > n + 36) break;
+    pushOffset(options, "choose2", `(${k}×${k - 1})÷2`, n - choose2, 28);
+    if (k >= 6) {
+      const choose3 = (k * (k - 1) * (k - 2)) / 6;
+      if (Number.isInteger(choose3)) {
+        pushOffset(
+          options,
+          "choose3",
+          `(${k}×${k - 1}×${k - 2})÷6`,
+          n - choose3,
+          36,
+        );
+      }
+    }
+  }
+
+  const squares = positiveSquares(n);
+  if (squares.length >= 3) {
+    options.push({
+      family: "squares",
+      label: squares.map((root) => `${root}²`).join("+"),
+    });
+  }
+
+  for (let len = 4; len <= 6; len += 1) {
+    if ((2 * n) % len !== 0) continue;
+    const start = (2 * n) / len - len + 1;
+    if (start % 2 !== 0) continue;
+    const first = start / 2;
+    if (first <= 0) continue;
+    options.push({
+      family: "run",
+      label: Array.from({ length: len }, (_, index) => String(first + index)).join(
+        "+",
+      ),
+    });
+  }
+
+  const floorRoot = Math.floor(Math.sqrt(n));
+  for (let root = floorRoot; root >= 2 && floorRoot - root <= 4; root -= 1) {
+    const gap = n - root * root;
+    if (gap <= 1) continue;
+    const gapRoot = Math.floor(Math.sqrt(gap));
+    if (gapRoot >= 2) {
+      const rest = gap - gapRoot * gapRoot;
+      if (rest === 0) {
+        options.push({ family: "gap", label: `${root}²+${gapRoot}²` });
+      } else if (rest > 0 && rest <= 16) {
+        options.push({
+          family: "gap",
+          label: `${root}²+${gapRoot}²+${prettyPart(rest)}`,
+        });
+      }
+    } else {
+      options.push({ family: "gap", label: `${root}²+${prettyPart(gap)}` });
+    }
+  }
+
+  for (let left = 2; left <= 14; left += 1) {
+    for (let right = left; right <= 14; right += 1) {
+      const product = left * right;
+      if (product > n + 40) break;
+      const leftLabel = prettyPart(left);
+      const rightLabel = prettyPart(right);
+      if (leftLabel === String(left) && rightLabel === String(right)) continue;
+      pushOffset(
+        options,
+        "product",
+        `(${leftLabel}×${rightLabel})`,
+        n - product,
+        24,
+      );
+    }
+  }
+
+  return options;
+}
+
+function pushOffset(
+  options: CreatorFormula[],
+  family: string,
+  core: string,
+  delta: number,
+  limit: number,
+) {
+  if (Math.abs(delta) > limit) return;
+  if (delta === 0) options.push({ family, label: core });
+  else if (delta > 0) {
+    options.push({ family, label: `${core}+${prettyPart(delta)}` });
+  } else {
+    options.push({ family, label: `${core}-${prettyPart(-delta)}` });
+  }
+}
+
+function fromBase(n: number, base: number) {
+  const digits: { digit: number; power: number }[] = [];
+  let rest = n;
+  let power = 0;
+  while (rest > 0) {
+    digits.push({ digit: rest % base, power });
+    rest = Math.floor(rest / base);
+    power += 1;
+  }
+  const parts: string[] = [];
+  for (const { digit, power: exp } of digits.reverse()) {
+    if (digit === 0) continue;
+    if (exp === 0) parts.push(String(digit));
+    else if (exp === 1) parts.push(digit === 1 ? String(base) : `${digit}×${base}`);
+    else parts.push(digit === 1 ? `${base}${toSuper(exp)}` : `${digit}×${base}${toSuper(exp)}`);
+  }
+  return parts.join("+");
+}
+
+function positiveSquares(n: number): number[] {
+  for (let a = Math.floor(Math.sqrt(n)); a >= 0; a -= 1) {
+    const left = n - a * a;
+    for (let b = Math.floor(Math.sqrt(left)); b >= 0; b -= 1) {
+      const mid = left - b * b;
+      for (let c = Math.floor(Math.sqrt(mid)); c >= 0; c -= 1) {
+        const rest = mid - c * c;
+        const d = Math.round(Math.sqrt(rest));
+        if (d * d !== rest) continue;
+        const roots = [a, b, c, d].filter((root) => root > 0).sort((x, y) => y - x);
+        if (roots.reduce((sum, root) => sum + root * root, 0) === n) return roots;
+      }
+    }
+  }
+  return [];
 }
 
 function toSuper(exp: number): string {
@@ -307,10 +498,13 @@ export function formulaOptions(
   max: number,
   mode: "normal" | "advanced" = "normal",
 ): { value: number; label: string }[] {
-  const make = mode === "advanced" ? advancedFormulaFor : formulaFor;
+  const avoid = new Set<string>();
   const options: { value: number; label: string }[] = [];
   for (let n = min; n <= max; n++) {
-    options.push({ value: n, label: make(n) });
+    const label =
+      mode === "advanced" ? advancedFormulaFor(n, avoid) : formulaFor(n);
+    avoid.add(label);
+    options.push({ value: n, label });
   }
   return options;
 }
