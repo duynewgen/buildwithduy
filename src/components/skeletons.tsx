@@ -62,7 +62,7 @@ export function CategoryPageSkeleton({
   );
 }
 
-/** Build / experiment page loading state — back pill, title lines, content box. */
+/** Build / experiment page loading state — back pill and content box. */
 export function BuildPageSkeleton() {
   return (
     <main
@@ -74,12 +74,7 @@ export function BuildPageSkeleton() {
         <SkeletonPulse className="h-9 w-20 rounded-full" />
       </div>
 
-      <header className="relative z-10 mx-auto flex w-full max-w-6xl shrink-0 flex-col items-center pt-12 sm:pt-4">
-        <SkeletonPulse className="h-8 w-36 sm:h-9 sm:w-44" />
-        <SkeletonPulse className="mt-3 h-4 w-72 max-w-full sm:h-5 sm:w-96" />
-      </header>
-
-      <div className="relative z-0 flex min-h-0 flex-1 items-center justify-center py-8">
+      <div className="relative z-0 flex min-h-0 flex-1 items-center justify-center pb-8 pt-16">
         <div className="w-full max-w-md">
           <SkeletonPulse className="h-64 w-full rounded-2xl sm:h-72" />
           <div className="mt-6 flex justify-center gap-3">

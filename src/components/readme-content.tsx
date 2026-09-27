@@ -5,7 +5,7 @@ export function ReadmeContent() {
   const markdown = getReadmeMarkdown();
 
   return (
-    <article className="mx-auto w-full max-w-2xl">
+    <article className="w-full max-w-2xl">
       <p className="mb-8 font-sans text-sm tabular-nums tracking-wide text-zinc-400">
         readme.md
       </p>
