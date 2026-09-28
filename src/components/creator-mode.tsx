@@ -36,7 +36,7 @@ export function CreatorMode({
   prompt = "born",
   shell = "google",
 }: CreatorModeProps) {
-  const [name, setName] = useState(showStartYear ? "build with duy" : "");
+  const [name, setName] = useState(showStartYear ? "duy" : "");
   const [year, setYear] = useState<number | null>(null);
   const [startYearText, setStartYearText] = useState(String(CREATOR_YEAR.min));
   const [modalOpen, setModalOpen] = useState(false);
