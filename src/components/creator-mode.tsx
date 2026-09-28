@@ -36,7 +36,7 @@ export function CreatorMode({
   prompt = "born",
   shell = "google",
 }: CreatorModeProps) {
-  const [name, setName] = useState("build with duy");
+  const [name, setName] = useState(showStartYear ? "build with duy" : "");
   const [year, setYear] = useState<number | null>(null);
   const [startYearText, setStartYearText] = useState(String(CREATOR_YEAR.min));
   const [modalOpen, setModalOpen] = useState(false);
@@ -160,7 +160,7 @@ export function CreatorMode({
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   autoComplete="name"
-                  placeholder="your answer"
+                  placeholder="your name..."
                   className="mt-4 w-full border-b border-[#dadce0] bg-transparent px-0 py-2 font-sans text-base text-[#202124] outline-none transition placeholder:text-[#80868b] hover:border-[#673ab7] focus:border-[#673ab7]"
                 />
               </div>
@@ -187,7 +187,8 @@ export function CreatorMode({
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   autoComplete="name"
-                  className="w-full rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none transition hover:border-zinc-900 focus:border-zinc-900"
+                  placeholder="your name..."
+                  className="w-full rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 hover:border-zinc-900 focus:border-zinc-900"
                 />
               </div>
               <div className="space-y-2 text-left">
