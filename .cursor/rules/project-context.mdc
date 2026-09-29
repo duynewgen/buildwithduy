@@ -38,7 +38,7 @@ Fake “sign in” shells that resolve via a cursed challenge, then show success
 ## Birthday / creator
 
 - Public form builds use the interest form and a year-only cursed picker. Select builds (words, roman, math, arabic, chinese, chemistry) put the control inline; the others open it in a modal. Bounce, click, drop the cake, math, chemistry, morse, and wheel of fortune ask `how old are you` from 0 to 100. `?creator=true` adds the start-year filming control on birth-year builds.
-- `?type=form1` is the plain interest form: white page, simple heading, rounded bordered inputs, zinc modal. `?type=form2` (also the default, with no type) follows a google form: purple header, lavender page, white cards, underline answers. Inline selects follow the active shell via `FormChromeProvider`. The two combine with creator mode, e.g. `/form/slider?type=form1&creator=true`. Copy stays lowercase.
+- Interest form chrome follows a google form: purple header, lavender page, white cards, underline answers. Inline selects use that underline style. Copy stays lowercase.
 - Date thumbnails: today’s date from `src/lib/today.ts` + `suppressHydrationWarning`.
 
 ## Tone

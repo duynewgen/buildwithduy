@@ -16,7 +16,6 @@ import { BirthdaySliders } from "@/components/birthday-sliders";
 import { BirthdayWheel } from "@/components/birthday-wheel";
 import { BirthdayWords } from "@/components/birthday-words";
 import { BuildExperience } from "@/components/build-experience";
-import type { FormShell } from "@/components/form-chrome";
 import type { YearPickerProps } from "@/lib/creator";
 import { formExperiments, type FormExperiment } from "@/lib/builds";
 
@@ -38,11 +37,9 @@ const pickers: Record<string, ComponentType<YearPickerProps>> = {
 };
 
 export function FormBuildPage({
-  shell,
   experiment,
   creator,
 }: {
-  shell: FormShell;
   experiment: FormExperiment;
   creator: boolean;
 }) {
@@ -55,7 +52,6 @@ export function FormBuildPage({
       title={experiment.title}
       description={experiment.description}
       backHref="/form"
-      shell={shell}
       creatorInline={experiment.inline}
       prompt={experiment.prompt}
       YearPicker={Picker}

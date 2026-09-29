@@ -4,11 +4,6 @@ export const creatorFieldSelectClassName = [
   "transition hover:border-[#673ab7] focus:border-[#673ab7]",
 ].join(" ");
 
-export const basicFieldSelectClassName = [
-  "rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-left font-sans text-sm",
-  "transition hover:border-zinc-900 focus:border-zinc-900",
-].join(" ");
-
 export type YearPickerProps = {
   /** only the year interaction — used by creator mode */
   yearOnly?: boolean;
@@ -42,16 +37,6 @@ export function parseStartYear(text: string): number {
   const n = Number.parseInt(trimmed, 10);
   if (!Number.isFinite(n)) return CREATOR_YEAR.min;
   return Math.min(n, CREATOR_YEAR.max);
-}
-
-/** `?type=form1` is the plain form. anything else, including no type, is the google form. */
-export type FormShell = "basic" | "google";
-
-export function formShellFromType(
-  value: string | string[] | undefined,
-): FormShell {
-  const type = Array.isArray(value) ? value[0] : value;
-  return type === "form1" ? "basic" : "google";
 }
 
 /** Shared helper for `?creator=true` on build pages. */

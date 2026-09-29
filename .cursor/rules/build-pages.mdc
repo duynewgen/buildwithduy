@@ -14,7 +14,7 @@ alwaysApply: true
 - Interactive build content is centered in the **remaining space** below the back pill. Do not put a title or description on the build page.
 - Top-left back pill → category page. No logo on build pages.
 - Metadata titles use hyphen separator: `%s - buildwithduy`.
-- Form builds use the interest form (name + when were you born) and the build in **year-only** mode. Select builds put the year control inline; the others open a modal. `?creator=true` adds the start-year filming control. `?type=form1` is the plain form; `?type=form2` (the default) is the google form. They combine, e.g. `/form/slider?type=form1&creator=true`. Wire pages through `BuildExperience`.
+- Form builds use the interest form (name + when were you born) and the build in **year-only** mode. Select builds put the year control inline; the others open a modal. `?creator=true` adds the start-year filming control. The form uses the google form layout. Wire pages through `BuildExperience`.
 
 # Registry + sitemap
 

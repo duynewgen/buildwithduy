@@ -1,16 +1,12 @@
 import { notFound } from "next/navigation";
 import { FormBuildPage } from "@/components/form-build-page";
-import { formShellFromType } from "@/lib/creator";
 import { pageMetadata } from "@/lib/page-metadata";
 import { formExperiments, formSlugs, getBuildByPath } from "@/lib/builds";
 import { isCreatorMode } from "@/lib/creator";
 
 type PageProps = {
   params: Promise<{ build: string }>;
-  searchParams: Promise<{
-    creator?: string | string[];
-    type?: string | string[];
-  }>;
+  searchParams: Promise<{ creator?: string | string[] }>;
 };
 
 export function generateStaticParams() {
@@ -39,7 +35,6 @@ export default async function FormBuildRoute({
 
   return (
     <FormBuildPage
-      shell={formShellFromType(query.type)}
       experiment={experiment}
       creator={isCreatorMode(query.creator)}
     />

@@ -49,7 +49,7 @@ export type FormExperiment = {
   inline?: boolean;
 };
 
-/** Shared form builds. Chrome is `?type=form1` (plain) or `?type=form2` (google). */
+/** Shared form builds. The interest form uses the google form layout. */
 export const formExperiments: FormExperiment[] = [
   {
     slug: "slider",
