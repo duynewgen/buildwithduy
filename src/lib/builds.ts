@@ -112,13 +112,6 @@ export const formExperiments: FormExperiment[] = [
     inline: true,
   },
   {
-    slug: "physics",
-    title: "physics",
-    description: "pick your age as a physics equation.",
-    prompt: "age",
-    inline: true,
-  },
-  {
     slug: "morse",
     title: "morse",
     description: "tap and hold morse for your age.",
