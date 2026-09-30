@@ -8,9 +8,9 @@ import {
   CREATOR_YEAR,
   type YearPickerProps,
 } from "@/lib/creator";
-import { morseAge, morseOptions } from "@/lib/morse";
+import { binaryOptions, toBinary } from "@/lib/binary";
 
-export function BirthdayMorse({
+export function BirthdayBinary({
   minYear,
   maxYear,
   initialYear,
@@ -22,7 +22,7 @@ export function BirthdayMorse({
   const yearMax = maxYear ?? (yearMin === 0 ? CREATOR_AGE.max : CREATOR_YEAR.max);
   const countingAge = yearMax <= CREATOR_AGE.max && yearMin === CREATOR_AGE.min;
   const options = useMemo(
-    () => morseOptions(yearMin, yearMax),
+    () => binaryOptions(yearMin, yearMax),
     [yearMin, yearMax],
   );
 
@@ -50,7 +50,7 @@ export function BirthdayMorse({
         }}
         className={[
           creatorFieldSelectClassName,
-          "font-sans",
+          "font-sans tabular-nums",
           creatorFieldTextClassName,
         ].join(" ")}
       >
@@ -73,7 +73,9 @@ export function BirthdayMorse({
       <p className="font-sans text-2xl tabular-nums tracking-wide text-zinc-900 sm:text-3xl">
         {safeYear}
       </p>
-      <p className="mt-2 font-sans text-base text-zinc-500">{morseAge(safeYear)}</p>
+      <p className="mt-2 font-sans text-base tabular-nums text-zinc-500">
+        {toBinary(safeYear)}
+      </p>
     </div>
   );
 }

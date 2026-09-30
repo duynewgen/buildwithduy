@@ -7,6 +7,7 @@ import { BirthdayMathDemo } from "@/components/birthday-math-demo";
 import { BirthdayPlinkoDemo } from "@/components/birthday-plinko-demo";
 import { BirthdayWheelDemo } from "@/components/birthday-wheel-demo";
 import { BirthdayMorseDemo } from "@/components/birthday-morse-demo";
+import { BirthdayBinaryDemo } from "@/components/birthday-binary-demo";
 import { BirthdayChemistryDemo } from "@/components/birthday-chemistry-demo";
 import { BirthdayChineseDemo } from "@/components/birthday-chinese-demo";
 import { BirthdayArabicDemo } from "@/components/birthday-arabic-demo";
@@ -55,6 +56,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (id === "form/chemistry") {
     return <BirthdayChemistryDemo />;
+  }
+  if (id === "form/binary") {
+    return <BirthdayBinaryDemo />;
   }
   if (id === "form/morse") {
     return <BirthdayMorseDemo />;

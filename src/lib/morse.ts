@@ -31,3 +31,23 @@ export function morseGlyphs(pattern: string) {
     .map((symbol) => (symbol === "-" ? "−" : "·"))
     .join(" ");
 }
+
+const PATTERN_BY_DIGIT = new Map(
+  MORSE_DIGITS.map((entry) => [entry.digit, entry.pattern]),
+);
+
+/** Age digits joined so a select doesn't collapse the gap. 10 → · − − − − / − − − − − */
+export function morseAge(value: number) {
+  return String(Math.trunc(Math.abs(value)))
+    .split("")
+    .map((digit) => morseGlyphs(PATTERN_BY_DIGIT.get(digit) ?? ""))
+    .join(" / ");
+}
+
+export function morseOptions(min: number, max: number) {
+  const options: { value: number; label: string }[] = [];
+  for (let value = min; value <= max; value += 1) {
+    options.push({ value, label: morseAge(value) });
+  }
+  return options;
+}

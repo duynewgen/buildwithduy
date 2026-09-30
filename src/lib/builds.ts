@@ -112,10 +112,18 @@ export const formExperiments: FormExperiment[] = [
     inline: true,
   },
   {
+    slug: "binary",
+    title: "binary",
+    description: "pick your age in binary.",
+    prompt: "age",
+    inline: true,
+  },
+  {
     slug: "morse",
     title: "morse",
-    description: "tap and hold morse for your age.",
+    description: "pick your age in morse.",
     prompt: "age",
+    inline: true,
   },
   {
     slug: "wheel-of-fortune",

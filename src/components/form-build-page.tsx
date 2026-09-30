@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import { BirthdayAngryCake } from "@/components/birthday-angry-cake";
 import { BirthdayArabic } from "@/components/birthday-arabic";
 import { BirthdayBounce } from "@/components/birthday-bounce";
+import { BirthdayBinary } from "@/components/birthday-binary";
 import { BirthdayChemistry } from "@/components/birthday-chemistry";
 import { BirthdayChinese } from "@/components/birthday-chinese";
 import { BirthdayClick } from "@/components/birthday-click";
@@ -29,6 +30,7 @@ const pickers: Record<string, ComponentType<YearPickerProps>> = {
   chinese: BirthdayChinese,
   math: BirthdayMath,
   chemistry: BirthdayChemistry,
+  binary: BirthdayBinary,
   morse: BirthdayMorse,
   "wheel-of-fortune": BirthdayWheel,
   bounce: BirthdayBounce,
