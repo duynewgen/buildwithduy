@@ -36,12 +36,12 @@ const PATTERN_BY_DIGIT = new Map(
   MORSE_DIGITS.map((entry) => [entry.digit, entry.pattern]),
 );
 
-/** Age digits joined so a select doesn't collapse the gap. 10 → · − − − − / − − − − − */
+/** Age digits separated by a longer pause. 10 → · − − − −   − − − − − */
 export function morseAge(value: number) {
   return String(Math.trunc(Math.abs(value)))
     .split("")
     .map((digit) => morseGlyphs(PATTERN_BY_DIGIT.get(digit) ?? ""))
-    .join(" / ");
+    .join("\u00A0\u00A0\u00A0");
 }
 
 export function morseOptions(min: number, max: number) {
