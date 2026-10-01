@@ -32,7 +32,7 @@ export function morseGlyphs(pattern: string) {
     .join(" ");
 }
 
-const PATTERN_BY_DIGIT = new Map(
+const PATTERN_BY_DIGIT = new Map<string, string>(
   MORSE_DIGITS.map((entry) => [entry.digit, entry.pattern]),
 );
 
