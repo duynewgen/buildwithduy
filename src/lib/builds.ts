@@ -140,7 +140,7 @@ export const formExperiments: FormExperiment[] = [
   {
     slug: "click",
     title: "click",
-    description: "mash the box for 5 seconds to set your age.",
+    description: "mash the box for 3 seconds to set your age.",
     prompt: "age",
   },
   {

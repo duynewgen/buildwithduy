@@ -20,7 +20,7 @@ const RANGES = {
   year: { min: CREATOR_YEAR.min, max: CREATOR_YEAR.max },
 } as const;
 
-const DURATION_MS = 5000;
+const DURATION_MS = 3000;
 const RIPPLE_MS = 380;
 
 const pillButtonBase =
@@ -224,7 +224,7 @@ export function BirthdayClick({
   const secondsLeft = (remainingMs / 1000).toFixed(1);
   const status =
     phase === "idle"
-      ? "click the box as fast as you can. 5 seconds start on first click."
+      ? `click the box as fast as you can. ${DURATION_MS / 1000} seconds start on first click.`
       : phase === "running"
         ? "keep clicking..."
         : inRange
@@ -264,7 +264,7 @@ export function BirthdayClick({
             onKeyDown={handleBoxKeyDown}
             onContextMenu={(event) => event.preventDefault()}
             disabled={phase === "done"}
-            aria-label={`click box for ${step}. five second timer starts on first click.`}
+            aria-label={`click box for ${step}. ${DURATION_MS / 1000} second timer starts on first click.`}
             className={[
               "relative flex h-56 w-full touch-manipulation select-none flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border-2 border-dashed transition sm:h-64",
               pressed ? "scale-[0.99] bg-zinc-200 border-zinc-900" : "",
