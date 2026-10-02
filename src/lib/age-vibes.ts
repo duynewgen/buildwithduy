@@ -81,7 +81,7 @@ const VIBES: string[] = [
   "time traveler vibes", // 77
   "living fossil (affectionate)", // 78
   "almost a century preload", // 79
-  "octogenarian aura", // 80
+  "presidentially old", // 80
   "legendary old", // 81
   "mythical old", // 82
   "historical figure old", // 83
