@@ -11,6 +11,7 @@ import { BirthdayBinaryDemo } from "@/components/birthday-binary-demo";
 import { BirthdayChemistryDemo } from "@/components/birthday-chemistry-demo";
 import { BirthdayChineseDemo } from "@/components/birthday-chinese-demo";
 import { BirthdayArabicDemo } from "@/components/birthday-arabic-demo";
+import { BirthdayRandomOrdersDemo } from "@/components/birthday-random-orders-demo";
 import { BirthdayRomanDemo } from "@/components/birthday-roman-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
 import { BirthdayWordsDemo } from "@/components/birthday-words-demo";
@@ -62,6 +63,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (id === "form/morse") {
     return <BirthdayMorseDemo />;
+  }
+  if (id === "form/random-orders") {
+    return <BirthdayRandomOrdersDemo />;
   }
   if (id === "form/wheel-of-fortune") {
     return <BirthdayWheelDemo />;

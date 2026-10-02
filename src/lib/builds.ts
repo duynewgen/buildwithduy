@@ -126,6 +126,13 @@ export const formExperiments: FormExperiment[] = [
     inline: true,
   },
   {
+    slug: "random-orders",
+    title: "random orders",
+    description: "pick your age from a shuffled list.",
+    prompt: "age",
+    inline: true,
+  },
+  {
     slug: "wheel-of-fortune",
     title: "wheel of fortune",
     description: "spin the wheel to land on your age.",
