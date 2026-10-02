@@ -77,13 +77,6 @@ export const formExperiments: FormExperiment[] = [
     inline: true,
   },
   {
-    slug: "roman",
-    title: "roman",
-    description: "pick your birth year in roman numerals.",
-    prompt: "born",
-    inline: true,
-  },
-  {
     slug: "arabic",
     title: "arabic",
     description: "pick your birth year in arabic words.",
@@ -129,6 +122,13 @@ export const formExperiments: FormExperiment[] = [
     slug: "random-orders",
     title: "random orders",
     description: "pick your age from a shuffled list.",
+    prompt: "age",
+    inline: true,
+  },
+  {
+    slug: "roman",
+    title: "roman",
+    description: "pick your age in roman numerals.",
     prompt: "age",
     inline: true,
   },

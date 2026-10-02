@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useCreatorFieldClass, useCreatorFieldTextClass } from "@/components/form-chrome";
 import { IconSelect } from "@/components/icon-select";
 import {
+  CREATOR_AGE,
   CREATOR_YEAR,
   type YearPickerProps,
 } from "@/lib/creator";
@@ -56,15 +57,18 @@ function RomanSelect({
 export function BirthdayRoman({
   yearOnly = false,
   minYear,
+  maxYear,
   initialYear,
   onYearChange,
   creatorField = false,
 }: YearPickerProps = {}) {
   const creatorFieldSelectClassName = useCreatorFieldClass();
-  const yearMin = Math.max(1, minYear ?? CREATOR_YEAR.min);
+  const yearMin = Math.max(0, minYear ?? CREATOR_AGE.min);
+  const yearMax = maxYear ?? (yearMin === 0 ? CREATOR_AGE.max : CREATOR_YEAR.max);
+  const countingAge = yearMax <= CREATOR_AGE.max && yearMin === CREATOR_AGE.min;
   const yearOptions = useMemo(
-    () => rangeToRomanOptions(yearMin, CREATOR_YEAR.max),
-    [yearMin],
+    () => rangeToRomanOptions(yearMin, yearMax),
+    [yearMin, yearMax],
   );
 
   const [month, setMonth] = useState(1);
@@ -90,7 +94,7 @@ export function BirthdayRoman({
     return (
       <IconSelect
         id="creator-birthyear"
-        aria-label="when were you born"
+        aria-label={countingAge ? "how old are you" : "when were you born"}
         value={year ?? ""}
         onChange={(event) => {
           const next = Number(event.target.value);
@@ -104,7 +108,7 @@ export function BirthdayRoman({
         ].join(" ")}
       >
         <option value="" disabled>
-          add your birthyear
+          {countingAge ? "add your age" : "add your birthyear"}
         </option>
         {yearOptions.map((option) => (
           <option key={option.value} value={option.value}>

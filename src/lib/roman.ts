@@ -14,11 +14,12 @@ const ROMAN_MAP: ReadonlyArray<readonly [number, string]> = [
   [1, "I"],
 ];
 
-/** Convert a positive integer (1–3999) to uppercase Roman numerals. */
+/** Convert an integer (0–3999) to a roman numeral. 0 is nulla. */
 export function toRoman(n: number): string {
-  if (!Number.isInteger(n) || n < 1 || n > 3999) {
-    throw new RangeError(`toRoman expects an integer 1–3999, got ${n}`);
+  if (!Number.isInteger(n) || n < 0 || n > 3999) {
+    throw new RangeError(`toRoman expects an integer 0–3999, got ${n}`);
   }
+  if (n === 0) return "nulla";
 
   let remaining = n;
   let out = "";
