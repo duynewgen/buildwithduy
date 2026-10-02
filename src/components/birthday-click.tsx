@@ -284,7 +284,7 @@ export function BirthdayClick({
               />
             ))}
             <span className="relative z-0 font-sans text-5xl tabular-nums text-zinc-900 sm:text-6xl">
-              {phase === "idle" ? "5.0" : secondsLeft}
+              {secondsLeft}
             </span>
             <span className="relative z-0 text-sm tracking-wide text-zinc-500">
               {phase === "idle"
