@@ -47,7 +47,7 @@ const VIBES: string[] = [
   "disco was yesterday", // 43
   "super old", // 44
   "whackamole old", // 45
-  "chegvirone (wine) old", // 46
+  "fine wine old", // 46
   "early bird special curious", // 47
   "newspaper crossword old", // 48
   "half-century preload", // 49
