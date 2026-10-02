@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BirthdayAngryCakeDemo } from "@/components/birthday-angry-cake-demo";
 import { BirthdayBounceDemo } from "@/components/birthday-bounce-demo";
 import { BirthdayClickDemo } from "@/components/birthday-click-demo";
+import { BirthdayClickTwoDemo } from "@/components/birthday-click-two-demo";
 import { BirthdayLotteryDemo } from "@/components/birthday-lottery-demo";
 import { BirthdayMathDemo } from "@/components/birthday-math-demo";
 import { BirthdayPlinkoDemo } from "@/components/birthday-plinko-demo";
@@ -79,6 +80,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (id === "form/click") {
     return <BirthdayClickDemo />;
+  }
+  if (id === "form/click-2") {
+    return <BirthdayClickTwoDemo />;
   }
   if (id === "form/drop-the-cake") {
     return <BirthdayPlinkoDemo />;

@@ -158,6 +158,12 @@ export const formExperiments: FormExperiment[] = [
     prompt: "age",
   },
   {
+    slug: "click-2",
+    title: "click, part 2",
+    description: "mash the box to count down from 100 to your age.",
+    prompt: "age",
+  },
+  {
     slug: "drop-the-cake",
     title: "drop the cake",
     description: "drop a cake through the pegs onto your age.",

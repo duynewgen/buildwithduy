@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { CREATOR_AGE, CREATOR_YEAR, type YearPickerProps } from "@/lib/creator";
 
 type Step = "month" | "day" | "year";
@@ -22,6 +23,7 @@ const RANGES = {
 
 const DURATION_MS = 3000;
 const RIPPLE_MS = 380;
+const MODAL_MS = 220;
 
 const pillButtonBase =
   "inline-flex min-w-24 items-center justify-center rounded-full border px-4 py-2 text-sm transition";
@@ -42,7 +44,20 @@ function formatYear(value: number | null, compact = false) {
   return compact ? String(value) : String(value).padStart(4, "0");
 }
 
-function clicksToValue(step: Step, clicks: number, yearMin: number) {
+type ClickDirection = "up" | "down";
+
+function clicksToValue(
+  step: Step,
+  clicks: number,
+  yearMin: number,
+  yearMax: number,
+  direction: ClickDirection,
+) {
+  if (direction === "down") {
+    if (step === "year") return yearMax - clicks;
+    if (step === "month") return RANGES.month.max - clicks;
+    return RANGES.day.max - clicks;
+  }
   if (step === "year") return yearMin + clicks;
   return clicks;
 }
@@ -53,10 +68,13 @@ export function BirthdayClick({
   maxYear,
   initialYear,
   onYearChange,
-}: YearPickerProps = {}) {
+  direction = "up",
+}: YearPickerProps & { direction?: ClickDirection } = {}) {
   const yearMin = minYear ?? CREATOR_YEAR.min;
   const yearMax = maxYear ?? CREATOR_YEAR.max;
   const countingAge = yearMax <= CREATOR_AGE.max && yearMin === CREATOR_AGE.min;
+  const showAgeModal = yearOnly && countingAge;
+  const countingDown = direction === "down";
   const steps = yearOnly ? (["year"] as Step[]) : ALL_STEPS;
   const [step, setStep] = useState<Step>(yearOnly ? "year" : "month");
   const [month, setMonth] = useState<number | null>(null);
@@ -67,6 +85,10 @@ export function BirthdayClick({
   const [remainingMs, setRemainingMs] = useState(DURATION_MS);
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const [pressed, setPressed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [modalMounted, setModalMounted] = useState(false);
+  const [modalActive, setModalActive] = useState(false);
+  const [resultAge, setResultAge] = useState<number | null>(null);
 
   const phaseRef = useRef(phase);
   const clicksRef = useRef(0);
@@ -74,6 +96,7 @@ export function BirthdayClick({
   const startedAtRef = useRef(0);
   const rippleIdRef = useRef(0);
   const pressTimerRef = useRef(0);
+  const modalCloseTimerRef = useRef(0);
   const boxRef = useRef<HTMLButtonElement>(null);
   const onYearChangeRef = useRef(onYearChange);
   onYearChangeRef.current = onYearChange;
@@ -87,14 +110,34 @@ export function BirthdayClick({
       : RANGES[step];
   const stepIndex = steps.indexOf(step);
 
+  const openAgeModal = useCallback((age: number) => {
+    window.clearTimeout(modalCloseTimerRef.current);
+    setResultAge(age);
+    setModalMounted(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setModalActive(true));
+    });
+  }, []);
+
+  const closeAgeModal = useCallback((after?: () => void) => {
+    setModalActive(false);
+    window.clearTimeout(modalCloseTimerRef.current);
+    modalCloseTimerRef.current = window.setTimeout(() => {
+      setModalMounted(false);
+      setResultAge(null);
+      after?.();
+    }, MODAL_MS);
+  }, []);
+
   const lockValue = useEffectEvent((count: number) => {
     const current = stepRef.current;
-    const next = clicksToValue(current, count, yearMin);
+    const next = clicksToValue(current, count, yearMin, yearMax, direction);
     if (current === "month") setMonth(next);
     else if (current === "day") setDay(next);
     else {
       setYear(next);
       onYearChangeRef.current?.(next);
+      if (showAgeModal) openAgeModal(next);
     }
     setPhase("done");
   });
@@ -110,14 +153,28 @@ export function BirthdayClick({
   }, []);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     resetRound();
   }, [step, resetRound]);
 
   useEffect(() => {
     return () => {
       window.clearTimeout(pressTimerRef.current);
+      window.clearTimeout(modalCloseTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!modalMounted) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeAgeModal();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modalMounted, closeAgeModal]);
 
   useEffect(() => {
     if (phase !== "running") return;
@@ -209,33 +266,46 @@ export function BirthdayClick({
 
   const liveValue =
     phase === "idle"
-      ? null
-      : clicksToValue(step, clicks, yearMin);
+      ? countingDown
+        ? step === "year"
+          ? yearMax
+          : range.max
+        : null
+      : clicksToValue(step, clicks, yearMin, yearMax, direction);
 
   const error =
     phase === "done" && !inRange
       ? step === "year"
         ? countingAge
-          ? `need ${range.min}–${range.max} clicks`
-          : `need ${range.min - yearMin}–${range.max - yearMin} clicks (year ${range.min}–${range.max})`
+          ? countingDown
+            ? `need ${yearMax - range.max}–${yearMax - range.min} clicks`
+            : `need ${range.min}–${range.max} clicks`
+          : countingDown
+            ? `need ${yearMax - range.max}–${yearMax - range.min} clicks (year ${range.min}–${range.max})`
+            : `need ${range.min - yearMin}–${range.max - yearMin} clicks (year ${range.min}–${range.max})`
         : `need ${range.min}–${range.max} clicks for a ${step}`
       : null;
 
   const secondsLeft = (remainingMs / 1000).toFixed(1);
   const status =
     phase === "idle"
-      ? `click the box as fast as you can. ${DURATION_MS / 1000} seconds start on first click.`
+      ? countingDown
+        ? `click the box to count down from ${step === "year" ? yearMax : range.max}. ${DURATION_MS / 1000} seconds start on first click.`
+        : `click the box as fast as you can. ${DURATION_MS / 1000} seconds start on first click.`
       : phase === "running"
-        ? "keep clicking..."
+        ? countingDown
+          ? "keep clicking down..."
+          : "keep clicking..."
         : inRange
           ? "locked in. try again or continue."
           : "out of range. try again.";
 
   const summaryMonth =
-    step === "month" && phase !== "idle" ? liveValue : month;
-  const summaryDay = step === "day" && phase !== "idle" ? liveValue : day;
+    step === "month" && (phase !== "idle" || countingDown) ? liveValue : month;
+  const summaryDay =
+    step === "day" && (phase !== "idle" || countingDown) ? liveValue : day;
   const summaryYear =
-    step === "year" && phase !== "idle" ? liveValue : year;
+    step === "year" && (phase !== "idle" || countingDown) ? liveValue : year;
 
   return (
     <div className="w-full text-center">
@@ -264,7 +334,11 @@ export function BirthdayClick({
             onKeyDown={handleBoxKeyDown}
             onContextMenu={(event) => event.preventDefault()}
             disabled={phase === "done"}
-            aria-label={`click box for ${step}. ${DURATION_MS / 1000} second timer starts on first click.`}
+            aria-label={
+              countingDown
+                ? `click box to count down ${step}. ${DURATION_MS / 1000} second timer starts on first click.`
+                : `click box for ${step}. ${DURATION_MS / 1000} second timer starts on first click.`
+            }
             className={[
               "relative flex h-56 w-full touch-manipulation select-none flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border-2 border-dashed transition sm:h-64",
               pressed ? "scale-[0.99] bg-zinc-200 border-zinc-900" : "",
@@ -342,9 +416,15 @@ export function BirthdayClick({
             step {stepIndex + 1} of {steps.length}: {step} (
             {step === "year"
               ? countingAge
-                ? `${range.min}–${range.max} clicks`
-                : `${range.min - yearMin}–${range.max - yearMin} clicks → year ${range.min}–${range.max}`
-              : `${range.min}–${range.max} clicks`}
+                ? countingDown
+                  ? `${yearMax} − clicks (${range.min}–${range.max})`
+                  : `${range.min}–${range.max} clicks`
+                : countingDown
+                  ? `${yearMax} − clicks → year ${range.min}–${range.max}`
+                  : `${range.min - yearMin}–${range.max - yearMin} clicks → year ${range.min}–${range.max}`
+              : countingDown
+                ? `${range.max} − clicks`
+                : `${range.min}–${range.max} clicks`}
             )
           </p>
         </>
@@ -352,10 +432,68 @@ export function BirthdayClick({
       {yearOnly ? (
         <p className="mt-4 text-sm text-zinc-400">
           {countingAge
-            ? `age = clicks (${range.min}–${range.max})`
-            : `year = ${yearMin} + clicks (${range.min}–${range.max})`}
+            ? countingDown
+              ? `age = ${yearMax} − clicks (${range.min}–${range.max})`
+              : `age = clicks (${range.min}–${range.max})`
+            : countingDown
+              ? `year = ${yearMax} − clicks (${range.min}–${range.max})`
+              : `year = ${yearMin} + clicks (${range.min}–${range.max})`}
         </p>
       ) : null}
+
+      {mounted && modalMounted && resultAge !== null
+        ? createPortal(
+            <div
+              className={[
+                "fixed inset-0 z-[60] flex items-center justify-center p-4 transition-opacity duration-200 sm:p-8",
+                modalActive ? "opacity-100" : "opacity-0",
+              ].join(" ")}
+            >
+              <div className="absolute inset-0 bg-zinc-900/40" aria-hidden />
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="click-age-result"
+                className={[
+                  "relative z-10 w-full max-w-sm rounded-2xl border border-zinc-200 bg-white px-6 py-8 text-center shadow-xl transition duration-200",
+                  modalActive
+                    ? "translate-y-0 scale-100"
+                    : "translate-y-2 scale-95",
+                ].join(" ")}
+              >
+                <p
+                  id="click-age-result"
+                  className="font-sans text-2xl tracking-wide text-zinc-900 sm:text-3xl"
+                >
+                  you are{" "}
+                  <span className="tabular-nums">{resultAge}</span> years
+                  old
+                </p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      closeAgeModal(() => {
+                        resetRound();
+                      })
+                    }
+                    className={`${pillButtonBase} border-zinc-300 bg-white text-zinc-800 hover:border-zinc-900`}
+                  >
+                    try again
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => closeAgeModal()}
+                    className={`${pillButtonBase} border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800`}
+                  >
+                    ok
+                  </button>
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
