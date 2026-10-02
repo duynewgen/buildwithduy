@@ -15,6 +15,7 @@ import { BirthdayPlinko } from "@/components/birthday-plinko";
 import { BirthdayRandomOrders } from "@/components/birthday-random-orders";
 import { BirthdayRoman } from "@/components/birthday-roman";
 import { BirthdaySliders } from "@/components/birthday-sliders";
+import { BirthdayVibes } from "@/components/birthday-vibes";
 import { BirthdayWheel } from "@/components/birthday-wheel";
 import { BirthdayWords } from "@/components/birthday-words";
 import { BuildExperience } from "@/components/build-experience";
@@ -34,6 +35,7 @@ const pickers: Record<string, ComponentType<YearPickerProps>> = {
   binary: BirthdayBinary,
   morse: BirthdayMorse,
   "random-orders": BirthdayRandomOrders,
+  vibes: BirthdayVibes,
   "wheel-of-fortune": BirthdayWheel,
   bounce: BirthdayBounce,
   click: BirthdayClick,

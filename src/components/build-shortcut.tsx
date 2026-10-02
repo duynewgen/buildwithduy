@@ -14,6 +14,7 @@ import { BirthdayArabicDemo } from "@/components/birthday-arabic-demo";
 import { BirthdayRandomOrdersDemo } from "@/components/birthday-random-orders-demo";
 import { BirthdayRomanDemo } from "@/components/birthday-roman-demo";
 import { BirthdaySliderDemo } from "@/components/birthday-slider-demo";
+import { BirthdayVibesDemo } from "@/components/birthday-vibes-demo";
 import { BirthdayWordsDemo } from "@/components/birthday-words-demo";
 import { PaymentApplePayDemo } from "@/components/payment-apple-pay-demo";
 import { PaymentCancelDemo } from "@/components/payment-cancel-demo";
@@ -48,6 +49,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (id === "form/roman") {
     return <BirthdayRomanDemo />;
+  }
+  if (id === "form/vibes") {
+    return <BirthdayVibesDemo />;
   }
   if (id === "form/arabic") {
     return <BirthdayArabicDemo />;

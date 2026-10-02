@@ -133,6 +133,13 @@ export const formExperiments: FormExperiment[] = [
     inline: true,
   },
   {
+    slug: "vibes",
+    title: "vibes",
+    description: "pick your age as a life-stage vibe.",
+    prompt: "age",
+    inline: true,
+  },
+  {
     slug: "wheel-of-fortune",
     title: "wheel of fortune",
     description: "spin the wheel to land on your age.",
