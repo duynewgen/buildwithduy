@@ -1,7 +1,7 @@
 import { vibeFor } from "@/lib/age-vibes";
 
 export function BirthdayVibesDemo() {
-  const idleAge = 12;
+  const idleAge = 14;
   const motionAge = 36;
 
   return (
