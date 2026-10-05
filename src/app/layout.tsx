@@ -72,7 +72,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${rubik.variable} ${schoolbell.variable}`}>
-      <body className="min-h-dvh bg-white font-sans text-zinc-900 antialiased">
+      <body
+        className="min-h-dvh bg-white font-sans text-zinc-900 antialiased"
+        suppressHydrationWarning
+      >
         <SiteJsonLd />
         {children}
         <Analytics />
