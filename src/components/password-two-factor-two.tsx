@@ -4,44 +4,38 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-type Phase = "login" | "checked-in";
+type Phase = "login" | "checked-in" | "dumbass";
 
 const USERNAME = "duy";
 const PASSWORD = "hunter2";
+const POLYNOMIAL = "x² + 9070x − 49273224";
 const MODAL_MS = 220;
 
-const MILE_KM = 1.609344;
-const TWO_LB_KG = 0.90718474;
+const ACCEPTED = new Set([
+  "(x+12892)(x-3822)",
+  "(x-3822)(x+12892)",
+]);
 
-function parseNumber(raw: string): number | null {
-  const match = raw.replace(/,/g, "").match(/-?\d*\.?\d+(?:e[+-]?\d+)?/i);
-  if (!match) return null;
-  const n = Number(match[0]);
-  return Number.isFinite(n) ? n : null;
+function normalizeAnswer(raw: string) {
+  return raw
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/·/g, "")
+    .replace(/\*/g, "")
+    .replace(/×/g, "")
+    .replace(/−/g, "-")
+    .replace(/–/g, "-");
 }
 
-function near(value: number, expected: number, tol: number) {
-  return Math.abs(value - expected) <= tol;
-}
-
-function isCorrectMile(raw: string) {
-  const n = parseNumber(raw);
-  if (n === null) return false;
-  return near(n, MILE_KM, 0.02) || near(n, 1.6, 0.005);
-}
-
-function isCorrectLbs(raw: string) {
-  const n = parseNumber(raw);
-  if (n === null) return false;
-  return near(n, TWO_LB_KG, 0.02) || near(n, 0.9, 0.015);
+function isCorrectFactorization(raw: string) {
+  return ACCEPTED.has(normalizeAnswer(raw));
 }
 
 export function PasswordTwoFactorTwo() {
   const [phase, setPhase] = useState<Phase>("login");
   const [modalMounted, setModalMounted] = useState(false);
   const [modalActive, setModalActive] = useState(false);
-  const [mileAnswer, setMileAnswer] = useState("");
-  const [lbsAnswer, setLbsAnswer] = useState("");
+  const [answer, setAnswer] = useState("");
   const [error, setError] = useState(false);
   const [mounted, setMounted] = useState(false);
   const closeTimerRef = useRef(0);
@@ -74,8 +68,7 @@ export function PasswordTwoFactorTwo() {
   function openModal() {
     window.clearTimeout(closeTimerRef.current);
     window.clearTimeout(finishTimerRef.current);
-    setMileAnswer("");
-    setLbsAnswer("");
+    setAnswer("");
     setError(false);
     setModalMounted(true);
     requestAnimationFrame(() => {
@@ -88,8 +81,7 @@ export function PasswordTwoFactorTwo() {
     window.clearTimeout(closeTimerRef.current);
     closeTimerRef.current = window.setTimeout(() => {
       setModalMounted(false);
-      setMileAnswer("");
-      setLbsAnswer("");
+      setAnswer("");
       setError(false);
       after?.();
     }, MODAL_MS);
@@ -97,7 +89,7 @@ export function PasswordTwoFactorTwo() {
 
   function submitFactor(event: FormEvent) {
     event.preventDefault();
-    if (!isCorrectMile(mileAnswer) || !isCorrectLbs(lbsAnswer)) {
+    if (!isCorrectFactorization(answer)) {
       setError(true);
       return;
     }
@@ -109,51 +101,74 @@ export function PasswordTwoFactorTwo() {
     }, 450);
   }
 
+  function skipFactor() {
+    setPhase("dumbass");
+    window.clearTimeout(finishTimerRef.current);
+    finishTimerRef.current = window.setTimeout(() => {
+      closeModal();
+    }, 450);
+  }
+
+  if (phase === "checked-in") {
+    return (
+      <div className="mx-auto w-full max-w-sm text-center">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <p className="text-sm text-zinc-600">you&apos;re checked in</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "dumbass") {
+    return (
+      <div className="mx-auto w-full max-w-lg text-center sm:max-w-lg">
+        <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-12 shadow-sm sm:px-12 sm:py-14">
+          <p className="text-2xl text-zinc-900 sm:text-3xl">you dumbass</p>
+          <p className="mt-4 text-base text-zinc-600 sm:text-lg">
+            your parents gonna disown you bro <br /> cuz you can't be verified
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      {phase === "checked-in" ? (
-        <div className="mx-auto w-full max-w-sm text-center">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-zinc-600">you&apos;re checked in</p>
-          </div>
+      <div className="mx-auto w-full max-w-sm text-left">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+          <p className="text-sm tracking-wide text-zinc-500">sign in</p>
+
+          <label className="mt-4 block">
+            <span className="text-sm text-zinc-500">username</span>
+            <input
+              type="text"
+              value={USERNAME}
+              readOnly
+              tabIndex={-1}
+              className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
+            />
+          </label>
+
+          <label className="mt-3 block">
+            <span className="text-sm text-zinc-500">password</span>
+            <input
+              type="password"
+              value={PASSWORD}
+              readOnly
+              tabIndex={-1}
+              className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
+            />
+          </label>
+
+          <button
+            type="button"
+            onClick={openModal}
+            className="mt-5 w-full cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
+          >
+            continue with two-factor authentication
+          </button>
         </div>
-      ) : (
-        <div className="mx-auto w-full max-w-sm text-left">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
-            <p className="text-sm tracking-wide text-zinc-500">sign in</p>
-
-            <label className="mt-4 block">
-              <span className="text-sm text-zinc-500">username</span>
-              <input
-                type="text"
-                value={USERNAME}
-                readOnly
-                tabIndex={-1}
-                className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
-              />
-            </label>
-
-            <label className="mt-3 block">
-              <span className="text-sm text-zinc-500">password</span>
-              <input
-                type="password"
-                value={PASSWORD}
-                readOnly
-                tabIndex={-1}
-                className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
-              />
-            </label>
-
-            <button
-              type="button"
-              onClick={openModal}
-              className="mt-5 w-full cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
-            >
-              continue with two-factor authentication
-            </button>
-          </div>
-        </div>
-      )}
+      </div>
 
       {mounted && modalMounted
         ? createPortal(
@@ -198,58 +213,34 @@ export function PasswordTwoFactorTwo() {
                     </button>
                   </div>
 
-                  <div className="mt-5 space-y-4">
-                    <label className="block">
-                      <span className="font-sans text-sm tabular-nums text-zinc-900">
-                        1. 1 mile = ? km
-                      </span>
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        inputMode="decimal"
-                        value={mileAnswer}
-                        onChange={(event) => {
-                          setMileAnswer(event.target.value);
-                          if (error) setError(false);
-                        }}
-                        autoComplete="off"
-                        spellCheck={false}
-                        placeholder="km"
-                        className={[
-                          "mt-1.5 w-full rounded-xl border bg-zinc-50 px-3 py-2.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition placeholder:text-zinc-400",
-                          error
-                            ? "border-rose-300 focus:border-rose-400"
-                            : "border-zinc-200 focus:border-zinc-400",
-                        ].join(" ")}
-                        aria-invalid={error}
-                      />
-                    </label>
+                  <p className="mt-6 text-center font-sans text-xl tabular-nums tracking-tight text-zinc-900 sm:text-2xl">
+                    {POLYNOMIAL}
+                  </p>
 
-                    <label className="block">
-                      <span className="font-sans text-sm tabular-nums text-zinc-900">
-                        2. 2 lbs = ? kg
-                      </span>
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        value={lbsAnswer}
-                        onChange={(event) => {
-                          setLbsAnswer(event.target.value);
-                          if (error) setError(false);
-                        }}
-                        autoComplete="off"
-                        spellCheck={false}
-                        placeholder="kg"
-                        className={[
-                          "mt-1.5 w-full rounded-xl border bg-zinc-50 px-3 py-2.5 font-sans text-sm tabular-nums text-zinc-900 outline-none transition placeholder:text-zinc-400",
-                          error
-                            ? "border-rose-300 focus:border-rose-400"
-                            : "border-zinc-200 focus:border-zinc-400",
-                        ].join(" ")}
-                        aria-invalid={error}
-                      />
-                    </label>
-                  </div>
+                  <label className="mt-5 block">
+                    <span className="text-sm text-zinc-500">
+                      your factorization
+                    </span>
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={answer}
+                      onChange={(event) => {
+                        setAnswer(event.target.value);
+                        if (error) setError(false);
+                      }}
+                      autoComplete="off"
+                      spellCheck={false}
+                      placeholder="(x+?)(x+?)"
+                      className={[
+                        "mt-1.5 w-full rounded-xl border bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400",
+                        error
+                          ? "border-rose-300 focus:border-rose-400"
+                          : "border-zinc-200 focus:border-zinc-400",
+                      ].join(" ")}
+                      aria-invalid={error}
+                    />
+                  </label>
 
                   {error ? (
                     <p className="mt-2 text-sm text-rose-600">
@@ -257,12 +248,21 @@ export function PasswordTwoFactorTwo() {
                     </p>
                   ) : null}
 
-                  <button
-                    type="submit"
-                    className="mt-5 w-full cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
-                  >
-                    verify
-                  </button>
+                  <div className="mt-5 grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={skipFactor}
+                      className="cursor-pointer rounded-full border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-800 transition hover:border-zinc-900"
+                    >
+                      skip
+                    </button>
+                    <button
+                      type="submit"
+                      className="cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
+                    >
+                      verify
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>,

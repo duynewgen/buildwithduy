@@ -25,6 +25,7 @@ import { PaymentNoTipDemo } from "@/components/payment-no-tip-demo";
 import { PaymentSplitDemo } from "@/components/payment-split-demo";
 import { PasswordTwoFactorDemo } from "@/components/password-two-factor-demo";
 import { PasswordTwoFactorTwoDemo } from "@/components/password-two-factor-two-demo";
+import { PasswordTwoFactorThreeDemo } from "@/components/password-two-factor-three-demo";
 import { AuthOtpDemo } from "@/components/auth-otp-demo";
 import { AuthOtpTwoDemo } from "@/components/auth-otp-two-demo";
 import { AuthFallingNumbersDemo } from "@/components/auth-falling-numbers-demo";
@@ -113,6 +114,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "authentication/two-factor-2") {
     return <PasswordTwoFactorTwoDemo />;
+  }
+  if (path === "authentication/two-factor-3") {
+    return <PasswordTwoFactorThreeDemo />;
   }
   if (path === "authentication/otp-hint") {
     return <AuthOtpDemo />;

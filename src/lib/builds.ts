@@ -217,6 +217,11 @@ export const builds: Build[] = [
   {
     path: "authentication/two-factor-2",
     title: "two-factor, part 2",
+    description: "sign in. factor a nastier polynomial. or skip.",
+  },
+  {
+    path: "authentication/two-factor-3",
+    title: "two-factor, part 3",
     description: "sign in. verify with conversion factors.",
   },
   {
