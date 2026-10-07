@@ -18,27 +18,19 @@ const TIP_OPTIONS = [
 
 const PLANS = [
   {
-    id: "basic",
-    name: "basic",
-    amount: 4.99,
-    period: "/mo",
-    blurb: "allow no-tip up to 2 times a month.",
-    highlight: false,
-  },
-  {
     id: "pro",
     name: "pro",
-    amount: 12.99,
-    period: "/mo",
-    blurb: "allow no-tip up to 4 times a month.",
+    amount: 50,
+    period: "/yr",
+    blurb: "skip the tip a few times a year.",
     highlight: false,
   },
   {
     id: "pro-max",
     name: "pro max",
-    amount: 29.99,
-    period: "/mo",
-    blurb: "no need to tip forever.",
+    amount: 499,
+    period: "/yr",
+    blurb: "no tip. forever.",
     highlight: true,
   },
 ] as const;
@@ -54,13 +46,9 @@ export function PaymentNoTip() {
   const [modalMounted, setModalMounted] = useState(false);
   const [modalActive, setModalActive] = useState(false);
   const [paidTotal, setPaidTotal] = useState(SUBTOTAL);
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [subscribed, setSubscribed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const closeTimerRef = useRef(0);
-
-  const todayTotal = selectedPlan
-    ? Math.round((SUBTOTAL + selectedPlan.amount) * 100) / 100
-    : SUBTOTAL;
 
   useEffect(() => {
     setMounted(true);
@@ -96,16 +84,16 @@ export function PaymentNoTip() {
   function tipWith(pct: number) {
     const tip = Math.round(SUBTOTAL * pct * 100) / 100;
     setPaidTotal(SUBTOTAL + tip);
+    setSubscribed(false);
     setPhase("paid");
   }
 
   function choosePlan(plan: Plan) {
-    closeModal(() => setSelectedPlan(plan));
-  }
-
-  function payToday() {
-    setPaidTotal(todayTotal);
-    setPhase("paid");
+    closeModal(() => {
+      setPaidTotal(plan.amount);
+      setSubscribed(true);
+      setPhase("paid");
+    });
   }
 
   if (phase === "paid") {
@@ -114,9 +102,14 @@ export function PaymentNoTip() {
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
           <p className="font-sans text-3xl tabular-nums tracking-wide text-zinc-900">
             {money(paidTotal)}
+            {subscribed ? (
+              <span className="text-base text-zinc-500">/yr</span>
+            ) : null}
           </p>
           <p className="mt-2 text-sm text-zinc-600">
-            you&apos;re all set. thank you for your purchase.
+            {subscribed
+              ? "no more tips from now on!"
+              : "you're all set. thank you for your purchase."}
           </p>
         </div>
       </div>
@@ -149,23 +142,6 @@ export function PaymentNoTip() {
             </p>
           </div>
 
-          {selectedPlan ? (
-            <div className="mt-3 flex animate-[fade-up_0.28s_ease-out] items-center gap-3">
-              <div className="flex size-16 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-900 text-xs text-white">
-                sub
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm text-zinc-900">
-                  {selectedPlan.name} plan
-                </p>
-                <p className="mt-0.5 text-sm text-zinc-500">billed monthly</p>
-              </div>
-              <p className="shrink-0 font-sans text-sm tabular-nums text-zinc-900">
-                {money(selectedPlan.amount)}
-              </p>
-            </div>
-          ) : null}
-
           <div className="mt-5 space-y-2 border-t border-zinc-100 pt-4 text-sm">
             <div className="flex items-center justify-between gap-3">
               <span className="text-zinc-500">subtotal</span>
@@ -177,86 +153,43 @@ export function PaymentNoTip() {
               <span className="text-zinc-500">tax</span>
               <span className="font-sans tabular-nums text-zinc-900">$0.00</span>
             </div>
-            {selectedPlan ? (
-              <>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-zinc-500">
-                    {selectedPlan.name} subscription
-                  </span>
-                  <span className="font-sans tabular-nums text-zinc-900">
-                    {money(selectedPlan.amount)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-zinc-500">tip</span>
-                  <span className="font-sans tabular-nums text-zinc-900">
-                    $0.00
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-3 border-t border-zinc-100 pt-3">
-                  <span className="text-zinc-900">today you pay</span>
-                  <span className="font-sans text-base tabular-nums text-zinc-900">
-                    {money(todayTotal)}
-                  </span>
-                </div>
-              </>
-            ) : null}
           </div>
 
-          {selectedPlan ? (
+          <div className="mt-5 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+            <p className="text-sm text-zinc-900">add a tip?</p>
+            <p className="mt-1 text-xs text-zinc-500">
+              your barista will see this. probably.
+            </p>
+
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {TIP_OPTIONS.map((option) => {
+                const tip = Math.round(SUBTOTAL * option.pct * 100) / 100;
+                return (
+                  <button
+                    key={option.label}
+                    type="button"
+                    onClick={() => tipWith(option.pct)}
+                    className="flex cursor-pointer flex-col items-center rounded-xl border border-zinc-300 bg-white px-2 py-3 transition hover:border-zinc-900"
+                  >
+                    <span className="text-sm text-zinc-900">
+                      {option.label}
+                    </span>
+                    <span className="mt-1 font-sans text-xs tabular-nums text-zinc-500">
+                      {money(tip)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
             <button
               type="button"
-              onClick={payToday}
-              className="mt-5 w-full cursor-pointer transition hover:opacity-90 active:opacity-80"
-              aria-label="buy with apple pay"
+              onClick={openModal}
+              className="mt-3 w-full cursor-pointer rounded-xl border border-transparent px-3 py-2 text-center text-xs tracking-wide text-zinc-400 transition hover:border-zinc-200 hover:bg-white hover:text-zinc-600"
             >
-              <Image
-                src="/payment/buy-with-apple-pay.png"
-                alt=""
-                width={343}
-                height={50}
-                className="h-12 w-full object-contain"
-                draggable={false}
-                priority
-              />
+              no tip
             </button>
-          ) : (
-            <div className="mt-5 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
-              <p className="text-sm text-zinc-900">add a tip?</p>
-              <p className="mt-1 text-xs text-zinc-500">
-                your barista will see this. probably.
-              </p>
-
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                {TIP_OPTIONS.map((option) => {
-                  const tip = Math.round(SUBTOTAL * option.pct * 100) / 100;
-                  return (
-                    <button
-                      key={option.label}
-                      type="button"
-                      onClick={() => tipWith(option.pct)}
-                      className="flex cursor-pointer flex-col items-center rounded-xl border border-zinc-300 bg-white px-2 py-3 transition hover:border-zinc-900"
-                    >
-                      <span className="text-sm text-zinc-900">
-                        {option.label}
-                      </span>
-                      <span className="mt-1 font-sans text-xs tabular-nums text-zinc-500">
-                        {money(tip)}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <button
-                type="button"
-                onClick={openModal}
-                className="mt-3 w-full cursor-pointer rounded-xl border border-transparent px-3 py-2 text-center text-xs tracking-wide text-zinc-400 transition hover:border-zinc-200 hover:bg-white hover:text-zinc-600"
-              >
-                no tip
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       </div>
 
