@@ -19,7 +19,7 @@ type Step =
 
 const MODAL_MS = 220;
 const HOLD_MS = 2800;
-const CONFIRM_NAME = "build with duy";
+const CONFIRM_NAME = "duy";
 const CONFIRM_PHRASE = "cancel subscription";
 
 const CURRENT_PLAN = {

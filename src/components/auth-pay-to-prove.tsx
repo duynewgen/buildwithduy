@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 
 type Phase = "login" | "checked-in";
 
-const USERNAME = "buildwithduy";
+const USERNAME = "duy";
 const PASSWORD = "hunter2";
 const MODAL_MS = 220;
 
