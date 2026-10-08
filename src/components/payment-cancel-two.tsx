@@ -9,7 +9,6 @@ type Step =
   | "why"
   | "sure"
   | "name"
-  | "phrase"
   | "captcha"
   | "hold"
   | "half"
@@ -20,7 +19,6 @@ type Step =
 const MODAL_MS = 220;
 const HOLD_MS = 2800;
 const CONFIRM_NAME = "duy";
-const CONFIRM_PHRASE = "cancel subscription";
 
 const CURRENT_PLAN = {
   name: "pro max",
@@ -56,8 +54,6 @@ export function PaymentCancelTwo() {
   const [stepVisible, setStepVisible] = useState(true);
   const [nameValue, setNameValue] = useState("");
   const [nameError, setNameError] = useState(false);
-  const [phraseValue, setPhraseValue] = useState("");
-  const [phraseError, setPhraseError] = useState(false);
   const [captchaSelected, setCaptchaSelected] = useState<string[]>([]);
   const [captchaError, setCaptchaError] = useState(false);
   const [holding, setHolding] = useState(false);
@@ -91,8 +87,6 @@ export function PaymentCancelTwo() {
     setStepVisible(true);
     setNameValue("");
     setNameError(false);
-    setPhraseValue("");
-    setPhraseError(false);
     setCaptchaSelected([]);
     setCaptchaError(false);
     setHolding(false);
@@ -145,15 +139,6 @@ export function PaymentCancelTwo() {
       return;
     }
     setNameError(false);
-    goTo("phrase");
-  }
-
-  function submitPhrase() {
-    if (phraseValue.trim().toLowerCase() !== CONFIRM_PHRASE) {
-      setPhraseError(true);
-      return;
-    }
-    setPhraseError(false);
     goTo("captcha");
   }
 
@@ -427,47 +412,6 @@ export function PaymentCancelTwo() {
                         className="w-full cursor-pointer rounded-full bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
                       >
                         confirm name
-                      </button>
-                    </div>
-                  ) : null}
-
-                  {step === "phrase" ? (
-                    <div className="space-y-4">
-                      <p className="text-sm text-zinc-900">
-                        type cancel subscription
-                      </p>
-                      <p className="text-xs text-zinc-500">
-                        exactly as shown:{" "}
-                        <span className="font-sans text-zinc-800">
-                          {CONFIRM_PHRASE}
-                        </span>
-                      </p>
-                      <input
-                        type="text"
-                        value={phraseValue}
-                        onChange={(event) => {
-                          setPhraseValue(event.target.value);
-                          setPhraseError(false);
-                        }}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") submitPhrase();
-                        }}
-                        autoComplete="off"
-                        spellCheck={false}
-                        placeholder={CONFIRM_PHRASE}
-                        className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-3 font-sans text-sm text-zinc-900 outline-none transition placeholder:text-zinc-300 focus:border-zinc-900"
-                      />
-                      {phraseError ? (
-                        <p className="text-xs text-rose-600">
-                          phrase doesn&apos;t match. try again.
-                        </p>
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={submitPhrase}
-                        className="w-full cursor-pointer rounded-full bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
-                      >
-                        confirm phrase
                       </button>
                     </div>
                   ) : null}
