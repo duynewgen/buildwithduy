@@ -4,14 +4,14 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-type Phase = "login" | "checked-in";
+type Phase = "login" | "checked-in" | "dumbass";
 
 const USERNAME = "duy";
 const PASSWORD = "hunter2";
-const POLYNOMIAL = "x² + 12x + 20";
+const POLYNOMIAL = "x² + 8x + 15";
 const MODAL_MS = 220;
 
-const ACCEPTED = new Set(["(x+2)(x+10)", "(x+10)(x+2)"]);
+const ACCEPTED = new Set(["(x+3)(x+5)", "(x+5)(x+3)"]);
 
 function normalizeAnswer(raw: string) {
   return raw
@@ -96,51 +96,75 @@ export function PasswordTwoFactor() {
     }, 450);
   }
 
+  function skipFactor() {
+    setPhase("dumbass");
+    window.clearTimeout(finishTimerRef.current);
+    finishTimerRef.current = window.setTimeout(() => {
+      closeModal();
+    }, 450);
+  }
+
+  if (phase === "checked-in") {
+    return (
+      <div className="mx-auto w-full max-w-sm text-center">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <p className="text-sm text-zinc-600">you&apos;re checked in</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "dumbass") {
+    return (
+      <div className="mx-auto w-full max-w-lg text-center sm:max-w-lg">
+        <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-12 shadow-sm sm:px-12 sm:py-14">
+          <p className="text-2xl text-zinc-900 sm:text-3xl">you dumbass</p>
+          <p className="mt-4 text-base text-zinc-600 sm:text-lg">
+            your parents gonna disown you bro <br /> cuz you can&apos;t be
+            verified
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      {phase === "checked-in" ? (
-        <div className="mx-auto w-full max-w-sm text-center">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-zinc-600">you&apos;re checked in</p>
-          </div>
+      <div className="mx-auto w-full max-w-sm text-left">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
+          <p className="text-sm tracking-wide text-zinc-500">sign in</p>
+
+          <label className="mt-4 block">
+            <span className="text-sm text-zinc-500">username</span>
+            <input
+              type="text"
+              value={USERNAME}
+              readOnly
+              tabIndex={-1}
+              className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
+            />
+          </label>
+
+          <label className="mt-3 block">
+            <span className="text-sm text-zinc-500">password</span>
+            <input
+              type="password"
+              value={PASSWORD}
+              readOnly
+              tabIndex={-1}
+              className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
+            />
+          </label>
+
+          <button
+            type="button"
+            onClick={openModal}
+            className="mt-5 w-full cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
+          >
+            continue with two-factor authentication
+          </button>
         </div>
-      ) : (
-        <div className="mx-auto w-full max-w-sm text-left">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
-            <p className="text-sm tracking-wide text-zinc-500">sign in</p>
-
-            <label className="mt-4 block">
-              <span className="text-sm text-zinc-500">username</span>
-              <input
-                type="text"
-                value={USERNAME}
-                readOnly
-                tabIndex={-1}
-                className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
-              />
-            </label>
-
-            <label className="mt-3 block">
-              <span className="text-sm text-zinc-500">password</span>
-              <input
-                type="password"
-                value={PASSWORD}
-                readOnly
-                tabIndex={-1}
-                className="mt-1.5 w-full cursor-default rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 font-sans text-sm text-zinc-900 outline-none"
-              />
-            </label>
-
-            <button
-              type="button"
-              onClick={openModal}
-              className="mt-5 w-full cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
-            >
-              continue with two-factor authentication
-            </button>
-          </div>
-        </div>
-      )}
+      </div>
 
       {mounted && modalMounted
         ? createPortal(
@@ -220,12 +244,21 @@ export function PasswordTwoFactor() {
                     </p>
                   ) : null}
 
-                  <button
-                    type="submit"
-                    className="mt-5 w-full cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
-                  >
-                    verify
-                  </button>
+                  <div className="mt-5 grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={skipFactor}
+                      className="cursor-pointer rounded-full border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-800 transition hover:border-zinc-900"
+                    >
+                      skip
+                    </button>
+                    <button
+                      type="submit"
+                      className="cursor-pointer rounded-full border border-zinc-900 bg-zinc-900 px-4 py-3 text-sm text-white transition hover:bg-zinc-800"
+                    >
+                      verify
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>,
