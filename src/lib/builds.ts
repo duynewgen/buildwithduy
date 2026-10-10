@@ -205,6 +205,11 @@ export const builds: Build[] = [
     description: "cancel again. survive the confirmation gauntlet.",
   },
   {
+    path: "payment/cancel-3",
+    title: "cancel, part 3",
+    description: "cancel again. write a 500-word essay first.",
+  },
+  {
     path: "payment/split",
     title: "split",
     description: "split the check. literally.",

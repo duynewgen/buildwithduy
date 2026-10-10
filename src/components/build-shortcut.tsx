@@ -20,6 +20,7 @@ import { BirthdayWordsDemo } from "@/components/birthday-words-demo";
 import { PaymentApplePayDemo } from "@/components/payment-apple-pay-demo";
 import { PaymentCancelDemo } from "@/components/payment-cancel-demo";
 import { PaymentCancelTwoDemo } from "@/components/payment-cancel-two-demo";
+import { PaymentCancelThreeDemo } from "@/components/payment-cancel-three-demo";
 import { PaymentCardDemo } from "@/components/payment-card-demo";
 import { PaymentNoTipDemo } from "@/components/payment-no-tip-demo";
 import { PaymentSplitDemo } from "@/components/payment-split-demo";
@@ -105,6 +106,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "payment/cancel-2") {
     return <PaymentCancelTwoDemo />;
+  }
+  if (path === "payment/cancel-3") {
+    return <PaymentCancelThreeDemo />;
   }
   if (path === "payment/split") {
     return <PaymentSplitDemo />;
