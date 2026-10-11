@@ -58,4 +58,4 @@ Living conventions (also in `.cursor/rules/project-context.mdc`). Idea backlog: 
 
 ## Other builds
 
-- Normal writing, not lowercase. Scrappy on purpose is fine. No tagline or joke description under the title.
+- Normal writing, not lowercase. Scrappy on purpose is fine. No tagline or joke description under the title. Shortcut titles, descriptions, and thumbnail copy stay lowercase.

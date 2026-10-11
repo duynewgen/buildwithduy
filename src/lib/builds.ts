@@ -261,13 +261,13 @@ export const builds: Build[] = [
   },
   {
     path: "other/url-shortener",
-    title: "URL Shortener",
-    description: "Shorten a URL by making the link itself shorter.",
+    title: "url shortener",
+    description: "shorten a url by making the link itself shorter.",
   },
   {
     path: "other/file-compressor",
-    title: "File Compressor",
-    description: "Compress a file by pressing the page.",
+    title: "file compressor",
+    description: "compress a file by pressing the page.",
   },
 ];
 
