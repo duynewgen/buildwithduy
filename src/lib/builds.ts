@@ -264,6 +264,11 @@ export const builds: Build[] = [
     title: "URL Shortener",
     description: "Shorten a URL by making the link itself shorter.",
   },
+  {
+    path: "other/file-compressor",
+    title: "File Compressor",
+    description: "Compress a file by pressing the page.",
+  },
 ];
 
 export function buildHref(build: Build) {
