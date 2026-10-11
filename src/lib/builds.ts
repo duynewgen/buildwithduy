@@ -259,6 +259,11 @@ export const builds: Build[] = [
     title: "fishing",
     description: "verify with otp. aim, throw, catch four numbered fish.",
   },
+  {
+    path: "other/url-shortener",
+    title: "URL Shortener",
+    description: "Shorten a URL by making the link itself shorter.",
+  },
 ];
 
 export function buildHref(build: Build) {

@@ -33,6 +33,7 @@ import { AuthFallingNumbersDemo } from "@/components/auth-falling-numbers-demo";
 import { AuthSnakeDemo } from "@/components/auth-snake-demo";
 import { AuthPayToProveDemo } from "@/components/auth-pay-to-prove-demo";
 import { AuthFishingDemo } from "@/components/auth-fishing-demo";
+import { OtherUrlShortenerDemo } from "@/components/other-url-shortener-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -139,6 +140,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "authentication/fishing") {
     return <AuthFishingDemo />;
+  }
+  if (path === "other/url-shortener") {
+    return <OtherUrlShortenerDemo />;
   }
 
   return (

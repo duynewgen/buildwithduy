@@ -46,3 +46,4 @@ Fake “sign in” shells that resolve via a cursed challenge, then show success
 - Everything lowercase in UI copy.
 - Keep gags readable and short; polish interaction feel over extra chrome.
 - Prefer CSS/`group-hover` motion; real game loops only when the build is an actual mini-game (snake, fishing, falling numbers).
+- `other` builds use normal writing, not lowercase. They can look scrappy on purpose. No tagline or joke description under the title.

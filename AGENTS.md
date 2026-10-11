@@ -55,3 +55,7 @@ Living conventions (also in `.cursor/rules/project-context.mdc`). Idea backlog: 
 - Demo phone `0123456789` (readonly). Dark zinc pill CTA (`verify with otp`). Card: `rounded-2xl … border-zinc-200`. Inputs `rounded-xl`; buttons `rounded-full`.
 - Modals: portal + ~220ms fade (`modalMounted` / `modalActive`), Escape to close.
 - OTP/games collect digits via play; prefer any-order unless the gag needs a fixed code. Tabular `font-sans` numbers only.
+
+## Other builds
+
+- Normal writing, not lowercase. Scrappy on purpose is fine. No tagline or joke description under the title.
