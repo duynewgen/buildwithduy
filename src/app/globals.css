@@ -13,6 +13,7 @@
   --animate-math-flip: math-flip 0.7s ease-in-out forwards;
   --animate-apple-fall: apple-fall 0.95s ease-in forwards;
   --animate-morse-lamp: morse-lamp 1.1s ease-in-out;
+  --animate-asian-shutter: asian-shutter 0.7s ease-out forwards;
 }
 
 @layer base {
@@ -285,6 +286,18 @@
   100% {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@keyframes asian-shutter {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
 

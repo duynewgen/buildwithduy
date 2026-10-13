@@ -35,6 +35,7 @@ import { AuthPayToProveDemo } from "@/components/auth-pay-to-prove-demo";
 import { AuthFishingDemo } from "@/components/auth-fishing-demo";
 import { OtherUrlShortenerDemo } from "@/components/other-url-shortener-demo";
 import { OtherFileCompressorDemo } from "@/components/other-file-compressor-demo";
+import { OtherAsianDemo } from "@/components/other-asian-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -147,6 +148,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "other/file-compressor") {
     return <OtherFileCompressorDemo />;
+  }
+  if (path === "other/asian") {
+    return <OtherAsianDemo />;
   }
 
   return (

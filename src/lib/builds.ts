@@ -269,6 +269,11 @@ export const builds: Build[] = [
     title: "file compressor",
     description: "compress a file by pressing the page.",
   },
+  {
+    path: "other/asian",
+    title: "asian",
+    description: "detect your type by taking a photo.",
+  },
 ];
 
 export function buildHref(build: Build) {
