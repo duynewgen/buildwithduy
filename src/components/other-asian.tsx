@@ -199,9 +199,7 @@ export function OtherAsian() {
               <span className="pointer-events-none absolute right-4 bottom-4 h-6 w-6 border-r-2 border-b-2 border-white/80" />
               <span className="pointer-events-none absolute inset-x-8 top-[42%] flex -translate-y-1/2 items-center gap-2">
                 <span className="h-0.5 flex-1 bg-green-400 shadow-[0_0_10px_#4ade80]" />
-                <span className="bg-black/80 px-2.5 py-0.5 text-base leading-none text-green-400">
-                  Eyes line
-                </span>
+                <span className="text-base leading-none text-green-400">Eyes line</span>
                 <span className="h-0.5 flex-1 bg-green-400 shadow-[0_0_10px_#4ade80]" />
               </span>
               <span
