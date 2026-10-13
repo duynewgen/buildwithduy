@@ -274,6 +274,11 @@ export const builds: Build[] = [
     title: "asian",
     description: "take a photo.",
   },
+  {
+    path: "other/onlyfans",
+    title: "onlyfans",
+    description: "open a fan and turn it up.",
+  },
 ];
 
 export function buildHref(build: Build) {

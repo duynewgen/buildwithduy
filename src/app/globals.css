@@ -290,6 +290,15 @@
   }
 }
 
+@keyframes onlyfans-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes asian-run {
   from {
     transform: translateX(0);
