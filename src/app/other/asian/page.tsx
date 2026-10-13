@@ -26,7 +26,7 @@ export default async function OtherAsianPage({ searchParams }: PageProps) {
       title={build.title}
       description={build.description}
       backHref="/other"
-      contentClassName="max-w-lg"
+      contentClassName="max-w-2xl"
     >
       <OtherAsian />
     </BuildExperience>

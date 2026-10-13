@@ -15,6 +15,11 @@ export function OtherAsianDemo() {
             <span className="h-2.5 w-2.5 rounded-full bg-white" />
             <span className="h-2.5 w-2.5 rounded-full bg-white" />
           </span>
+          <span className="pointer-events-none absolute inset-x-1.5 top-1/2 flex -translate-y-2 items-center gap-0.5">
+            <span className="h-px flex-1 bg-green-400" />
+            <span className="text-[6px] leading-none text-green-400">eyes line</span>
+            <span className="h-px flex-1 bg-green-400" />
+          </span>
           <span className="pointer-events-none absolute inset-0 bg-white opacity-0 group-hover:animate-asian-shutter" />
         </div>
       </div>

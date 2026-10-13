@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 
 const MODAL_MS = 220;
 const FLASH_MS = 180;
+const ANALYZE_MS = 1400;
 
 const scrappyFont = {
   fontFamily: '"Times New Roman", Times, serif',
@@ -57,24 +58,27 @@ export function OtherAsian() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const closeTimerRef = useRef(0);
   const flashTimerRef = useRef(0);
+  const analyzeTimerRef = useRef(0);
   const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<"detect" | "photo">("detect");
-  const [cameraOn, setCameraOn] = useState(true);
   const [flash, setFlash] = useState(false);
   const [modalMounted, setModalMounted] = useState(false);
   const [modalActive, setModalActive] = useState(false);
+  const [analyzed, setAnalyzed] = useState(false);
+  const [still, setStill] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
     return () => {
       window.clearTimeout(closeTimerRef.current);
       window.clearTimeout(flashTimerRef.current);
+      window.clearTimeout(analyzeTimerRef.current);
       scheduleCameraRelease();
     };
   }, []);
 
   useEffect(() => {
-    if (step !== "photo" || !cameraOn) return;
+    if (step !== "photo") return;
     let active = true;
 
     void openCamera()
@@ -91,7 +95,7 @@ export function OtherAsian() {
       if (videoRef.current) videoRef.current.srcObject = null;
       scheduleCameraRelease();
     };
-  }, [step, cameraOn]);
+  }, [step]);
 
   useEffect(() => {
     if (!modalMounted) return;
@@ -104,22 +108,45 @@ export function OtherAsian() {
 
   function openModal() {
     window.clearTimeout(closeTimerRef.current);
+    window.clearTimeout(analyzeTimerRef.current);
+    setAnalyzed(false);
     setModalMounted(true);
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setModalActive(true));
     });
+    analyzeTimerRef.current = window.setTimeout(() => {
+      setAnalyzed(true);
+    }, ANALYZE_MS);
   }
 
   function closeModal() {
     setModalActive(false);
     window.clearTimeout(closeTimerRef.current);
+    window.clearTimeout(analyzeTimerRef.current);
     closeTimerRef.current = window.setTimeout(() => {
       setModalMounted(false);
+      setAnalyzed(false);
+      setStill(null);
     }, MODAL_MS);
+  }
+
+  function captureFrame() {
+    const video = videoRef.current;
+    if (!video || !video.videoWidth) return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const context = canvas.getContext("2d");
+    if (!context) return null;
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
+    context.drawImage(video, 0, 0);
+    return canvas.toDataURL("image/jpeg", 0.85);
   }
 
   function takePhoto() {
     if (flash || modalMounted) return;
+    setStill(captureFrame());
     setFlash(true);
     window.clearTimeout(flashTimerRef.current);
     flashTimerRef.current = window.setTimeout(() => {
@@ -130,10 +157,10 @@ export function OtherAsian() {
 
   return (
     <div
-      className="mx-auto w-full max-w-sm text-center text-zinc-900"
+      className="mx-auto w-full max-w-2xl text-center text-zinc-900"
       style={scrappyFont}
     >
-      <p className="text-3xl text-red-700">what asian are you</p>
+      <p className="text-4xl text-red-700">What Asian are you?</p>
 
       {step === "detect" ? (
         <button
@@ -142,26 +169,41 @@ export function OtherAsian() {
           className="mt-5 cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
           style={scrappyFont}
         >
-          detect your type
+          Start
         </button>
       ) : (
-        <div className="mx-auto mt-5 w-80 max-w-full">
-          <div className="rounded-[2rem] border-4 border-zinc-800 bg-zinc-900 px-3 pt-3 pb-4 shadow-md">
-            <div className="mx-auto mb-2 h-4 w-4 rounded-full border-2 border-zinc-500 bg-black" />
+        <div className="mx-auto mt-5 w-full">
+          <div className="rounded-[2rem] border-4 border-zinc-800 bg-zinc-900 px-4 pt-4 pb-5 shadow-md">
+            <div className="mx-auto mb-3 h-5 w-5 rounded-full border-2 border-zinc-500 bg-black" />
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-black">
-              {cameraOn ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="h-full w-full object-cover [transform:scaleX(-1)]"
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={[
+                  "h-full w-full object-cover [transform:scaleX(-1)]",
+                  still ? "invisible" : "",
+                ].join(" ")}
+              />
+              {still ? (
+                <img
+                  src={still}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : null}
-              <span className="pointer-events-none absolute top-3 left-3 h-5 w-5 border-t-2 border-l-2 border-white/80" />
-              <span className="pointer-events-none absolute top-3 right-3 h-5 w-5 border-t-2 border-r-2 border-white/80" />
-              <span className="pointer-events-none absolute bottom-3 left-3 h-5 w-5 border-b-2 border-l-2 border-white/80" />
-              <span className="pointer-events-none absolute right-3 bottom-3 h-5 w-5 border-r-2 border-b-2 border-white/80" />
+              <span className="pointer-events-none absolute top-4 left-4 h-6 w-6 border-t-2 border-l-2 border-white/80" />
+              <span className="pointer-events-none absolute top-4 right-4 h-6 w-6 border-t-2 border-r-2 border-white/80" />
+              <span className="pointer-events-none absolute bottom-4 left-4 h-6 w-6 border-b-2 border-l-2 border-white/80" />
+              <span className="pointer-events-none absolute right-4 bottom-4 h-6 w-6 border-r-2 border-b-2 border-white/80" />
+              <span className="pointer-events-none absolute inset-x-8 top-[42%] flex -translate-y-1/2 items-center gap-2">
+                <span className="h-0.5 flex-1 bg-green-400 shadow-[0_0_10px_#4ade80]" />
+                <span className="bg-black/80 px-2.5 py-0.5 text-base leading-none text-green-400">
+                  Eyes line
+                </span>
+                <span className="h-0.5 flex-1 bg-green-400 shadow-[0_0_10px_#4ade80]" />
+              </span>
               <span
                 className={[
                   "pointer-events-none absolute inset-0 bg-white transition-opacity duration-100",
@@ -176,16 +218,7 @@ export function OtherAsian() {
             className="mx-auto mt-4 block cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
             style={scrappyFont}
           >
-            take photo
-          </button>
-          <button
-            type="button"
-            aria-pressed={cameraOn}
-            onClick={() => setCameraOn((on) => !on)}
-            className="mx-auto mt-3 block cursor-pointer rounded-full border-2 border-red-900 bg-white px-4 py-1.5 text-lg text-red-700"
-            style={scrappyFont}
-          >
-            {cameraOn ? "camera off" : "camera on"}
+            Analyze
           </button>
         </div>
       )}
@@ -222,11 +255,18 @@ export function OtherAsian() {
                 >
                   <X className="h-4 w-4" strokeWidth={2} />
                 </button>
-                <p id="asian-title" className="text-2xl text-red-700">
-                  eyes not detected.
-                  <br />
-                  please try again
-                </p>
+                {analyzed ? (
+                  <p id="asian-title" className="text-2xl text-red-700">
+                    Your eyes cannot be detected.
+                    <br />
+                    Please try again.
+                  </p>
+                ) : (
+                  <div id="asian-title">
+                    <span className="mx-auto block h-9 w-9 animate-spin rounded-full border-2 border-red-200 border-t-red-700" />
+                    <p className="mt-4 text-2xl text-red-700">Analyzing...</p>
+                  </div>
+                )}
               </div>
             </div>,
             document.body,

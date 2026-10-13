@@ -272,7 +272,7 @@ export const builds: Build[] = [
   {
     path: "other/asian",
     title: "asian",
-    description: "detect your type by taking a photo.",
+    description: "take a photo.",
   },
 ];
 
