@@ -12,6 +12,41 @@ const scrappyFont = {
   fontFamily: '"Times New Roman", Times, serif',
 } as const;
 
+const FACES = [
+  "/other/asian/1.png",
+  "/other/asian/2.jpg",
+  "/other/asian/3.png",
+  "/other/asian/4.png",
+  "/other/asian/5.png",
+  "/other/asian/6.png",
+  "/other/asian/7.png",
+  "/other/asian/8.png",
+];
+
+function FaceRun() {
+  const row = (copy: string) => (
+    <div className="flex shrink-0 gap-3 pr-3">
+      {FACES.map((src) => (
+        <img
+          key={`${copy}-${src}`}
+          src={src}
+          alt=""
+          className="h-36 w-28 rounded-xl object-cover"
+        />
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="mt-8 overflow-hidden">
+      <div className="flex w-max animate-asian-run">
+        {row("a")}
+        {row("b")}
+      </div>
+    </div>
+  );
+}
+
 let cameraPromise: Promise<MediaStream> | null = null;
 let releaseTimer = 0;
 
@@ -163,14 +198,17 @@ export function OtherAsian() {
       <p className="text-4xl text-red-700">What Asian are you?</p>
 
       {step === "detect" ? (
-        <button
-          type="button"
-          onClick={() => setStep("photo")}
-          className="mt-5 cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
-          style={scrappyFont}
-        >
-          Start
-        </button>
+        <>
+          <button
+            type="button"
+            onClick={() => setStep("photo")}
+            className="mt-5 cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
+            style={scrappyFont}
+          >
+            Start
+          </button>
+          <FaceRun />
+        </>
       ) : (
         <div className="mx-auto mt-5 w-full">
           <div className="rounded-[2rem] border-4 border-zinc-800 bg-zinc-900 px-4 pt-4 pb-5 shadow-md">
