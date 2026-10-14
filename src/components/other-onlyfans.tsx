@@ -55,7 +55,7 @@ export function OtherOnlyfans() {
   return (
     <div className="w-full text-center text-zinc-900" style={scrappyFont}>
       <p className="text-4xl" style={{ color: ONLYFANS_BLUE }}>
-        Welcome to OnlyFans 2067
+        Welcome to OnlyFans 2030
       </p>
       {level < 1 ? (
         <button
