@@ -31,14 +31,14 @@ function FaceRun() {
           key={`${copy}-${src}`}
           src={src}
           alt=""
-          className="h-36 w-28 rounded-xl object-cover"
+          className="h-28 w-20 rounded-lg object-cover"
         />
       ))}
     </div>
   );
 
   return (
-    <div className="mt-8 overflow-hidden">
+    <div className="mb-6 overflow-hidden">
       <div className="flex w-max animate-asian-run">
         {row("a")}
         {row("b")}
@@ -95,7 +95,6 @@ export function OtherAsian() {
   const flashTimerRef = useRef(0);
   const analyzeTimerRef = useRef(0);
   const [mounted, setMounted] = useState(false);
-  const [step, setStep] = useState<"detect" | "photo">("detect");
   const [flash, setFlash] = useState(false);
   const [modalMounted, setModalMounted] = useState(false);
   const [modalActive, setModalActive] = useState(false);
@@ -113,7 +112,6 @@ export function OtherAsian() {
   }, []);
 
   useEffect(() => {
-    if (step !== "photo") return;
     let active = true;
 
     void openCamera()
@@ -130,7 +128,7 @@ export function OtherAsian() {
       if (videoRef.current) videoRef.current.srcObject = null;
       scheduleCameraRelease();
     };
-  }, [step]);
+  }, []);
 
   useEffect(() => {
     if (!modalMounted) return;
@@ -195,22 +193,10 @@ export function OtherAsian() {
       className="mx-auto w-full max-w-2xl text-center text-zinc-900"
       style={scrappyFont}
     >
+      <FaceRun />
       <p className="text-4xl text-red-700">What Asian are you?</p>
 
-      {step === "detect" ? (
-        <>
-          <button
-            type="button"
-            onClick={() => setStep("photo")}
-            className="mt-5 cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
-            style={scrappyFont}
-          >
-            Start
-          </button>
-          <FaceRun />
-        </>
-      ) : (
-        <div className="mx-auto mt-5 w-full">
+      <div className="mx-auto mt-5 w-full">
           <div className="rounded-[2rem] border-4 border-zinc-800 bg-zinc-900 px-4 pt-4 pb-5 shadow-md">
             <div className="mx-auto mb-3 h-5 w-5 rounded-full border-2 border-zinc-500 bg-black" />
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-black">
@@ -235,7 +221,7 @@ export function OtherAsian() {
               <span className="pointer-events-none absolute top-4 right-4 h-6 w-6 border-t-2 border-r-2 border-white/80" />
               <span className="pointer-events-none absolute bottom-4 left-4 h-6 w-6 border-b-2 border-l-2 border-white/80" />
               <span className="pointer-events-none absolute right-4 bottom-4 h-6 w-6 border-r-2 border-b-2 border-white/80" />
-              <span className="pointer-events-none absolute inset-x-8 top-[42%] flex -translate-y-1/2 items-center gap-2">
+              <span className="pointer-events-none absolute inset-x-8 top-[50%] flex -translate-y-1/2 items-center gap-2">
                 <span className="h-0.5 flex-1 bg-green-400 shadow-[0_0_10px_#4ade80]" />
                 <span className="text-base leading-none text-green-400">Eyes line</span>
                 <span className="h-0.5 flex-1 bg-green-400 shadow-[0_0_10px_#4ade80]" />
@@ -254,10 +240,9 @@ export function OtherAsian() {
             className="mx-auto mt-4 block cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
             style={scrappyFont}
           >
-            Analyze
+            Detect your type
           </button>
         </div>
-      )}
 
       {mounted && modalMounted
         ? createPortal(
