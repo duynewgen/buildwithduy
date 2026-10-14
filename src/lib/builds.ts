@@ -279,6 +279,11 @@ export const builds: Build[] = [
     title: "onlyfans",
     description: "open a fan and turn it up.",
   },
+  {
+    path: "other/file-unzip",
+    title: "file unzip",
+    description: "unzip a zip by opening the fly.",
+  },
 ];
 
 export function buildHref(build: Build) {
