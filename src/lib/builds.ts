@@ -276,7 +276,7 @@ export const builds: Build[] = [
   },
   {
     path: "other/onlyfans",
-    title: "onlyfans",
+    title: "onlyfan",
     description: "open a fan and turn it up.",
   },
   {
