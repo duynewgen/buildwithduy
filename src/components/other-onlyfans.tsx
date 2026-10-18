@@ -4,17 +4,13 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-const FAN_SECONDS = [0, 3.2, 1.5, 0.8, 0.42, 0.22];
+const FAN_SECONDS = [0, 0.8, 0.42, 0.22];
 const MAX_LEVEL = FAN_SECONDS.length - 1;
 const MODAL_MS = 220;
 
 const ONLYFANS_BLUE = "#00AFF0";
 const FAN_SRC = "/other/onlyfan.png";
-
-const PLANS = [
-  { name: "Basic", price: "$49.99", highlighted: false },
-  { name: "Pro Max", price: "$99.99", highlighted: true },
-];
+const LOGO_SRC = "/other/onlyfan-wordmark.svg";
 
 const scrappyFont = {
   fontFamily: '"Times New Roman", Times, serif',
@@ -27,14 +23,14 @@ export function OtherOnlyfans() {
   const [planMounted, setPlanMounted] = useState(false);
   const [planActive, setPlanActive] = useState(false);
 
-  const planOpen = level >= 4 && !planDismissed;
+  const planOpen = level >= 2 && !planDismissed;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (level < 4) setPlanDismissed(false);
+    if (level < 2) setPlanDismissed(false);
   }, [level]);
 
   useEffect(() => {
@@ -96,7 +92,8 @@ export function OtherOnlyfans() {
 
   return (
     <div className="w-full text-center text-zinc-900" style={scrappyFont}>
-      <p className="text-4xl" style={{ color: ONLYFANS_BLUE }}>
+      <img src={LOGO_SRC} alt="OnlyFan" className="mx-auto h-14 w-auto" />
+      <p className="mt-4 text-4xl" style={{ color: ONLYFANS_BLUE }}>
         {level < 1 ? "Welcome to OnlyFan 2030" : "You're in OnlyFan!"}
       </p>
       {level < 1 ? (
@@ -106,7 +103,7 @@ export function OtherOnlyfans() {
           className="mt-5 cursor-pointer rounded-full border-2 px-5 py-2 text-xl text-white"
           style={{ ...scrappyFont, backgroundColor: ONLYFANS_BLUE, borderColor: "#0086b8" }}
         >
-          Open
+          Join OnlyFan
         </button>
       ) : (
         <img
@@ -136,7 +133,7 @@ export function OtherOnlyfans() {
                 className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-700 accent-[#00AFF0]"
               />
               <div className="mt-1 flex justify-between font-sans text-sm tabular-nums">
-                {[1, 2, 3, 4, 5].map((mark) => (
+                {[1, 2, 3].map((mark) => (
                   <button
                     key={mark}
                     type="button"
@@ -169,9 +166,9 @@ export function OtherOnlyfans() {
               <div
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby="onlyfan-plan-title"
+                aria-labelledby="payment-required-title"
                 className={[
-                  "relative z-10 w-full max-w-md rounded-3xl border border-zinc-200 bg-white p-6 text-center shadow-xl transition duration-200 ease-out",
+                  "relative z-10 w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-6 text-center shadow-xl transition duration-200 ease-out",
                   planActive
                     ? "translate-y-0 scale-100 opacity-100"
                     : "translate-y-2 scale-[0.98] opacity-0",
@@ -186,38 +183,18 @@ export function OtherOnlyfans() {
                 >
                   <X className="h-4 w-4" strokeWidth={2} />
                 </button>
-                <p id="onlyfan-plan-title" className="text-2xl text-zinc-900">
-                  Free trial ended
+                <p id="payment-required-title" className="text-2xl" style={{ color: ONLYFANS_BLUE }}>
+                  Payment required
                 </p>
-                <div className="mt-5 grid grid-cols-2 gap-3">
-                  {PLANS.map((plan) => (
-                    <div
-                      key={plan.name}
-                      className="rounded-2xl border-2 px-3 py-5"
-                      style={
-                        plan.highlighted
-                          ? { borderColor: ONLYFANS_BLUE, backgroundColor: ONLYFANS_BLUE }
-                          : { borderColor: ONLYFANS_BLUE }
-                      }
-                    >
-                      <p
-                        className="text-xl"
-                        style={{ color: plan.highlighted ? "#fff" : ONLYFANS_BLUE }}
-                      >
-                        {plan.name}
-                      </p>
-                      <p
-                        className={[
-                          "mt-3 font-sans text-2xl tabular-nums",
-                          plan.highlighted ? "text-white" : "text-zinc-900",
-                        ].join(" ")}
-                      >
-                        {plan.price}
-                        <span className="text-base">/month</span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                <p className="mt-4 font-sans text-5xl text-zinc-900 tabular-nums">$99</p>
+                <p className="mt-1 text-lg">service fee</p>
+                <button
+                  type="button"
+                  className="mt-6 cursor-pointer rounded-full border-2 px-5 py-2 text-xl text-white"
+                  style={{ ...scrappyFont, backgroundColor: ONLYFANS_BLUE, borderColor: "#0086b8" }}
+                >
+                  Pay $99
+                </button>
               </div>
             </div>,
             document.body,
