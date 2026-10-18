@@ -135,9 +135,18 @@ export function OtherOnlyfans() {
                 onChange={(event) => setLevel(Number(event.target.value))}
                 className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-700 accent-[#00AFF0]"
               />
-              <div className="mt-1 flex justify-between px-0.5 font-sans text-sm text-zinc-300 tabular-nums">
+              <div className="mt-1 flex justify-between font-sans text-sm tabular-nums">
                 {[1, 2, 3, 4, 5].map((mark) => (
-                  <span key={mark}>{mark}</span>
+                  <button
+                    key={mark}
+                    type="button"
+                    aria-label={`fan level ${mark}`}
+                    onClick={() => setLevel(mark)}
+                    className="cursor-pointer px-1 text-zinc-300"
+                    style={mark === level ? { color: ONLYFANS_BLUE } : undefined}
+                  >
+                    {mark}
+                  </button>
                 ))}
               </div>
             </div>,
