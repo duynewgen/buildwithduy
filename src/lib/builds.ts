@@ -284,6 +284,11 @@ export const builds: Build[] = [
     title: "file unzip",
     description: "unzip a zip by opening the fly.",
   },
+  {
+    path: "other/mcdonalds-job-application",
+    title: "mcdonalds job application",
+    description: "apply with your coding languages.",
+  },
 ];
 
 export function buildHref(build: Build) {

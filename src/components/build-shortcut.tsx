@@ -38,6 +38,7 @@ import { OtherFileCompressorDemo } from "@/components/other-file-compressor-demo
 import { OtherAsianDemo } from "@/components/other-asian-demo";
 import { OtherOnlyfansDemo } from "@/components/other-onlyfans-demo";
 import { OtherFileUnzipDemo } from "@/components/other-file-unzip-demo";
+import { OtherMcdonaldsJobApplicationDemo } from "@/components/other-mcdonalds-job-application-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -159,6 +160,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "other/file-unzip") {
     return <OtherFileUnzipDemo />;
+  }
+  if (path === "other/mcdonalds-job-application") {
+    return <OtherMcdonaldsJobApplicationDemo />;
   }
 
   return (
