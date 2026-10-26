@@ -289,6 +289,11 @@ export const builds: Build[] = [
     title: "mcdonalds job application",
     description: "apply with your coding languages.",
   },
+  {
+    path: "other/food-scanner",
+    title: "food scanner",
+    description: "scan a meal down to the chemicals.",
+  },
 ];
 
 export function buildHref(build: Build) {
