@@ -291,7 +291,7 @@ export const builds: Build[] = [
   },
   {
     path: "other/food-scanner",
-    title: "food scanner",
+    title: "calorie tracker",
     description: "scan a meal down to the chemicals.",
   },
 ];
