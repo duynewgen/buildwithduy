@@ -290,19 +290,14 @@ export const builds: Build[] = [
     description: "apply with your coding languages.",
   },
   {
-    path: "other/food-scanner",
-    title: "calorie tracker",
-    description: "scan a meal down to the chemicals.",
-  },
-  {
-    path: "other/food-analyzer",
-    title: "food analyzer",
-    description: "analyze a meal down to the chemicals.",
-  },
-  {
     path: "other/ingredient-analysis",
     title: "ingredient analysis",
     description: "read a meal down to the chemicals.",
+  },
+  {
+    path: "other/backend",
+    title: "backend",
+    description: "color inside a backwards end.",
   },
 ];
 

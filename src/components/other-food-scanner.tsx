@@ -232,7 +232,3 @@ export function OtherMealAnalysis({ title }: { title: string }) {
     </div>
   );
 }
-
-export function OtherFoodScanner() {
-  return <OtherMealAnalysis title="Calorie Tracker" />;
-}

@@ -10,7 +10,3 @@ export function OtherMealAnalysisDemo() {
     </div>
   );
 }
-
-export function OtherFoodScannerDemo() {
-  return <OtherMealAnalysisDemo />;
-}

@@ -39,9 +39,8 @@ import { OtherAsianDemo } from "@/components/other-asian-demo";
 import { OtherOnlyfansDemo } from "@/components/other-onlyfans-demo";
 import { OtherFileUnzipDemo } from "@/components/other-file-unzip-demo";
 import { OtherMcdonaldsJobApplicationDemo } from "@/components/other-mcdonalds-job-application-demo";
-import { OtherFoodScannerDemo } from "@/components/other-food-scanner-demo";
-import { OtherFoodAnalyzerDemo } from "@/components/other-food-analyzer-demo";
 import { OtherIngredientAnalysisDemo } from "@/components/other-ingredient-analysis-demo";
+import { OtherBackendDemo } from "@/components/other-backend-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -167,14 +166,11 @@ function BuildDemo({ path }: { path: string }) {
   if (path === "other/mcdonalds-job-application") {
     return <OtherMcdonaldsJobApplicationDemo />;
   }
-  if (path === "other/food-scanner") {
-    return <OtherFoodScannerDemo />;
-  }
-  if (path === "other/food-analyzer") {
-    return <OtherFoodAnalyzerDemo />;
-  }
   if (path === "other/ingredient-analysis") {
     return <OtherIngredientAnalysisDemo />;
+  }
+  if (path === "other/backend") {
+    return <OtherBackendDemo />;
   }
 
   return (

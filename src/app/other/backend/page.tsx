@@ -1,22 +1,22 @@
 import { pageMetadata } from "@/lib/page-metadata";
-import { OtherMealAnalysis } from "@/components/other-food-scanner";
+import { OtherBackend } from "@/components/other-backend";
 import { BuildExperience } from "@/components/build-experience";
 import { getBuildByPath } from "@/lib/builds";
 import { isCreatorMode } from "@/lib/creator";
 
-const build = getBuildByPath("other/food-analyzer")!;
+const build = getBuildByPath("other/backend")!;
 
 export const metadata = pageMetadata({
   title: build.title,
   description: build.description,
-  path: "/other/food-analyzer",
+  path: "/other/backend",
 });
 
 type PageProps = {
   searchParams: Promise<{ creator?: string | string[] }>;
 };
 
-export default async function OtherFoodAnalyzerPage({ searchParams }: PageProps) {
+export default async function OtherBackendPage({ searchParams }: PageProps) {
   const params = await searchParams;
 
   return (
@@ -26,9 +26,9 @@ export default async function OtherFoodAnalyzerPage({ searchParams }: PageProps)
       title={build.title}
       description={build.description}
       backHref="/other"
-      contentClassName="max-w-lg"
+      contentClassName="max-w-6xl"
     >
-      <OtherMealAnalysis title="Food Analyzer" />
+      <OtherBackend />
     </BuildExperience>
   );
 }
