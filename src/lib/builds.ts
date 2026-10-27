@@ -299,6 +299,11 @@ export const builds: Build[] = [
     title: "backend",
     description: "color inside a backwards end.",
   },
+  {
+    path: "other/asian-parents-translator",
+    title: "asian parents translator",
+    description: "sorry comes back as an error.",
+  },
 ];
 
 export function buildHref(build: Build) {

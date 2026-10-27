@@ -41,6 +41,7 @@ import { OtherFileUnzipDemo } from "@/components/other-file-unzip-demo";
 import { OtherMcdonaldsJobApplicationDemo } from "@/components/other-mcdonalds-job-application-demo";
 import { OtherIngredientAnalysisDemo } from "@/components/other-ingredient-analysis-demo";
 import { OtherBackendDemo } from "@/components/other-backend-demo";
+import { OtherAsianParentsTranslatorDemo } from "@/components/other-asian-parents-translator-demo";
 import type { Build } from "@/lib/builds";
 import { buildHref } from "@/lib/builds";
 
@@ -171,6 +172,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "other/backend") {
     return <OtherBackendDemo />;
+  }
+  if (path === "other/asian-parents-translator") {
+    return <OtherAsianParentsTranslatorDemo />;
   }
 
   return (
