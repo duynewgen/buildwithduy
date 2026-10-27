@@ -93,7 +93,7 @@ function formatCalories(amount: number) {
   });
 }
 
-export function OtherFoodScanner() {
+export function OtherMealAnalysis({ title }: { title: string }) {
   const closeTimerRef = useRef(0);
   const analyzeTimerRef = useRef(0);
   const [mounted, setMounted] = useState(false);
@@ -143,7 +143,7 @@ export function OtherFoodScanner() {
 
   return (
     <div className="w-full max-w-sm text-zinc-900" style={scrappyFont}>
-      <p className="text-3xl text-red-700">Calorie Tracker</p>
+      <p className="text-3xl text-red-700">{title}</p>
 
       <div className="mx-auto mt-5 w-80">
         <img
@@ -177,7 +177,7 @@ export function OtherFoodScanner() {
               <div
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby="food-scanner-title"
+                aria-labelledby="meal-analysis-title"
                 className={[
                   "relative z-10 max-h-[92vh] w-full max-w-md overflow-y-auto rounded-3xl border border-zinc-200 bg-white px-6 py-6 text-center shadow-xl transition duration-200 ease-out",
                   modalActive
@@ -196,7 +196,7 @@ export function OtherFoodScanner() {
                 </button>
 
                 {analyzed ? (
-                  <div id="food-scanner-title" className="text-left">
+                  <div id="meal-analysis-title" className="text-left">
                     <p className="text-center text-2xl text-red-700">Analysis</p>
                     <ul className="mt-5 max-h-[52vh] space-y-3 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                       {COMPOUNDS.map((compound) => (
@@ -205,7 +205,7 @@ export function OtherFoodScanner() {
                           className="flex items-baseline justify-between gap-4"
                         >
                           <span className="text-xl">{compound.formula}</span>
-                          <span className="font-sans text-xl text-zinc-900 tabular-nums">
+                          <span className="text-xl text-zinc-900 tabular-nums">
                             {formatCalories(compound.amount)} calories
                           </span>
                         </li>
@@ -213,18 +213,14 @@ export function OtherFoodScanner() {
                     </ul>
                     <div className="mt-4 flex items-baseline justify-between border-t border-zinc-200 pt-3">
                       <span className="text-xl">total</span>
-                      <span className="font-sans text-xl text-red-700 tabular-nums">
+                      <span className="text-xl text-red-700 tabular-nums">
                         {formatCalories(TOTAL)} calories
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div id="food-scanner-title">
-                    <div className="relative mx-auto w-56 overflow-hidden rounded-xl border border-zinc-200">
-                      <img src={MEAL_SRC} alt="" className="w-full object-contain" />
-                      <span className="pointer-events-none absolute inset-x-0 top-0 h-1 animate-food-scan bg-red-600 shadow-[0_0_12px_#dc2626]" />
-                    </div>
-                    <span className="mx-auto mt-5 block h-9 w-9 animate-spin rounded-full border-2 border-red-200 border-t-red-700" />
+                  <div id="meal-analysis-title" className="py-8">
+                    <span className="mx-auto block h-9 w-9 animate-spin rounded-full border-2 border-red-200 border-t-red-700" />
                     <p className="mt-4 text-2xl text-red-700">Analyzing...</p>
                   </div>
                 )}
@@ -235,4 +231,8 @@ export function OtherFoodScanner() {
         : null}
     </div>
   );
+}
+
+export function OtherFoodScanner() {
+  return <OtherMealAnalysis title="Calorie Tracker" />;
 }

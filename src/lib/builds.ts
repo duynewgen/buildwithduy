@@ -294,6 +294,16 @@ export const builds: Build[] = [
     title: "calorie tracker",
     description: "scan a meal down to the chemicals.",
   },
+  {
+    path: "other/food-analyzer",
+    title: "food analyzer",
+    description: "analyze a meal down to the chemicals.",
+  },
+  {
+    path: "other/ingredient-analysis",
+    title: "ingredient analysis",
+    description: "read a meal down to the chemicals.",
+  },
 ];
 
 export function buildHref(build: Build) {
