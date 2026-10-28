@@ -22,6 +22,8 @@ type BuildExperienceProps = {
    * only hides title/description for filming.
    */
   creatorSame?: boolean;
+  hideBack?: boolean;
+  alignTop?: boolean;
   children: ReactNode;
 };
 
@@ -40,6 +42,8 @@ export function BuildExperience({
   creatorInline = false,
   prompt = "born",
   creatorSame = false,
+  hideBack = false,
+  alignTop = false,
   children,
 }: BuildExperienceProps) {
   if (creator && creatorSame) {
@@ -50,6 +54,8 @@ export function BuildExperience({
         backHref={backHref}
         contentClassName={contentClassName}
         filming
+        hideBack={hideBack}
+        alignTop={alignTop}
       >
         {children}
       </BuildShell>
@@ -74,6 +80,8 @@ export function BuildExperience({
       description={description}
       backHref={backHref}
       contentClassName={contentClassName}
+      hideBack={hideBack}
+      alignTop={alignTop}
     >
       {children}
     </BuildShell>

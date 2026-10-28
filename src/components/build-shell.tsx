@@ -9,6 +9,10 @@ type BuildShellProps = {
   contentClassName?: string;
   /** hide title/description (creator filming) */
   filming?: boolean;
+  /** this build has no back pill */
+  hideBack?: boolean;
+  /** sit the build at the top of the page */
+  alignTop?: boolean;
   children: ReactNode;
 };
 
@@ -20,15 +24,23 @@ type BuildShellProps = {
 export function BuildShell({
   backHref = "/",
   contentClassName = "max-w-xl",
+  hideBack = false,
+  alignTop = false,
   children,
 }: BuildShellProps) {
   return (
-    <main className="relative flex min-h-dvh flex-col px-6 py-10 sm:px-10 lg:px-16">
-      <div className="absolute left-6 top-6 z-20 sm:left-10 lg:left-16">
-        <BackPill href={backHref} />
-      </div>
+    <main
+      className={`relative flex min-h-dvh flex-col px-6 sm:px-10 lg:px-16 ${alignTop ? "py-6" : "py-10"}`}
+    >
+      {hideBack ? null : (
+        <div className="absolute left-6 top-6 z-20 sm:left-10 lg:left-16">
+          <BackPill href={backHref} />
+        </div>
+      )}
 
-      <div className="relative z-0 flex min-h-0 flex-1 items-center justify-center pb-8 pt-16">
+      <div
+        className={`relative z-0 flex min-h-0 flex-1 justify-center ${alignTop ? "items-start" : "items-center pb-8 pt-16"}`}
+      >
         <div className={`w-full ${contentClassName}`}>{children}</div>
       </div>
     </main>

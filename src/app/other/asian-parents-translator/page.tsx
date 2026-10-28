@@ -28,7 +28,9 @@ export default async function OtherAsianParentsTranslatorPage({
       title={build.title}
       description={build.description}
       backHref="/other"
-      contentClassName="max-w-lg"
+      hideBack
+      alignTop
+      contentClassName="max-w-7xl"
     >
       <OtherAsianParentsTranslator />
     </BuildExperience>

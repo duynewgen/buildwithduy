@@ -1,10 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-const scrappyFont = {
-  fontFamily: '"Times New Roman", Times, serif',
-} as const;
+import {
+  ArrowLeftRight,
+  ChevronDown,
+  FileText,
+  Globe,
+  Image,
+  Languages,
+  Mic,
+  Pencil,
+  Star,
+  Volume2,
+  X,
+} from "lucide-react";
+import { googleSans } from "@/lib/google-translate-font";
 
 const LINES: { test: RegExp; line: string }[] = [
   {
@@ -104,88 +114,194 @@ function translateToParent(input: string) {
     .join(" ");
 }
 
-const WORDS = ["translating", "fathoming", "thinking"];
-const DOT_MS = 180;
+const DOT_MS = 160;
+
+const MODES = [
+  { name: "Text", icon: Languages },
+  { name: "Images", icon: Image },
+  { name: "Documents", icon: FileText },
+  { name: "Websites", icon: Globe },
+];
+
+function AsianParentsTranslateLogo() {
+  const colors = ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"];
+  const letters = "Asian Parents".split("");
+
+  return (
+    <p className="text-[22px] leading-none" aria-label="Asian Parents Translate">
+      {letters.map((letter, index) => (
+        <span key={index} style={{ color: letter === " " ? undefined : colors[index % colors.length] }}>
+          {letter}
+        </span>
+      ))}
+      <span className="ml-2 text-[#5f6368]">Translate</span>
+    </p>
+  );
+}
+
+const ALTERNATIVES = [
+  { text: "Have you eaten?", tone: "Check in" },
+  { text: "I cut some fruit for you", tone: "Care" },
+];
 
 export function OtherAsianParentsTranslator() {
   const [normal, setNormal] = useState("i'm sorry");
-  const [parent, setParent] = useState("");
-  const [step, setStep] = useState(-1);
+  const [parent, setParent] = useState("SYNTAX ERROR");
+  const [dots, setDots] = useState(0);
   const timer = useRef(0);
 
   useEffect(() => {
     return () => window.clearTimeout(timer.current);
   }, []);
 
-  function translate() {
+  function edit(value: string) {
     window.clearTimeout(timer.current);
+    setNormal(value);
     setParent("");
-    setStep(0);
-    const text = normal;
-    let current = 0;
+    const text = value.trim();
+    if (!text) {
+      setDots(0);
+      return;
+    }
+    setDots(1);
+    let current = 1;
     const advance = () => {
       current += 1;
-      if (current < WORDS.length * 3) {
-        setStep(current);
+      if (current <= 3) {
+        setDots(current);
         timer.current = window.setTimeout(advance, DOT_MS);
         return;
       }
       setParent(translateToParent(text));
-      setStep(-1);
+      setDots(0);
     };
     timer.current = window.setTimeout(advance, DOT_MS);
   }
 
-  function edit(value: string) {
-    window.clearTimeout(timer.current);
-    setStep(-1);
-    setNormal(value);
-    setParent("");
-  }
-
-  const translating = step >= 0;
-  const shown = translating
-    ? `${WORDS[Math.floor(step / 3)]}${".".repeat((step % 3) + 1)}`
-    : parent;
+  const translating = dots > 0;
+  const shown = translating ? `translating${".".repeat(dots)}` : parent;
+  const showAlternatives = !translating && shown === "SYNTAX ERROR";
+  const boxClass = showAlternatives ? "min-h-64" : "h-64";
 
   return (
-    <div className="w-full max-w-md text-red-950" style={scrappyFont}>
-      <p className="text-3xl text-red-700">Asian Parents Translator</p>
+    <div className={`${googleSans.className} w-full text-[#202124]`}>
+      <AsianParentsTranslateLogo />
+      <div className="mt-6 flex flex-wrap gap-2">
+        {MODES.map((mode) => {
+          const Icon = mode.icon;
+          const selected = mode.name === "Text";
+          return (
+            <button
+              key={mode.name}
+              type="button"
+              className={[
+                "inline-flex h-9 items-center gap-2 rounded-full border px-3 text-sm font-medium",
+                selected
+                  ? "border-[#d3e3fd] bg-[#d3e3fd] text-[#0842a0]"
+                  : "border-[#dadce0] bg-transparent text-[#0b57d0]",
+              ].join(" ")}
+            >
+              <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+              {mode.name}
+            </button>
+          );
+        })}
+      </div>
 
-      <label className="mt-5 block text-xl" htmlFor="normal-parents">
-        Normal parents
-        <textarea
-          id="normal-parents"
-          value={normal}
-          onChange={(event) => edit(event.target.value)}
-          rows={4}
-          className="mt-1 w-full resize-none border-2 border-orange-600 bg-white px-2 py-2 text-xl text-red-950 outline-none"
-          style={scrappyFont}
-        />
-      </label>
+      <div className="mt-3 flex flex-col gap-2 lg:flex-row lg:items-start">
+        <section className="min-w-0 flex-1">
+          <div className="flex h-12 items-center gap-1 px-1 text-sm font-medium">
+            <span className="border-b-2 border-[#0b57d0] px-2 pb-2.5 pt-3 text-[#0b57d0]">
+              Normal Parents
+            </span>
+          </div>
+          <div className={`flex ${boxClass} flex-col rounded-2xl border border-[#e1e3e1] bg-white`}>
+            <textarea
+              aria-label="Source text"
+              value={normal}
+              onChange={(event) => edit(event.target.value)}
+              className="w-full flex-1 resize-none bg-transparent px-4 pt-4 text-2xl leading-8 text-[#444746] outline-none"
+            />
+            <div className="flex items-center justify-between px-4 pb-3 text-[#5f6368]">
+              <div className="flex items-center gap-3">
+                <Mic className="h-5 w-5" strokeWidth={1.75} />
+                {normal ? <Volume2 className="h-5 w-5" strokeWidth={1.75} /> : null}
+              </div>
+              <div className="flex items-center gap-3">
+                {normal ? (
+                  <>
+                    <button
+                      type="button"
+                      aria-label="clear"
+                      onClick={() => edit("")}
+                      className="text-[#5f6368]"
+                    >
+                      <X className="h-5 w-5" strokeWidth={1.75} />
+                    </button>
+                    <span className="text-xs">{normal.length}</span>
+                  </>
+                ) : null}
+                <Pencil className="h-5 w-5" strokeWidth={1.75} />
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <button
-        type="button"
-        onClick={translate}
-        disabled={translating}
-        className="mt-4 cursor-pointer border-2 border-red-900 bg-red-600 px-4 py-2 text-xl text-white disabled:cursor-default disabled:opacity-70"
-        style={scrappyFont}
-      >
-        Translate
-      </button>
+        <div className="flex h-12 items-center justify-center text-[#5f6368] lg:w-12">
+          <ArrowLeftRight className="h-5 w-5" strokeWidth={1.75} />
+        </div>
 
-      <label className="mt-4 block text-xl" htmlFor="parent">
-        Asian parents
-        <textarea
-          id="parent"
-          readOnly
-          aria-busy={translating}
-          value={shown}
-          rows={4}
-          className="mt-1 w-full resize-none border-2 border-red-800 bg-red-100 px-2 py-2 text-xl text-red-800 outline-none"
-          style={scrappyFont}
-        />
-      </label>
+        <section className="min-w-0 flex-1">
+          <div className="flex h-12 items-center gap-1 px-1 text-sm font-medium">
+            <span className="border-b-2 border-[#0b57d0] px-2 pb-2.5 pt-3 text-[#0b57d0]">
+              Asian Parents
+            </span>
+          </div>
+          <div
+            className={`rounded-2xl bg-[#f0f4f9] px-5 pb-2 pt-4 ${boxClass}`}
+            aria-live="polite"
+            aria-busy={translating}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <p
+                id="parent"
+                className={[
+                  "text-[28px] leading-9",
+                  translating || !shown ? "text-[#5f6368]" : "text-[#1f1f1f]",
+                ].join(" ")}
+              >
+                {shown || "Translation"}
+              </p>
+              {showAlternatives ? (
+                <Star className="mt-1 h-5 w-5 text-[#5f6368]" strokeWidth={1.75} />
+              ) : null}
+            </div>
+            {showAlternatives ? (
+              <div className="mt-8">
+                <div className="flex items-center justify-between text-sm">
+                  <p className="font-medium text-[#202124]">Alternatives</p>
+                  <p className="text-[#0b57d0]">Expand all</p>
+                </div>
+                <ul className="mt-1">
+                  {ALTERNATIVES.map((item) => (
+                    <li
+                      key={item.text}
+                      className="flex items-center justify-between gap-4 border-t border-[#dadce0] py-3.5"
+                    >
+                      <p className="text-base text-[#202124]">{item.text}</p>
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#d3e3fd] px-2.5 py-0.5 text-xs text-[#0b57d0]">
+                        {item.tone}
+                        <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+          <p className="mt-1 text-right text-xs text-[#70757a]">Send feedback</p>
+        </section>
+      </div>
     </div>
   );
 }

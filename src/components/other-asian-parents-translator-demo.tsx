@@ -1,23 +1,21 @@
-const scrappyFont = {
-  fontFamily: '"Times New Roman", Times, serif',
-} as const;
+import { googleSans } from "@/lib/google-translate-font";
 
 export function OtherAsianParentsTranslatorDemo() {
   return (
-    <div
-      className="flex h-full w-full flex-col justify-center bg-white px-3"
-      style={scrappyFont}
-    >
-      <p className="text-[8px] text-red-800">normal parents</p>
-      <p className="mt-0.5 border border-orange-600 bg-white px-1 text-[9px] text-red-950">
-        i&apos;m sorry
-      </p>
-      <p className="mt-1.5 text-[8px] text-red-800">asian parents</p>
-      <p className="mt-0.5 min-h-8 border border-red-800 bg-red-100 px-1 text-[9px] leading-tight text-red-800">
-        <span className="opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          SYNTAX ERROR
-        </span>
-      </p>
+    <div className={`${googleSans.className} flex h-full w-full items-center gap-1 bg-white px-2`}>
+      <div className="min-w-0 flex-1">
+        <p className="text-[8px] font-medium text-[#0b57d0]">normal parents</p>
+        <p className="mt-0.5 flex h-10 items-start rounded-md border border-[#e1e3e1] bg-white px-1 pt-1 text-[9px] text-[#444746]">
+          i&apos;m sorry
+        </p>
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[8px] font-medium text-[#0b57d0]">asian parents</p>
+        <p className="mt-0.5 h-10 rounded-md bg-[#f0f4f9] px-1 pt-1 text-[9px] leading-tight text-[#5f6368]">
+          <span className="group-hover:hidden">translation</span>
+          <span className="hidden text-[#444746] group-hover:inline">SYNTAX ERROR</span>
+        </p>
+      </div>
     </div>
   );
 }
