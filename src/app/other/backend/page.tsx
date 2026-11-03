@@ -26,7 +26,7 @@ export default async function OtherBackendPage({ searchParams }: PageProps) {
       title={build.title}
       description={build.description}
       backHref="/other"
-      contentClassName="max-w-6xl"
+      contentClassName="max-w-lg"
     >
       <OtherBackend />
     </BuildExperience>

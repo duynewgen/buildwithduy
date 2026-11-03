@@ -1,6 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import {
+  Brush,
+  Circle,
+  Eraser,
+  PaintBucket,
+  Pencil,
+  Pipette,
+  Slash,
+  Square,
+  Type,
+} from "lucide-react";
 
 const COLORS = [
   { name: "red", value: "#da291c" },
@@ -13,7 +25,39 @@ const COLORS = [
   { name: "white", value: "#ffffff" },
 ];
 
-export function OtherBackend() {
+const MENUS = ["File", "Edit", "View", "Image", "Colors", "Help"];
+
+const TOOLS = [
+  { name: "free-form select", icon: Slash },
+  { name: "select", icon: Square },
+  { name: "eraser", icon: Eraser },
+  { name: "fill", icon: PaintBucket },
+  { name: "eyedropper", icon: Pipette },
+  { name: "magnifier", icon: Circle },
+  { name: "pencil", icon: Pencil },
+  { name: "brush", icon: Brush },
+  { name: "airbrush", icon: Circle },
+  { name: "text", icon: Type },
+  { name: "line", icon: Slash },
+  { name: "curve", icon: Slash },
+  { name: "rectangle", icon: Square },
+  { name: "polygon", icon: Square },
+  { name: "ellipse", icon: Circle },
+  { name: "rounded rectangle", icon: Square },
+] as const;
+
+const raised =
+  "border border-[#808080] border-r-[#ffffff] border-b-[#ffffff] shadow-[inset_1px_1px_0_#ffffff]";
+const sunken =
+  "border border-[#ffffff] border-r-[#808080] border-b-[#808080] shadow-[inset_1px_1px_0_#808080]";
+
+const scrappyFont = {
+  fontFamily: '"Times New Roman", Times, serif',
+} as const;
+
+const PROJECT_FILE = "backend.sql";
+
+function BackendPaint({ onClose }: { onClose: () => void }) {
   const frameRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLCanvasElement>(null);
   const paintRef = useRef<HTMLCanvasElement | null>(null);
@@ -22,10 +66,19 @@ export function OtherBackend() {
   const lastRef = useRef<{ x: number; y: number } | null>(null);
   const seededRef = useRef(false);
   const [color, setColor] = useState(COLORS[0].value);
+  const [tool, setTool] = useState("brush");
 
   useEffect(() => {
     colorRef.current = color;
   }, [color]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -59,72 +112,93 @@ export function OtherBackend() {
     };
 
     const fitFont = () => {
-      let size = height * 0.78;
+      let size = height * 0.68;
       viewCtx.font = `900 ${size}px ${fontFamily()}`;
       const measured = viewCtx.measureText("END").width;
-      if (measured > width * 0.92) size *= (width * 0.92) / measured;
+      if (measured > width * 0.86) size *= (width * 0.86) / measured;
       fontSize = size;
     };
 
-    const eLocalCenter = () => {
+    const letterLocalCenter = (letter: "E" | "N" | "D") => {
       paintCtx.font = `900 ${fontSize}px ${fontFamily()}`;
       const endWidth = paintCtx.measureText("END").width;
       const eWidth = paintCtx.measureText("E").width;
-      return -endWidth / 2 + eWidth / 2;
+      const nWidth = paintCtx.measureText("N").width;
+      const dWidth = paintCtx.measureText("D").width;
+      if (letter === "E") return -endWidth / 2 + eWidth / 2;
+      if (letter === "N") return -endWidth / 2 + eWidth + nWidth / 2;
+      return -endWidth / 2 + eWidth + nWidth + dWidth / 2;
     };
 
-    const paintBloom = (
-      x: number,
-      y: number,
-      radius: number,
-      color: string,
-      alpha = 1,
+    const scribble = (
+      ctx: CanvasRenderingContext2D,
+      x0: number,
+      y0: number,
+      x1: number,
+      y1: number,
+      colors: string[],
     ) => {
-      const glow = paintCtx.createRadialGradient(x, y, 0, x, y, radius);
-      glow.addColorStop(0, color);
-      glow.addColorStop(1, "rgba(255,255,255,0)");
-      paintCtx.globalAlpha = alpha;
-      paintCtx.fillStyle = glow;
-      paintCtx.beginPath();
-      paintCtx.arc(x, y, radius, 0, Math.PI * 2);
-      paintCtx.fill();
-      paintCtx.globalAlpha = 1;
+      for (let i = 0; i < 64; i += 1) {
+        const fill = colors[Math.floor(Math.random() * colors.length)]!;
+        const x = x0 + Math.random() * (x1 - x0);
+        const y = y0 + Math.random() * (y1 - y0);
+        const radius = fontSize * (0.05 + Math.random() * 0.16);
+        ctx.fillStyle = fill;
+        ctx.beginPath();
+        if (Math.random() > 0.4) {
+          ctx.ellipse(
+            x,
+            y,
+            radius,
+            radius * (0.3 + Math.random() * 0.75),
+            Math.random() * Math.PI,
+            0,
+            Math.PI * 2,
+          );
+        } else {
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+        }
+        ctx.fill();
+      }
+
+      for (let i = 0; i < 10; i += 1) {
+        const stroke = colors[Math.floor(Math.random() * colors.length)]!;
+        const x = x0 + Math.random() * (x1 - x0);
+        const y = y0 + Math.random() * (y1 - y0);
+        const dx = (Math.random() - 0.5) * fontSize * 0.55;
+        const dy = (Math.random() - 0.5) * fontSize * 0.55;
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = fontSize * (0.04 + Math.random() * 0.08);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(
+          x + dx * 0.4 + (Math.random() - 0.5) * fontSize * 0.2,
+          y + dy * 0.2 + (Math.random() - 0.5) * fontSize * 0.2,
+          x + dx,
+          y + dy,
+        );
+        ctx.stroke();
+      }
     };
 
-    const seedE = () => {
-      if (seededRef.current) return;
+    const seedLetter = (letter: "E" | "N" | "D", colors: string[], x0: number, x1: number) => {
+      const ratio = window.devicePixelRatio || 1;
+      const layer = document.createElement("canvas");
+      layer.width = paint.width;
+      layer.height = paint.height;
+      const layerCtx = layer.getContext("2d");
+      if (!layerCtx) return;
 
-      const ex = width * 0.78;
-      const top = height * 0.22;
-      const mid = height * 0.5;
-      const bottom = height * 0.78;
-      const arm = width * 0.68;
-
-      const sky = paintCtx.createLinearGradient(ex, top - 20, ex, bottom + 20);
-      sky.addColorStop(0, "#fb7185");
-      sky.addColorStop(0.35, "#fdba74");
-      sky.addColorStop(0.7, "#fde68a");
-      sky.addColorStop(1, "#bbf7d0");
-      paintCtx.fillStyle = sky;
-      paintCtx.fillRect(width * 0.55, height * 0.08, width * 0.42, height * 0.84);
-
-      paintBloom(arm, top, fontSize * 0.22, "#f472b6", 0.95);
-      paintBloom(ex - fontSize * 0.02, top + fontSize * 0.02, fontSize * 0.16, "#fb7185", 0.9);
-      paintBloom(arm + fontSize * 0.04, mid, fontSize * 0.2, "#fdba74", 0.92);
-      paintBloom(ex, mid - fontSize * 0.04, fontSize * 0.14, "#f9a8d4", 0.85);
-      paintBloom(arm, bottom, fontSize * 0.24, "#86efac", 0.9);
-      paintBloom(ex - fontSize * 0.06, bottom - fontSize * 0.02, fontSize * 0.18, "#fde68a", 0.88);
-      paintBloom(ex + fontSize * 0.04, mid + fontSize * 0.12, fontSize * 0.12, "#c084fc", 0.7);
-      paintBloom(arm + fontSize * 0.08, top + fontSize * 0.18, fontSize * 0.08, "#fef08a", 1);
-      paintBloom(arm - fontSize * 0.02, bottom - fontSize * 0.16, fontSize * 0.07, "#fef9c3", 1);
-      paintBloom(ex - fontSize * 0.1, mid + fontSize * 0.02, fontSize * 0.06, "#ffffff", 0.85);
+      layerCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      scribble(layerCtx, x0, height * 0.08, x1, height * 0.92, colors);
 
       const mask = document.createElement("canvas");
       mask.width = paint.width;
       mask.height = paint.height;
       const maskCtx = mask.getContext("2d");
       if (!maskCtx) return;
-      const ratio = window.devicePixelRatio || 1;
       maskCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
       maskCtx.translate(width / 2, height / 2);
       maskCtx.scale(-1, 1);
@@ -132,26 +206,65 @@ export function OtherBackend() {
       maskCtx.textAlign = "center";
       maskCtx.textBaseline = "middle";
       maskCtx.fillStyle = "#000";
-      maskCtx.fillText("E", eLocalCenter(), 0);
+      maskCtx.fillText(letter, letterLocalCenter(letter), 0);
 
-      paintCtx.globalCompositeOperation = "destination-in";
+      layerCtx.globalCompositeOperation = "destination-in";
+      layerCtx.setTransform(1, 0, 0, 1, 0, 0);
+      layerCtx.drawImage(mask, 0, 0);
+
       paintCtx.setTransform(1, 0, 0, 1, 0, 0);
-      paintCtx.drawImage(mask, 0, 0);
-      paintCtx.globalCompositeOperation = "source-over";
+      paintCtx.drawImage(layer, 0, 0);
       paintCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    const seedLetters = () => {
+      if (seededRef.current) return;
+      seedLetter("D", ["#f97316", "#16a34a", "#7c3aed"], width * 0.02, width * 0.38);
+      seedLetter("N", ["#da291c", "#f97316", "#facc15"], width * 0.34, width * 0.66);
+      seedLetter("E", ["#16a34a", "#2563eb", "#7c3aed"], width * 0.62, width * 0.98);
       seededRef.current = true;
     };
 
     const render = () => {
+      const ratio = window.devicePixelRatio || 1;
+      const depth = Math.max(2, Math.round(fontSize * 0.016));
+      const stepX = fontSize * 0.01;
+      const stepY = fontSize * 0.012;
+
       viewCtx.setTransform(1, 0, 0, 1, 0, 0);
       viewCtx.clearRect(0, 0, view.width, view.height);
-      viewCtx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+      viewCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
       viewCtx.globalCompositeOperation = "source-over";
-      viewCtx.fillStyle = "#ffffff";
-      mirrored(viewCtx, (ctx) => ctx.fillText("END", 0, 0));
-      viewCtx.globalCompositeOperation = "source-atop";
-      viewCtx.drawImage(paint, 0, 0, width, height);
-      viewCtx.globalCompositeOperation = "source-over";
+
+      // chunky extrusion behind the mirrored word (reads down-right on screen)
+      for (let i = depth; i >= 1; i -= 1) {
+        const t = i / depth;
+        const shade = Math.round(28 + t * 78);
+        viewCtx.fillStyle = `rgb(${shade},${shade},${shade})`;
+        mirrored(viewCtx, (ctx) => ctx.fillText("END", i * stepX, -i * stepY));
+      }
+
+      // paint only the front face so the sides stay solid 3d
+      const face = document.createElement("canvas");
+      face.width = view.width;
+      face.height = view.height;
+      const faceCtx = face.getContext("2d");
+      if (faceCtx) {
+        faceCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        faceCtx.fillStyle = "#ffffff";
+        faceCtx.save();
+        faceCtx.translate(width / 2, height / 2);
+        faceCtx.scale(-1, 1);
+        faceCtx.font = `900 ${fontSize}px ${fontFamily()}`;
+        faceCtx.textAlign = "center";
+        faceCtx.textBaseline = "middle";
+        faceCtx.fillText("END", 0, 0);
+        faceCtx.restore();
+        faceCtx.globalCompositeOperation = "source-atop";
+        faceCtx.drawImage(paint, 0, 0, width, height);
+        viewCtx.drawImage(face, 0, 0, width, height);
+      }
+
       viewCtx.strokeStyle = "#18181b";
       viewCtx.lineWidth = Math.max(5, fontSize * 0.022);
       viewCtx.lineJoin = "round";
@@ -179,7 +292,7 @@ export function OtherBackend() {
         paintCtx.drawImage(snapshot, 0, 0, snapshot.width, snapshot.height, 0, 0, width, height);
       }
       fitFont();
-      if (!seededRef.current) seedE();
+      if (!seededRef.current) seedLetters();
       render();
     };
 
@@ -254,40 +367,196 @@ export function OtherBackend() {
   }, []);
 
   return (
-    <div className="flex w-full flex-col items-center">
-      <div
-        ref={frameRef}
-        className="relative h-[min(68dvh,560px)] w-full overflow-hidden rounded-3xl shadow-[0_20px_70px_rgba(168,85,247,0.35)] ring-1 ring-fuchsia-300/40"
+    <div
+      className="flex h-full min-h-0 w-full flex-col"
+      style={{ fontFamily: "Tahoma, 'MS Sans Serif', sans-serif" }}
+    >
+      <div className={`flex h-full min-h-0 w-full flex-col bg-[#c0c0c0] p-0.5 ${raised}`}>
+        <div className="flex items-center justify-between bg-gradient-to-r from-[#000080] to-[#1084d0] px-1.5 py-1 text-white">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <span className="flex h-4 w-4 items-center justify-center bg-[#c0c0c0] text-[9px] text-black">
+              ✏
+            </span>
+            <p className="truncate text-[13px] font-bold tracking-tight">backend - Paint</p>
+          </div>
+          <div className="flex shrink-0 gap-0.5">
+            <span
+              className={`flex h-[18px] w-[18px] items-center justify-center bg-[#c0c0c0] text-[11px] leading-none text-black ${raised}`}
+            >
+              _
+            </span>
+            <span
+              className={`flex h-[18px] w-[18px] items-center justify-center bg-[#c0c0c0] text-[11px] leading-none text-black ${raised}`}
+            >
+              □
+            </span>
+            <button
+              type="button"
+              aria-label="close"
+              onClick={onClose}
+              className={`flex h-[18px] w-[18px] cursor-pointer items-center justify-center bg-[#c0c0c0] text-[11px] leading-none text-black ${raised}`}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div className="flex gap-3 border-b border-[#808080] px-2 py-0.5 text-[12px] text-black">
+          {MENUS.map((menu) => (
+            <span key={menu}>
+              <span className="underline">{menu[0]}</span>
+              {menu.slice(1)}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex min-h-0 flex-1 gap-1 p-1">
+          <div className={`flex w-[58px] shrink-0 flex-col gap-1 bg-[#c0c0c0] p-1 ${sunken}`}>
+            <div className="grid grid-cols-2 gap-0.5">
+              {TOOLS.map((item) => {
+                const Icon = item.icon;
+                const selected = item.name === tool;
+                return (
+                  <button
+                    key={item.name}
+                    type="button"
+                    aria-label={item.name}
+                    aria-pressed={selected}
+                    onClick={() => setTool(item.name)}
+                    className={`flex h-7 w-7 items-center justify-center bg-[#c0c0c0] text-black ${
+                      selected ? sunken : raised
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  </button>
+                );
+              })}
+            </div>
+            <div className={`mt-1 flex flex-1 items-end justify-center p-1 ${sunken}`}>
+              <div className="mb-1 flex items-end gap-0.5">
+                {[4, 7, 10].map((size) => (
+                  <span
+                    key={size}
+                    className="rounded-full bg-black"
+                    style={{ width: size, height: size }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className={`flex min-h-0 min-w-0 flex-1 bg-[#808080] p-2 ${sunken}`}>
+            <div
+              ref={frameRef}
+              className={`relative h-full min-h-0 w-full flex-1 overflow-hidden bg-white ${raised}`}
+            >
+              <canvas
+                ref={viewRef}
+                className="relative h-full w-full touch-none cursor-crosshair"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className={`mx-1 mb-1 flex items-center gap-3 bg-[#c0c0c0] px-2 py-1.5 ${sunken}`}>
+          <div className={`relative h-10 w-10 shrink-0 bg-[#c0c0c0] ${sunken}`}>
+            <span
+              className={`absolute left-1 top-1 h-5 w-5 border border-black ${raised}`}
+              style={{ backgroundColor: color }}
+            />
+            <span
+              className={`absolute bottom-1 right-1 h-5 w-5 border border-black bg-white ${raised}`}
+            />
+          </div>
+          <div className="grid grid-cols-8 gap-0.5">
+            {COLORS.map((swatch) => (
+              <button
+                key={swatch.name}
+                type="button"
+                aria-label={swatch.name}
+                aria-pressed={color === swatch.value}
+                onClick={() => setColor(swatch.value)}
+                className={`h-5 w-5 cursor-pointer border border-black ${
+                  color === swatch.value ? "outline outline-1 outline-offset-1 outline-black" : ""
+                }`}
+                style={{ backgroundColor: swatch.value }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div
+          className={`mx-1 mb-1 flex items-center justify-between px-2 py-0.5 text-[11px] text-black ${sunken}`}
+        >
+          <span>For Help, click Help Topics on the Help Menu.</span>
+          <span>{COLORS.find((swatch) => swatch.value === color)?.name}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProjectPreview() {
+  return (
+    <div className="mx-auto mt-5 flex w-full max-w-xs justify-center border-2 border-orange-600 bg-white p-6">
+      <svg viewBox="0 0 72 88" className="h-28 w-24" aria-hidden>
+        <path
+          d="M12 4h34l18 18v58a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"
+          fill="#ffffff"
+          stroke="#d4d4d8"
+          strokeWidth="2"
+        />
+        <path d="M46 4v14a4 4 0 0 0 4 4h14" fill="#f4f4f5" stroke="#d4d4d8" strokeWidth="2" />
+        <rect x="10" y="48" width="52" height="22" rx="3" fill="#e11d48" />
+        <text
+          x="36"
+          y="64"
+          textAnchor="middle"
+          fill="#ffffff"
+          fontFamily="Rubik, sans-serif"
+          fontSize="14"
+          fontWeight="700"
+        >
+          PDF
+        </text>
+        <path d="M18 18h22M18 28h28M18 38h24" stroke="#d4d4d8" strokeWidth="3" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+}
+
+export function OtherBackend() {
+  const [mounted, setMounted] = useState(false);
+  const [opened, setOpened] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return (
+    <div className="w-full max-w-sm text-zinc-900" style={scrappyFont}>
+      <p className="text-3xl text-red-700">Backend design assignment</p>
+
+      <ProjectPreview />
+      <p className="mt-3 text-base break-all">{PROJECT_FILE}</p>
+
+      <button
+        type="button"
+        onClick={() => setOpened(true)}
+        className="mt-4 cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
+        style={scrappyFont}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/other/backend-garden.jpg"
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.28)_0%,transparent_55%),linear-gradient(to_bottom,rgba(236,72,153,0.12),transparent_40%,rgba(34,211,238,0.14))]" />
-        <canvas
-          ref={viewRef}
-          className="relative z-10 h-full w-full touch-none cursor-crosshair"
-        />
-      </div>
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-        {COLORS.map((swatch) => (
-          <button
-            key={swatch.name}
-            type="button"
-            aria-label={swatch.name}
-            aria-pressed={color === swatch.value}
-            onClick={() => setColor(swatch.value)}
-            className={[
-              "h-8 w-8 cursor-pointer rounded-full border border-zinc-300 sm:h-9 sm:w-9",
-              color === swatch.value ? "ring-2 ring-zinc-900 ring-offset-2" : "",
-            ].join(" ")}
-            style={{ backgroundColor: swatch.value }}
-          />
-        ))}
-      </div>
+        Open submission
+      </button>
+
+      {mounted && opened
+        ? createPortal(
+            <div className="fixed inset-0 z-[100] bg-white">
+              <BackendPaint onClose={() => setOpened(false)} />
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

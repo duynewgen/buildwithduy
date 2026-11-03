@@ -24,6 +24,7 @@ type BuildExperienceProps = {
   creatorSame?: boolean;
   hideBack?: boolean;
   alignTop?: boolean;
+  fullBleed?: boolean;
   children: ReactNode;
 };
 
@@ -44,6 +45,7 @@ export function BuildExperience({
   creatorSame = false,
   hideBack = false,
   alignTop = false,
+  fullBleed = false,
   children,
 }: BuildExperienceProps) {
   if (creator && creatorSame) {
@@ -56,6 +58,7 @@ export function BuildExperience({
         filming
         hideBack={hideBack}
         alignTop={alignTop}
+        fullBleed={fullBleed}
       >
         {children}
       </BuildShell>
@@ -82,6 +85,7 @@ export function BuildExperience({
       contentClassName={contentClassName}
       hideBack={hideBack}
       alignTop={alignTop}
+      fullBleed={fullBleed}
     >
       {children}
     </BuildShell>

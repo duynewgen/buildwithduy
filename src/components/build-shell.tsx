@@ -13,6 +13,8 @@ type BuildShellProps = {
   hideBack?: boolean;
   /** sit the build at the top of the page */
   alignTop?: boolean;
+  /** edge-to-edge build with no shell padding */
+  fullBleed?: boolean;
   children: ReactNode;
 };
 
@@ -26,8 +28,24 @@ export function BuildShell({
   contentClassName = "max-w-xl",
   hideBack = false,
   alignTop = false,
+  fullBleed = false,
   children,
 }: BuildShellProps) {
+  if (fullBleed) {
+    return (
+      <main className="relative flex h-dvh min-h-dvh flex-col overflow-hidden">
+        {hideBack ? null : (
+          <div className="absolute left-4 top-4 z-20">
+            <BackPill href={backHref} />
+          </div>
+        )}
+        <div className={`relative z-0 flex min-h-0 flex-1 ${contentClassName}`}>
+          {children}
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main
       className={`relative flex min-h-dvh flex-col px-6 sm:px-10 lg:px-16 ${alignTop ? "py-6" : "py-10"}`}
