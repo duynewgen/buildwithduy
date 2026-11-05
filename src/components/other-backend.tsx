@@ -2,17 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  Brush,
-  Circle,
-  Eraser,
-  PaintBucket,
-  Pencil,
-  Pipette,
-  Slash,
-  Square,
-  Type,
-} from "lucide-react";
+import { X } from "lucide-react";
 
 const COLORS = [
   { name: "red", value: "#da291c" },
@@ -25,52 +15,111 @@ const COLORS = [
   { name: "white", value: "#ffffff" },
 ];
 
-const MENUS = ["File", "Edit", "View", "Image", "Colors", "Help"];
-
-const TOOLS = [
-  { name: "free-form select", icon: Slash },
-  { name: "select", icon: Square },
-  { name: "eraser", icon: Eraser },
-  { name: "fill", icon: PaintBucket },
-  { name: "eyedropper", icon: Pipette },
-  { name: "magnifier", icon: Circle },
-  { name: "pencil", icon: Pencil },
-  { name: "brush", icon: Brush },
-  { name: "airbrush", icon: Circle },
-  { name: "text", icon: Type },
-  { name: "line", icon: Slash },
-  { name: "curve", icon: Slash },
-  { name: "rectangle", icon: Square },
-  { name: "polygon", icon: Square },
-  { name: "ellipse", icon: Circle },
-  { name: "rounded rectangle", icon: Square },
-] as const;
-
-const raised =
-  "border border-[#808080] border-r-[#ffffff] border-b-[#ffffff] shadow-[inset_1px_1px_0_#ffffff]";
-const sunken =
-  "border border-[#ffffff] border-r-[#808080] border-b-[#808080] shadow-[inset_1px_1px_0_#808080]";
-
 const scrappyFont = {
   fontFamily: '"Times New Roman", Times, serif',
 } as const;
 
 const PROJECT_FILE = "backend.sql";
+const HOLD_MS = 180;
+const FLIP_MS = 700;
+const MODAL_MS = 220;
 
-function BackendPaint({ onClose }: { onClose: () => void }) {
+function drawLeaf(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  angle: number,
+) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.fillStyle = "#16a34a";
+  ctx.beginPath();
+  ctx.ellipse(0, 0, size, size * 0.38, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#14532d";
+  ctx.lineWidth = Math.max(1, size * 0.08);
+  ctx.beginPath();
+  ctx.moveTo(-size * 0.7, 0);
+  ctx.lineTo(size * 0.7, 0);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawFlower(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  petal: string,
+  center: string,
+  petals = 6,
+) {
+  for (let i = 0; i < petals; i += 1) {
+    const angle = (i / petals) * Math.PI * 2;
+    const px = x + Math.cos(angle) * size * 0.42;
+    const py = y + Math.sin(angle) * size * 0.42;
+    ctx.fillStyle = petal;
+    ctx.beginPath();
+    ctx.ellipse(px, py, size * 0.42, size * 0.22, angle, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = center;
+  ctx.beginPath();
+  ctx.arc(x, y, size * 0.22, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.arc(x - size * 0.06, y - size * 0.06, size * 0.06, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawBud(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  color: string,
+) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(x, y, size * 0.55, size * 0.8, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#16a34a";
+  ctx.beginPath();
+  ctx.ellipse(x - size * 0.35, y + size * 0.2, size * 0.35, size * 0.18, 0.8, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function BackendDesign({
+  onClose,
+  onReady,
+}: {
+  onClose: () => void;
+  onReady?: () => void;
+}) {
   const frameRef = useRef<HTMLDivElement>(null);
-  const viewRef = useRef<HTMLCanvasElement>(null);
+  const frontRef = useRef<HTMLCanvasElement>(null);
+  const backRef = useRef<HTMLCanvasElement>(null);
   const paintRef = useRef<HTMLCanvasElement | null>(null);
   const colorRef = useRef(COLORS[0].value);
   const drawingRef = useRef(false);
   const lastRef = useRef<{ x: number; y: number } | null>(null);
   const seededRef = useRef(false);
+  const flippedRef = useRef(false);
+  const readySentRef = useRef(false);
+  const renderBackRef = useRef<(() => void) | null>(null);
   const [color, setColor] = useState(COLORS[0].value);
-  const [tool, setTool] = useState("brush");
+  const [flipped, setFlipped] = useState(false);
 
   useEffect(() => {
     colorRef.current = color;
   }, [color]);
+
+  useEffect(() => {
+    flippedRef.current = flipped;
+  }, [flipped]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -81,15 +130,33 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   useEffect(() => {
+    const hold = window.setTimeout(() => setFlipped(true), HOLD_MS);
+    return () => window.clearTimeout(hold);
+  }, []);
+
+  useEffect(() => {
+    if (!flipped) return;
+    const done = window.setTimeout(() => {
+      if (!readySentRef.current) {
+        readySentRef.current = true;
+        onReady?.();
+      }
+    }, FLIP_MS);
+    return () => window.clearTimeout(done);
+  }, [flipped, onReady]);
+
+  useEffect(() => {
     const frame = frameRef.current;
-    const view = viewRef.current;
-    if (!frame || !view) return;
+    const front = frontRef.current;
+    const back = backRef.current;
+    if (!frame || !front || !back) return;
 
     const paint = document.createElement("canvas");
     paintRef.current = paint;
-    const viewCtx = view.getContext("2d");
+    const frontCtx = front.getContext("2d");
+    const backCtx = back.getContext("2d");
     const paintCtx = paint.getContext("2d");
-    if (!viewCtx || !paintCtx) return;
+    if (!frontCtx || !backCtx || !paintCtx) return;
 
     let width = 0;
     let height = 0;
@@ -97,13 +164,14 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
 
     const fontFamily = () => getComputedStyle(document.body).fontFamily;
 
-    const mirrored = (
+    const withWord = (
       ctx: CanvasRenderingContext2D,
+      mirror: boolean,
       draw: (ctx: CanvasRenderingContext2D) => void,
     ) => {
       ctx.save();
       ctx.translate(width / 2, height / 2);
-      ctx.scale(-1, 1);
+      if (mirror) ctx.scale(-1, 1);
       ctx.font = `900 ${fontSize}px ${fontFamily()}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -112,10 +180,10 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
     };
 
     const fitFont = () => {
-      let size = height * 0.68;
-      viewCtx.font = `900 ${size}px ${fontFamily()}`;
-      const measured = viewCtx.measureText("END").width;
-      if (measured > width * 0.86) size *= (width * 0.86) / measured;
+      let size = height * 0.7;
+      frontCtx.font = `900 ${size}px ${fontFamily()}`;
+      const measured = frontCtx.measureText("END").width;
+      if (measured > width * 0.88) size *= (width * 0.88) / measured;
       fontSize = size;
     };
 
@@ -130,60 +198,10 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
       return -endWidth / 2 + eWidth + nWidth + dWidth / 2;
     };
 
-    const scribble = (
-      ctx: CanvasRenderingContext2D,
-      x0: number,
-      y0: number,
-      x1: number,
-      y1: number,
-      colors: string[],
+    const paintLetterGarden = (
+      letter: "E" | "N" | "D",
+      layout: (ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number) => void,
     ) => {
-      for (let i = 0; i < 64; i += 1) {
-        const fill = colors[Math.floor(Math.random() * colors.length)]!;
-        const x = x0 + Math.random() * (x1 - x0);
-        const y = y0 + Math.random() * (y1 - y0);
-        const radius = fontSize * (0.05 + Math.random() * 0.16);
-        ctx.fillStyle = fill;
-        ctx.beginPath();
-        if (Math.random() > 0.4) {
-          ctx.ellipse(
-            x,
-            y,
-            radius,
-            radius * (0.3 + Math.random() * 0.75),
-            Math.random() * Math.PI,
-            0,
-            Math.PI * 2,
-          );
-        } else {
-          ctx.arc(x, y, radius, 0, Math.PI * 2);
-        }
-        ctx.fill();
-      }
-
-      for (let i = 0; i < 10; i += 1) {
-        const stroke = colors[Math.floor(Math.random() * colors.length)]!;
-        const x = x0 + Math.random() * (x1 - x0);
-        const y = y0 + Math.random() * (y1 - y0);
-        const dx = (Math.random() - 0.5) * fontSize * 0.55;
-        const dy = (Math.random() - 0.5) * fontSize * 0.55;
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = fontSize * (0.04 + Math.random() * 0.08);
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.quadraticCurveTo(
-          x + dx * 0.4 + (Math.random() - 0.5) * fontSize * 0.2,
-          y + dy * 0.2 + (Math.random() - 0.5) * fontSize * 0.2,
-          x + dx,
-          y + dy,
-        );
-        ctx.stroke();
-      }
-    };
-
-    const seedLetter = (letter: "E" | "N" | "D", colors: string[], x0: number, x1: number) => {
       const ratio = window.devicePixelRatio || 1;
       const layer = document.createElement("canvas");
       layer.width = paint.width;
@@ -192,7 +210,7 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
       if (!layerCtx) return;
 
       layerCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      scribble(layerCtx, x0, height * 0.08, x1, height * 0.92, colors);
+      layout(layerCtx, width / 2, height / 2, fontSize);
 
       const mask = document.createElement("canvas");
       mask.width = paint.width;
@@ -201,7 +219,6 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
       if (!maskCtx) return;
       maskCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
       maskCtx.translate(width / 2, height / 2);
-      maskCtx.scale(-1, 1);
       maskCtx.font = `900 ${fontSize}px ${fontFamily()}`;
       maskCtx.textAlign = "center";
       maskCtx.textBaseline = "middle";
@@ -219,35 +236,68 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
 
     const seedLetters = () => {
       if (seededRef.current) return;
-      seedLetter("D", ["#f97316", "#16a34a", "#7c3aed"], width * 0.02, width * 0.38);
-      seedLetter("N", ["#da291c", "#f97316", "#facc15"], width * 0.34, width * 0.66);
-      seedLetter("E", ["#16a34a", "#2563eb", "#7c3aed"], width * 0.62, width * 0.98);
+
+      paintLetterGarden("E", (ctx, cx, cy, size) => {
+        const x = cx - size * 0.95;
+        ctx.fillStyle = "#f97316";
+        ctx.fillRect(x - size * 0.55, cy - size * 0.55, size * 1.1, size * 1.1);
+        drawLeaf(ctx, x - size * 0.18, cy + size * 0.18, size * 0.16, -0.8);
+        drawLeaf(ctx, x + size * 0.2, cy + size * 0.28, size * 0.14, 0.6);
+        drawFlower(ctx, x - size * 0.08, cy - size * 0.18, size * 0.18, "#da291c", "#facc15");
+        drawFlower(ctx, x + size * 0.16, cy + size * 0.02, size * 0.14, "#7c3aed", "#facc15", 5);
+        drawBud(ctx, x + size * 0.02, cy + size * 0.28, size * 0.1, "#da291c");
+        drawFlower(ctx, x - size * 0.22, cy + size * 0.08, size * 0.11, "#2563eb", "#facc15", 5);
+      });
+
+      paintLetterGarden("N", (ctx, cx, cy, size) => {
+        ctx.fillStyle = "#16a34a";
+        ctx.fillRect(cx - size * 0.45, cy - size * 0.55, size * 0.9, size * 1.1);
+        drawLeaf(ctx, cx - size * 0.12, cy + size * 0.22, size * 0.15, -0.5);
+        drawLeaf(ctx, cx + size * 0.14, cy - size * 0.05, size * 0.13, 1.1);
+        drawFlower(ctx, cx, cy - size * 0.12, size * 0.17, "#facc15", "#da291c");
+        drawFlower(ctx, cx - size * 0.18, cy + size * 0.12, size * 0.13, "#2563eb", "#facc15", 5);
+        drawFlower(ctx, cx + size * 0.16, cy + size * 0.18, size * 0.12, "#da291c", "#facc15", 5);
+        drawBud(ctx, cx + size * 0.02, cy + size * 0.32, size * 0.09, "#7c3aed");
+      });
+
+      paintLetterGarden("D", (ctx, cx, cy, size) => {
+        const x = cx + size * 0.95;
+        ctx.fillStyle = "#2563eb";
+        ctx.fillRect(x - size * 0.55, cy - size * 0.55, size * 1.1, size * 1.1);
+        drawLeaf(ctx, x - size * 0.2, cy + size * 0.2, size * 0.15, -0.9);
+        drawLeaf(ctx, x + size * 0.12, cy + size * 0.08, size * 0.12, 0.4);
+        drawFlower(ctx, x - size * 0.05, cy - size * 0.22, size * 0.16, "#facc15", "#da291c");
+        drawFlower(ctx, x + size * 0.12, cy - size * 0.02, size * 0.13, "#f97316", "#facc15", 5);
+        drawFlower(ctx, x - size * 0.16, cy + size * 0.14, size * 0.14, "#da291c", "#facc15", 5);
+        drawBud(ctx, x + size * 0.04, cy + size * 0.3, size * 0.1, "#7c3aed");
+        drawFlower(ctx, x + size * 0.18, cy + size * 0.18, size * 0.1, "#16a34a", "#facc15", 5);
+      });
+
       seededRef.current = true;
     };
 
-    const render = () => {
+    const renderFront = () => {
       const ratio = window.devicePixelRatio || 1;
-      const depth = Math.max(2, Math.round(fontSize * 0.016));
-      const stepX = fontSize * 0.01;
-      const stepY = fontSize * 0.012;
+      frontCtx.setTransform(1, 0, 0, 1, 0, 0);
+      frontCtx.clearRect(0, 0, front.width, front.height);
+      frontCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      frontCtx.fillStyle = "#ffffff";
+      withWord(frontCtx, false, (ctx) => ctx.fillText("END", 0, 0));
+      frontCtx.strokeStyle = "#18181b";
+      frontCtx.lineWidth = Math.max(5, fontSize * 0.022);
+      frontCtx.lineJoin = "round";
+      withWord(frontCtx, false, (ctx) => ctx.strokeText("END", 0, 0));
+    };
 
-      viewCtx.setTransform(1, 0, 0, 1, 0, 0);
-      viewCtx.clearRect(0, 0, view.width, view.height);
-      viewCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      viewCtx.globalCompositeOperation = "source-over";
+    const renderBack = () => {
+      const ratio = window.devicePixelRatio || 1;
+      backCtx.setTransform(1, 0, 0, 1, 0, 0);
+      backCtx.clearRect(0, 0, back.width, back.height);
+      backCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-      // chunky extrusion behind the mirrored word (reads down-right on screen)
-      for (let i = depth; i >= 1; i -= 1) {
-        const t = i / depth;
-        const shade = Math.round(28 + t * 78);
-        viewCtx.fillStyle = `rgb(${shade},${shade},${shade})`;
-        mirrored(viewCtx, (ctx) => ctx.fillText("END", i * stepX, -i * stepY));
-      }
-
-      // paint only the front face so the sides stay solid 3d
       const face = document.createElement("canvas");
-      face.width = view.width;
-      face.height = view.height;
+      face.width = back.width;
+      face.height = back.height;
       const faceCtx = face.getContext("2d");
       if (faceCtx) {
         faceCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -261,14 +311,18 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
         faceCtx.fillText("END", 0, 0);
         faceCtx.restore();
         faceCtx.globalCompositeOperation = "source-atop";
+        faceCtx.save();
+        faceCtx.translate(width, 0);
+        faceCtx.scale(-1, 1);
         faceCtx.drawImage(paint, 0, 0, width, height);
-        viewCtx.drawImage(face, 0, 0, width, height);
+        faceCtx.restore();
+        backCtx.drawImage(face, 0, 0, width, height);
       }
 
-      viewCtx.strokeStyle = "#18181b";
-      viewCtx.lineWidth = Math.max(5, fontSize * 0.022);
-      viewCtx.lineJoin = "round";
-      mirrored(viewCtx, (ctx) => ctx.strokeText("END", 0, 0));
+      backCtx.strokeStyle = "#18181b";
+      backCtx.lineWidth = Math.max(5, fontSize * 0.022);
+      backCtx.lineJoin = "round";
+      withWord(backCtx, true, (ctx) => ctx.strokeText("END", 0, 0));
     };
 
     const resize = () => {
@@ -283,8 +337,10 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
       width = nextWidth;
       height = nextHeight;
       const ratio = window.devicePixelRatio || 1;
-      view.width = Math.round(width * ratio);
-      view.height = Math.round(height * ratio);
+      for (const canvas of [front, back]) {
+        canvas.width = Math.round(width * ratio);
+        canvas.height = Math.round(height * ratio);
+      }
       paint.width = Math.round(width * ratio);
       paint.height = Math.round(height * ratio);
       paintCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -293,14 +349,17 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
       }
       fitFont();
       if (!seededRef.current) seedLetters();
-      render();
+      renderFront();
+      renderBack();
     };
 
     const stamp = (x: number, y: number) => {
       const radius = Math.max(16, fontSize * 0.07);
+      // back face shows mirrored END; map pointer into upright paint space
+      const px = width - x;
       paintCtx.fillStyle = colorRef.current;
       paintCtx.beginPath();
-      paintCtx.arc(x, y, radius, 0, Math.PI * 2);
+      paintCtx.arc(px, y, radius, 0, Math.PI * 2);
       paintCtx.fill();
     };
 
@@ -318,15 +377,16 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
         }
       }
       lastRef.current = { x, y };
-      render();
+      renderBack();
     };
 
     const localPoint = (event: PointerEvent) => {
-      const rect = view.getBoundingClientRect();
+      const rect = back.getBoundingClientRect();
       return { x: event.clientX - rect.left, y: event.clientY - rect.top };
     };
 
     const onDown = (event: PointerEvent) => {
+      if (!flippedRef.current) return;
       drawingRef.current = true;
       lastRef.current = null;
       const point = localPoint(event);
@@ -346,7 +406,7 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
 
     const observer = new ResizeObserver(resize);
     observer.observe(frame);
-    view.addEventListener("pointerdown", onDown);
+    back.addEventListener("pointerdown", onDown);
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
@@ -356,10 +416,13 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
       if (!cancelled) resize();
     });
 
+    renderBackRef.current = renderBack;
+
     return () => {
       cancelled = true;
+      renderBackRef.current = null;
       observer.disconnect();
-      view.removeEventListener("pointerdown", onDown);
+      back.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
@@ -367,130 +430,47 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
   }, []);
 
   return (
-    <div
-      className="flex h-full min-h-0 w-full flex-col"
-      style={{ fontFamily: "Tahoma, 'MS Sans Serif', sans-serif" }}
-    >
-      <div className={`flex h-full min-h-0 w-full flex-col bg-[#c0c0c0] p-0.5 ${raised}`}>
-        <div className="flex items-center justify-between bg-gradient-to-r from-[#000080] to-[#1084d0] px-1.5 py-1 text-white">
-          <div className="flex min-w-0 items-center gap-1.5">
-            <span className="flex h-4 w-4 items-center justify-center bg-[#c0c0c0] text-[9px] text-black">
-              ✏
-            </span>
-            <p className="truncate text-[13px] font-bold tracking-tight">backend - Paint</p>
-          </div>
-          <div className="flex shrink-0 gap-0.5">
-            <span
-              className={`flex h-[18px] w-[18px] items-center justify-center bg-[#c0c0c0] text-[11px] leading-none text-black ${raised}`}
-            >
-              _
-            </span>
-            <span
-              className={`flex h-[18px] w-[18px] items-center justify-center bg-[#c0c0c0] text-[11px] leading-none text-black ${raised}`}
-            >
-              □
-            </span>
-            <button
-              type="button"
-              aria-label="close"
-              onClick={onClose}
-              className={`flex h-[18px] w-[18px] cursor-pointer items-center justify-center bg-[#c0c0c0] text-[11px] leading-none text-black ${raised}`}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-
-        <div className="flex gap-3 border-b border-[#808080] px-2 py-0.5 text-[12px] text-black">
-          {MENUS.map((menu) => (
-            <span key={menu}>
-              <span className="underline">{menu[0]}</span>
-              {menu.slice(1)}
-            </span>
-          ))}
-        </div>
-
-        <div className="flex min-h-0 flex-1 gap-1 p-1">
-          <div className={`flex w-[58px] shrink-0 flex-col gap-1 bg-[#c0c0c0] p-1 ${sunken}`}>
-            <div className="grid grid-cols-2 gap-0.5">
-              {TOOLS.map((item) => {
-                const Icon = item.icon;
-                const selected = item.name === tool;
-                return (
-                  <button
-                    key={item.name}
-                    type="button"
-                    aria-label={item.name}
-                    aria-pressed={selected}
-                    onClick={() => setTool(item.name)}
-                    className={`flex h-7 w-7 items-center justify-center bg-[#c0c0c0] text-black ${
-                      selected ? sunken : raised
-                    }`}
-                  >
-                    <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-                  </button>
-                );
-              })}
-            </div>
-            <div className={`mt-1 flex flex-1 items-end justify-center p-1 ${sunken}`}>
-              <div className="mb-1 flex items-end gap-0.5">
-                {[4, 7, 10].map((size) => (
-                  <span
-                    key={size}
-                    className="rounded-full bg-black"
-                    style={{ width: size, height: size }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className={`flex min-h-0 min-w-0 flex-1 bg-[#808080] p-2 ${sunken}`}>
-            <div
-              ref={frameRef}
-              className={`relative h-full min-h-0 w-full flex-1 overflow-hidden bg-white ${raised}`}
-            >
-              <canvas
-                ref={viewRef}
-                className="relative h-full w-full touch-none cursor-crosshair"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className={`mx-1 mb-1 flex items-center gap-3 bg-[#c0c0c0] px-2 py-1.5 ${sunken}`}>
-          <div className={`relative h-10 w-10 shrink-0 bg-[#c0c0c0] ${sunken}`}>
-            <span
-              className={`absolute left-1 top-1 h-5 w-5 border border-black ${raised}`}
-              style={{ backgroundColor: color }}
-            />
-            <span
-              className={`absolute bottom-1 right-1 h-5 w-5 border border-black bg-white ${raised}`}
-            />
-          </div>
-          <div className="grid grid-cols-8 gap-0.5">
-            {COLORS.map((swatch) => (
-              <button
-                key={swatch.name}
-                type="button"
-                aria-label={swatch.name}
-                aria-pressed={color === swatch.value}
-                onClick={() => setColor(swatch.value)}
-                className={`h-5 w-5 cursor-pointer border border-black ${
-                  color === swatch.value ? "outline outline-1 outline-offset-1 outline-black" : ""
-                }`}
-                style={{ backgroundColor: swatch.value }}
-              />
-            ))}
-          </div>
-        </div>
-
+    <div className="w-full">
+      <div className="mx-auto w-full [perspective:1000px]">
         <div
-          className={`mx-1 mb-1 flex items-center justify-between px-2 py-0.5 text-[11px] text-black ${sunken}`}
+          ref={frameRef}
+          className="relative mx-auto h-52 w-full sm:h-64"
+          style={{
+            transformStyle: "preserve-3d",
+            transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            transition: `transform ${FLIP_MS}ms cubic-bezier(0.4, 0.0, 0.2, 1)`,
+          }}
         >
-          <span>For Help, click Help Topics on the Help Menu.</span>
-          <span>{COLORS.find((swatch) => swatch.value === color)?.name}</span>
+          <canvas
+            ref={frontRef}
+            className="absolute inset-0 h-full w-full"
+            style={{ backfaceVisibility: "hidden" }}
+          />
+          <canvas
+            ref={backRef}
+            className="absolute inset-0 h-full w-full touch-none cursor-crosshair"
+            style={{
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+            }}
+          />
         </div>
+      </div>
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        {COLORS.map((swatch) => (
+          <button
+            key={swatch.name}
+            type="button"
+            aria-label={swatch.name}
+            aria-pressed={color === swatch.value}
+            onClick={() => setColor(swatch.value)}
+            className={[
+              "h-8 w-8 cursor-pointer rounded-full border border-zinc-300",
+              color === swatch.value ? "ring-2 ring-zinc-900 ring-offset-2" : "",
+            ].join(" ")}
+            style={{ backgroundColor: swatch.value }}
+          />
+        ))}
       </div>
     </div>
   );
@@ -499,60 +479,199 @@ function BackendPaint({ onClose }: { onClose: () => void }) {
 function ProjectPreview() {
   return (
     <div className="mx-auto mt-5 flex w-full max-w-xs justify-center border-2 border-orange-600 bg-white p-6">
-      <svg viewBox="0 0 72 88" className="h-28 w-24" aria-hidden>
-        <path
-          d="M12 4h34l18 18v58a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"
-          fill="#ffffff"
-          stroke="#d4d4d8"
-          strokeWidth="2"
-        />
-        <path d="M46 4v14a4 4 0 0 0 4 4h14" fill="#f4f4f5" stroke="#d4d4d8" strokeWidth="2" />
-        <rect x="10" y="48" width="52" height="22" rx="3" fill="#e11d48" />
-        <text
-          x="36"
-          y="64"
-          textAnchor="middle"
-          fill="#ffffff"
-          fontFamily="Rubik, sans-serif"
-          fontSize="14"
-          fontWeight="700"
-        >
-          PDF
-        </text>
-        <path d="M18 18h22M18 28h28M18 38h24" stroke="#d4d4d8" strokeWidth="3" strokeLinecap="round" />
-      </svg>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/other/backend-preview.png"
+        alt=""
+        className="h-28 w-28 object-contain"
+      />
     </div>
   );
 }
 
 export function OtherBackend() {
   const [mounted, setMounted] = useState(false);
-  const [opened, setOpened] = useState(false);
+  const [modalMounted, setModalMounted] = useState(false);
+  const [modalActive, setModalActive] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [payMounted, setPayMounted] = useState(false);
+  const [payActive, setPayActive] = useState(false);
+  const closeTimerRef = useRef(0);
+  const payTimerRef = useRef(0);
 
   useEffect(() => {
     setMounted(true);
+    return () => {
+      window.clearTimeout(closeTimerRef.current);
+      window.clearTimeout(payTimerRef.current);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!modalMounted && !payMounted) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (payMounted) closePay();
+      else closeModal();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modalMounted, payMounted]);
+
+  function openModal() {
+    window.clearTimeout(closeTimerRef.current);
+    setReady(false);
+    setModalMounted(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setModalActive(true));
+    });
+  }
+
+  function closeModal() {
+    setModalActive(false);
+    window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = window.setTimeout(() => {
+      setModalMounted(false);
+      setReady(false);
+    }, MODAL_MS);
+  }
+
+  function openPay() {
+    window.clearTimeout(payTimerRef.current);
+    setPayMounted(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setPayActive(true));
+    });
+  }
+
+  function closePay() {
+    setPayActive(false);
+    window.clearTimeout(payTimerRef.current);
+    payTimerRef.current = window.setTimeout(() => {
+      setPayMounted(false);
+    }, MODAL_MS);
+  }
 
   return (
     <div className="w-full max-w-sm text-zinc-900" style={scrappyFont}>
-      <p className="text-3xl text-red-700">Backend design assignment</p>
+      <p className="text-3xl text-red-700">Agentic Backend Design</p>
 
       <ProjectPreview />
       <p className="mt-3 text-base break-all">{PROJECT_FILE}</p>
 
       <button
         type="button"
-        onClick={() => setOpened(true)}
+        onClick={openModal}
         className="mt-4 cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
         style={scrappyFont}
       >
-        Open submission
+        Run backend
       </button>
 
-      {mounted && opened
+      {mounted && modalMounted
         ? createPortal(
-            <div className="fixed inset-0 z-[100] bg-white">
-              <BackendPaint onClose={() => setOpened(false)} />
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <button
+                type="button"
+                aria-label="close"
+                className={[
+                  "absolute inset-0 cursor-pointer bg-zinc-900/40 transition-opacity duration-200 ease-out",
+                  modalActive ? "opacity-100" : "opacity-0",
+                ].join(" ")}
+                onClick={closeModal}
+              />
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="backend-title"
+                className={[
+                  "relative z-10 max-h-[92vh] w-full max-w-md overflow-y-auto rounded-3xl border border-zinc-200 bg-white p-5 shadow-xl transition duration-200 ease-out",
+                  modalActive
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "translate-y-2 scale-[0.98] opacity-0",
+                ].join(" ")}
+                style={scrappyFont}
+              >
+                <div className="flex items-center justify-between">
+                  <p id="backend-title" className="text-2xl text-red-700">
+                    {ready ? "Backend successfully designed" : "Running..."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="cursor-pointer rounded-full p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900"
+                    aria-label="close"
+                  >
+                    <X className="h-4 w-4" strokeWidth={2} />
+                  </button>
+                </div>
+
+                <div className="mt-4">
+                  <BackendDesign onClose={closeModal} onReady={() => setReady(true)} />
+                </div>
+
+                <p className="mt-3 text-center text-sm break-all">{PROJECT_FILE}</p>
+                {ready ? (
+                  <button
+                    type="button"
+                    onClick={openPay}
+                    className="mx-auto mt-4 block cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
+                    style={scrappyFont}
+                  >
+                    Run again
+                  </button>
+                ) : null}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+
+      {mounted && payMounted
+        ? createPortal(
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+              <button
+                type="button"
+                aria-label="close"
+                className={[
+                  "absolute inset-0 cursor-pointer bg-zinc-900/40 transition-opacity duration-200 ease-out",
+                  payActive ? "opacity-100" : "opacity-0",
+                ].join(" ")}
+                onClick={closePay}
+              />
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="credits-title"
+                className={[
+                  "relative z-10 w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-6 text-center shadow-xl transition duration-200 ease-out",
+                  payActive
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "translate-y-2 scale-[0.98] opacity-0",
+                ].join(" ")}
+                style={scrappyFont}
+              >
+                <button
+                  type="button"
+                  onClick={closePay}
+                  className="absolute top-4 right-4 cursor-pointer rounded-full p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900"
+                  aria-label="close"
+                >
+                  <X className="h-4 w-4" strokeWidth={2} />
+                </button>
+                <p id="credits-title" className="text-2xl text-red-700">
+                  You ran out of credits
+                </p>
+                <p className="mt-4 font-sans text-5xl text-zinc-900 tabular-nums">$99</p>
+                <p className="mt-1 text-lg">credits</p>
+                <button
+                  type="button"
+                  className="mt-6 cursor-pointer rounded-full border-2 border-red-900 bg-red-600 px-5 py-2 text-xl text-white"
+                  style={scrappyFont}
+                >
+                  Pay $99
+                </button>
+              </div>
             </div>,
             document.body,
           )
