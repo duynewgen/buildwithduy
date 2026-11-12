@@ -309,6 +309,11 @@ export const builds: Build[] = [
     title: "asian parents translator",
     description: "sorry comes back as an error.",
   },
+  {
+    path: "other/ai-chip",
+    title: "ai chip",
+    description: "play poker with jensen for ai chips.",
+  },
 ];
 
 export function buildHref(build: Build) {
