@@ -270,6 +270,11 @@ export const builds: Build[] = [
     description: "compress a file by pressing the page.",
   },
   {
+    path: "other/file-compressor-2",
+    title: "file compressor, part 2",
+    description: "compress a file with a head.",
+  },
+  {
     path: "other/asian",
     title: "asian",
     description: "take a photo.",

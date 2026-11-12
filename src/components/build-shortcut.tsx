@@ -35,6 +35,7 @@ import { AuthPayToProveDemo } from "@/components/auth-pay-to-prove-demo";
 import { AuthFishingDemo } from "@/components/auth-fishing-demo";
 import { OtherUrlShortenerDemo } from "@/components/other-url-shortener-demo";
 import { OtherFileCompressorDemo } from "@/components/other-file-compressor-demo";
+import { OtherFileCompressorTwoDemo } from "@/components/other-file-compressor-two-demo";
 import { OtherAsianDemo } from "@/components/other-asian-demo";
 import { OtherOnlyfansDemo } from "@/components/other-onlyfans-demo";
 import { OtherFileUnzipDemo } from "@/components/other-file-unzip-demo";
@@ -154,6 +155,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "other/file-compressor") {
     return <OtherFileCompressorDemo />;
+  }
+  if (path === "other/file-compressor-2") {
+    return <OtherFileCompressorTwoDemo />;
   }
   if (path === "other/asian") {
     return <OtherAsianDemo />;
