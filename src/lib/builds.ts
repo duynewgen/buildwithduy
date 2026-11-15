@@ -314,6 +314,11 @@ export const builds: Build[] = [
     title: "ai chip",
     description: "play poker with jensen for ai chips.",
   },
+  {
+    path: "other/google-ai-name",
+    title: "google ai name",
+    description: "pick a google model by star sign.",
+  },
 ];
 
 export function buildHref(build: Build) {

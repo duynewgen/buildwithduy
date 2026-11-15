@@ -37,6 +37,7 @@ import { OtherUrlShortenerDemo } from "@/components/other-url-shortener-demo";
 import { OtherFileCompressorDemo } from "@/components/other-file-compressor-demo";
 import { OtherFileCompressorTwoDemo } from "@/components/other-file-compressor-two-demo";
 import { OtherAiChipDemo } from "@/components/other-ai-chip-demo";
+import { OtherGoogleAiDemo } from "@/components/other-google-ai-demo";
 import { OtherAsianDemo } from "@/components/other-asian-demo";
 import { OtherOnlyfansDemo } from "@/components/other-onlyfans-demo";
 import { OtherFileUnzipDemo } from "@/components/other-file-unzip-demo";
@@ -162,6 +163,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "other/ai-chip") {
     return <OtherAiChipDemo />;
+  }
+  if (path === "other/google-ai-name") {
+    return <OtherGoogleAiDemo />;
   }
   if (path === "other/asian") {
     return <OtherAsianDemo />;
