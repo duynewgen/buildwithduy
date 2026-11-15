@@ -33,7 +33,7 @@ const SIGNS: [string, string][] = [
   ["♓", "Pisces"],
 ];
 
-const MODELS: { sign: string; names: string[] }[] = [
+export const MODELS: { sign: string; names: string[] }[] = [
   { sign: "♊", names: ["Gemini 3 Flash", "Gemini 3 Pro"] },
   ...SIGNS.map(([sign, name]) => ({
     sign,

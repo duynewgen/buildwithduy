@@ -38,6 +38,7 @@ import { OtherFileCompressorDemo } from "@/components/other-file-compressor-demo
 import { OtherFileCompressorTwoDemo } from "@/components/other-file-compressor-two-demo";
 import { OtherAiChipDemo } from "@/components/other-ai-chip-demo";
 import { OtherGoogleAiDemo } from "@/components/other-google-ai-demo";
+import { OtherGoogleAiTwoDemo } from "@/components/other-google-ai-two-demo";
 import { OtherAsianDemo } from "@/components/other-asian-demo";
 import { OtherOnlyfansDemo } from "@/components/other-onlyfans-demo";
 import { OtherFileUnzipDemo } from "@/components/other-file-unzip-demo";
@@ -166,6 +167,9 @@ function BuildDemo({ path }: { path: string }) {
   }
   if (path === "other/google-ai-name") {
     return <OtherGoogleAiDemo />;
+  }
+  if (path === "other/google-ai-name-2") {
+    return <OtherGoogleAiTwoDemo />;
   }
   if (path === "other/asian") {
     return <OtherAsianDemo />;
